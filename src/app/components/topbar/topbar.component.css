@@ -1,0 +1,184 @@
+.layout-topbar {
+    position: fixed;
+    height: 5rem;
+    z-index: 997;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0 2rem;
+    background-color: #ffffff;
+    transition: left 0.2s;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05), 0px 1px 4px rgba(0, 0, 0, 0.08);
+}
+.layout-topbar .layout-topbar-logo {
+    display: flex;
+    align-items: center;
+    color: #111827;
+    font-size: 1.5rem;
+    font-weight: 400;
+    width: 300px;
+    border-radius: 12px;
+    text-decoration: none;
+}
+.layout-topbar .layout-topbar-logo img {
+    height: 2.5rem;
+    margin-right: 0.5rem;
+}
+.layout-topbar .layout-menu-button {
+    margin-left: 2rem;
+}
+.layout-topbar .layout-topbar-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.layout-topbar .layout-topbar-button i {
+    font-size: 1.5rem;
+}
+.sala{
+    color: #6b7280;
+    font-size: 1.5rem;
+}
+.layout-topbar .layout-topbar-menu {
+    margin: 0 0 0 auto;
+    padding: 0;
+    list-style: none;
+    display: flex;
+}
+.layout-topbar .layout-topbar-menu .layout-topbar-button {
+    margin-left: 1rem;
+}
+
+
+
+
+
+
+.navbar1{
+    display: none !important;
+  }
+  .sideNav{
+    display: block;
+  }
+      /* Sidebar Base Style */
+/* Sidebar Styling */
+/* Sidebar Styles */
+.sidebar {
+  top: 7rem;
+  left: 2rem; /* Hidden by default */
+  width: 300px;
+  height: calc(100vh - 9rem);
+  background-color: #000;
+  color: #fff;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  padding: 0.5rem 1.5rem;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05), 0px 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+
+.sidebar.active {
+  left: -300px; /* Slide-in effect */
+}
+
+.logo img {
+  width: 100px;
+  margin: 10px auto;
+  display: block;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #000000;
+  font-size: 24px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  display: block;
+}
+
+.menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 50px 0;
+}
+
+.menu li {
+  padding: 10px 20px;
+  text-align: left;
+}
+
+.menu li a {
+  color: #000000;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.menu li a:hover {
+  color: #f1c40f;
+}
+
+.footer {
+  margin-top: auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.footer .social-icons a {
+  color: #000000;
+  margin: 0 10px;
+  font-size: 20px;
+}
+
+.footer p {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Open Button */
+.open-btn {
+  top: 10px;
+  left: 10px;
+  z-index: 1100;
+  background: #000;
+  color: #000000;
+  border: none;
+  padding: 10px 15px;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.open-btn:hover {
+  background: #333;
+}
+
+/* Main Content */
+.content {
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar.active ~ .content {
+  margin-left: 300px; /* Adjust content when sidebar is active */
+}
+.w-15{
+  width: 15%;
+}
+.navHeader{
+  margin-left: 100px;;
+}

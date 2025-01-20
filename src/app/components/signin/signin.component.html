@@ -1,0 +1,49 @@
+<div class="py-5 h-100 bg-dark-subtle">
+    <div class="w-75 m-auto p-5 group">
+        <h1 class="h4 mt-3">Login Now : </h1>
+        @if(errMsg){
+            <div class="alert alert-danger">{{errMsg}}</div>
+        }
+        <form>
+           
+            <div class="my-3">
+                <label for="userEmail">Email :</label>
+                <input formControlName="email" id="userEmail" type="email" class="form-control">
+                @if(loginForm.get('email')?.errors && loginForm.get('email')?.touched){
+                    <div>
+                        @if(loginForm.get('email')?.errors?.['required']){
+                            <p class="text-danger">Email is Required</p>
+                        }
+                        @if(loginForm.get('email')?.errors?.['email']){
+                            <p class="text-danger">Enter avalid Email</p>
+                        }
+                    </div>
+                }
+            </div>
+           
+            <div class="my-3">
+                <label for="userPassword">Password :</label>
+                <input formControlName="password" id="userPassword" type="password" class="form-control">
+                @if(loginForm.get('password')?.errors && loginForm.get('password')?.touched){
+                    <div>
+                        @if(loginForm.get('password')?.errors?.['required']){
+                            <p class="text-danger">password is Required</p>
+                        }
+                        @if(loginForm.get('password')?.errors?.['pattern']){
+                            <p class="text-danger">Enter avalid password</p>
+                        }
+                    </div>
+                }
+            </div>
+            
+    
+            <button [disabled]="loginForm.invalid" class="btn text-bg-primary text-white mb-3 ms-auto d-block">Login
+                @if (isLoading) {
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                }
+            </button>
+        </form>
+    </div>
+</div>
+
+

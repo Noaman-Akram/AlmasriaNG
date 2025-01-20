@@ -1,0 +1,57 @@
+.salah{
+    margin-left: 300px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: space-evenly;
+    padding: 7rem 2rem 2rem 4rem;
+    transition: margin-left 0.2s;
+}
+.sidebar{
+    margin-left: 300px;
+}
+.sidebar.active {
+    margin-left: 100px; /* Slide-in effect */
+}
+.input-group .form-control {
+    position: relative;
+    flex: 0.6 0;
+    width: 50%;
+    min-width: 0;
+}
+.w-s{
+    width: 180px;
+}
+.hs{
+    height: 36px;
+}
+.bgs{
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+}
+.form-control{
+    width: 40%;
+}
+.form-select{
+    width: 40%;
+}
+.form2{
+    width: 100%;
+}
+.ws{
+    width: 209px;
+}
+.z{
+    z-index: 100;
+}
+.wfc{
+    width: 75%;
+}
+.hfc{
+    height: 56%;
+}
+.w-s2{
+    width: 410px;
+}

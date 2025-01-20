@@ -1,0 +1,66 @@
+<div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary">
+  <div class="z-2">
+    <div class="d-flex mb-3">
+      <div class=" w-s2 hs bgs rounded-3 me-4">
+        <div class="d-flex align-items-end justify-content-evenly w-100 pt-2 text-secondary">
+            <h6 class="">Today's Date</h6>
+            <h6>{{ today | date:'fullDate' }}</h6>
+        </div>
+   </div>
+
+      <div class=" w-s hs bgs rounded-3">
+           <div class="d-flex align-items-end justify-content-evenly w-100 pt-2 text-secondary">
+               <h6 class="">Order ID</h6>
+               <h6 class="">KFSG1</h6>
+           </div>
+      </div>
+  </div>
+<div class="d-flex flex-column">
+   <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label">Customer name</label>
+      <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input placeholder">
+    </div>
+    <div class="mb-3">
+      <div for="formGroupExampleInput2" class="form-label">Address</div>
+      <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Another input placeholder">
+    </div>
+    <select class="form-select mb-3" aria-label="Default select example">
+      <option selected>Work Space</option>
+      <option value="1">One</option>
+      <option value="2">Two</option>
+      <option value="3">Three</option>
+    </select>
+    <div class="mb-3">
+      <div for="formGroupExampleInput3" class="form-label">Marble Material</div>
+      <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="Another input placeholder">
+    </div>
+</div>
+<div class="d-flex">
+  <div class="mb-3 me-5">
+    <label for="formGroupExampleInput3" class="form-label">Amount</label>
+    <input type="text" class="form-control form2" id="formGroupExampleInput3" placeholder="placeholder text">
+  </div>
+  <div class="mb-3 me-5">
+    <div for="formGroupExampleInput4" class="form-label">Cost</div>
+    <input type="text" class="form-control form2" id="formGroupExampleInput4" placeholder="placeholder text">
+  </div>
+  <div class="mb-3 me-5 ws">
+    <div class="form-label">Total Cost</div>
+    <h6 class="form-control form2 bg-secondary-subtle">4000 EGP</h6>
+  </div>
+</div>
+<div class="d-flex">
+  <div class="mb-3 me-5 ws">
+    <div class="form-label">Pre-paid</div>
+    <h6 class="form-control form2">0 EGP</h6>
+  </div>
+  <div class="mb-3 me-5 ws">
+    <div class="form-label">Total Cost</div>
+    <h6 class="form-control form2 bg-secondary-subtle">4000 EGP</h6>
+  </div>
+</div>
+<div class="d-flex">
+  <button class="btn btn-danger" type="submit"> <i class="pi pi-plus me-2"></i> Submit</button>
+</div>
+  </div>
+</div>
