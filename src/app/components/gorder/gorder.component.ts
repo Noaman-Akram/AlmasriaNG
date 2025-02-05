@@ -34,7 +34,7 @@ export class GorderComponent implements OnInit {
   }
     today: Date = new Date();
     model: NgbDateStruct | undefined;
-    marginLeft = 300; // Default margin
+    marginLeft = 200; // Default margin
     isSidebarOpen = false;
   
     constructor(private linkService: LinkService) {
@@ -46,7 +46,7 @@ export class GorderComponent implements OnInit {
   
     // Function to update margin based on isSidebarOpen
     updateMargin() {
-      this.marginLeft = this.isSidebarOpen ? 100 : 300;
+      this.marginLeft = this.isSidebarOpen ? 100 : 200;
       return this.marginLeft;
     }
 

@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
 export class ArdS3rComponent {
   today: Date = new Date();
   model: NgbDateStruct | undefined;
-  marginLeft = 300; // Default margin
+  marginLeft = 200; // Default margin
   isSidebarOpen = false;
 
   constructor(private linkService: LinkService) {
@@ -28,7 +28,7 @@ export class ArdS3rComponent {
 
   // Function to update margin based on isSidebarOpen
   updateMargin() {
-    this.marginLeft = this.isSidebarOpen ? 100 : 300;
+    this.marginLeft = this.isSidebarOpen ? 100 : 200;
     return this.marginLeft;
   }
 }

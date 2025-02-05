@@ -20,7 +20,7 @@ export class TopbarComponent {
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen; // Toggle sidebar state
     this.LinkService.toggleSidebar();
-
+    
   }
   closeSidebar() {
     this.isSidebarOpen = false; // Close the sidebar

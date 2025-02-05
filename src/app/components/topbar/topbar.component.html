@@ -1,15 +1,13 @@
 <!-- @if (isLogin){ -->
 <div class="layout-topbar z-3">
     <a class="layout-topbar-logo">
-        <img src="/WhatsApp Image 2025-01-17 at 12.52.53_335cad66.jpg">
+        <img src="/WhatsApp Image 2025-01-17 at 12.52.57_da3c3cfe.jpg">
     </a>
     <div>
         <button class="bg-transparent border-0 layout-menu-button layout-topbar-button" (click)="toggleSidebar()">
             <i class="sala pi pi-bars"></i>
         </button>
     </div>
-    
-
     <div class="layout-topbar-menu" >
         <button class="bg-transparent border-0  layout-topbar-button">
             <i class="sala pi pi-calendar"></i>
@@ -22,15 +20,13 @@
         </button>
     </div>
 </div>
-
-<div class="sideNav h-100 d-flex top-0 z-1 position-fixed bg-body-tertiary">
-    <nav [class]="isSidebarOpen ? 'sidebar active' : 'sidebar'" class="position-relative overflow-hidden d-flex justify-content-center align-items-center bg-danger ">
+<div [class]="isSidebarOpen ? 'z-1' : 'z-2'" class="sideNav h-100 d-flex top-0 position-fixed bg-body-tertiary">
+    <nav [class]="isSidebarOpen ? 'sidebar active' : 'sidebar'" class="position-relative overflow-hidden d-flex justify-content-center align-items-center bg-danger">
     <div class="navTab bg-danger d-flex flex-column justify-content-between p-4">
-        <div class="links overflow-hidden">
-          
+        <div class="links overflow-hidden ">  
             <ul class="list-unstyled w-100 h-100">
                 <div class="">
-                  <li>
+                  <!-- <li>
                     <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="page1" routerLinkActive="btn-light">Page1</a>
                   </li>
                   <li>
@@ -38,8 +34,8 @@
                   </li>
                   <li>
                     <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="page3" routerLinkActive="btn-light">Page3</a>
-                  </li>
-          
+                  </li> -->
+
                       <!-- <li class="btn rounded-2 border-0 btn-danger my-3 d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-controls="flush-collapseOne">
                         <i class="pi pi-plus me-2"></i> Add
                       </li>
@@ -67,19 +63,19 @@
                     <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
                       <div class="card bg-transparent border-0">
                         <li>
-                          <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="ard-s3r" routerLinkActive="btn-light"> عرض سعر </a>
+                          <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="ard-s3r" routerLinkActive="btn-light">عرض سعر</a>
                         </li>
                         <li>
                           <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="gorder" routerLinkActive="btn-light">تشغيل اوردر</a>
                         </li>
+                        <li>
+                          <a class="btn rounded-2 border-0 btn-danger my-3 mx-4" routerLink="gadwal" routerLinkActive="btn-light">جدول</a>
+                        </li>
                       </div>
                     </div>
-
-
                </div>
             </ul>
         </div>
-  
     </div>
   </nav>
   </div>

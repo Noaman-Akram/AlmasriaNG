@@ -6,6 +6,8 @@ import { Page4Component } from './Components/page4/page4.component';
 import { ArdS3rComponent } from './Components/ard-s3r/ard-s3r.component';
 import { GorderComponent } from './Components/gorder/gorder.component';
 import {SigninComponent} from './Components/signin/signin.component';
+import { GadwalComponent } from './components/gadwal/gadwal.component';
+import { CdkDragDropConnectedSortingExampleComponent } from './components/cdk-drag-drop-connected-sorting-example/cdk-drag-drop-connected-sorting-example.component';
 
 export const routes: Routes = [
     { path:'',redirectTo:'page1',pathMatch:'full' }, // Default route (Home)
@@ -16,5 +18,7 @@ export const routes: Routes = [
   { path: 'ard-s3r', component: ArdS3rComponent,title:'عرض سعر' },
   { path: 'gorder', component: GorderComponent,title:'تشغيل اوردر' },
   { path: 'signin', component: SigninComponent,title:'/signin' },
+  { path: 'gadwal', component: GadwalComponent,title:'/gadwal' },
+  { path: 'cdk-drag-drop-connected-sorting-example', component: CdkDragDropConnectedSortingExampleComponent,title:'/cdk-drag-drop-connected-sorting-example' },
   { path: '**', redirectTo: '' },
 ];

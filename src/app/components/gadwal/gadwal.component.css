@@ -1,0 +1,134 @@
+.salah{
+    margin-left: 300px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: space-evenly;
+    padding: 7rem 2rem 2rem 4rem;
+    transition: margin-left 0.2s;
+  }
+  .sidebar{
+    margin-left: 300px;
+  }
+  .sidebar.active {
+    margin-left: 100px; /* Slide-in effect */
+  }
+  .input-group .form-control {
+    position: relative;
+    flex: 0.6 0;
+    width: 50%;
+    min-width: 0;
+  }
+  .w-s{
+    width: 180px;
+  }
+  .hs{
+    height: 36px;
+  }
+  .bgs{
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+  }
+  .form-control{
+    width: 40%;
+  }
+  .form-select{
+    width: 40%;
+  }
+  .form2{
+    width: 100%;
+  }
+  .ws{
+    width: 209px;
+  }
+  .z{
+    z-index: 100;
+  }
+  .wfc{
+    width: 75%;
+  }
+  .hfc{
+    height: 56%;
+  }
+  .w-s2{
+    width: 410px;
+  }
+  .sala{
+    color: #6b7280;
+    font-size: 1rem;
+  }
+  .sala2{
+    font-size: 1rem;
+    color: rebeccapurple;
+  }
+  .br{
+    border-radius: 12px;
+  }
+  
+  .example-container {
+      width: 150px;
+      max-width: 100%;
+      margin: 0 25px 25px 0;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .tr-s{
+        transition: 0.7s;
+    }
+    .example-list {
+      min-height: 60px;
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      display: block;
+      width: 140px;
+    }
+    .h-s{
+        height: 80px;
+    }
+    .example-box {
+      padding: 20px 10px;
+      border-bottom: solid 1px #ccc;
+      color: rgba(0, 0, 0, 0.87);
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      cursor: move;
+      background: white;
+      font-size: 14px;
+    }
+    
+    .cdk-drag-preview {
+      box-sizing: border-box;
+      border-radius: 4px;
+      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                  0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                  0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    }
+    
+    .cdk-drag-placeholder {
+      opacity: 0;
+    }
+    
+    .cdk-drag-animating {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+    
+    .example-box:last-child {
+      border: none;
+    }
+    
+    .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+    
+.drop-area{
+    border: #ccc dashed 2px;
+    padding: 20px 10px;
+    box-sizing: border-box;
+    margin-top: 15px;
+}

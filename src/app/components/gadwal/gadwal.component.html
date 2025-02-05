@@ -1,0 +1,166 @@
+<div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary w-100">
+<div class="z-1 w-75">
+   <div class="d-flex flex-wrap ">
+    <div class="d-flex col-2">
+        <div class="example-container">
+          <h5>To do</h5>
+        
+          <div
+            cdkDropList
+            #todoList="cdkDropList"
+            [cdkDropListData]="todo"
+            [cdkDropListConnectedTo]="[suList,moList,tuList,weList,thList,frList,saList]"
+            class="example-list"
+            (cdkDropListDropped)="drop($event)">
+            @for (item of todo; track item) {
+              <div class="example-box" cdkDrag>{{item}}</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap col-10">
+        <div class="bg-white br w-100 h-s mb-4">
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <div class="d-flex my-4 ms-4">
+                    <div>
+                        <button class="bg-transparent border-0  layout-topbar-button pe-3">
+                            <i class="sala pi pi-calendar"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <h6 class="sala">Week of January 30, 2025</h6>
+                    </div>
+                </div>
+                <div class="d-flex me-5">
+                    <h6 class="sala2 pe-3">Today</h6>
+                    <button class="bg-transparent border-0  layout-topbar-button pe-3">
+                        <i class="sala pi pi-angle-left"></i>
+                    </button>
+                    <button class="bg-transparent border-0  layout-topbar-button pe-3">
+                        <i class="sala pi pi-angle-right"></i>
+                    </button>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="w-100">
+            <div class="d-flex">
+              <div class="example-container br">
+                <h5>Sunday</h5>
+              
+                <div
+                  cdkDropList
+                  #suList="cdkDropList"
+                  [cdkDropListData]="su"
+                  [cdkDropListConnectedTo]="[todoList,moList,tuList,weList,thList,frList,saList]"
+                  class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  @for (item of su; track item) {
+                    <div class="example-box" cdkDrag>{{item}}</div>
+                  }
+                </div>
+              </div>
+              <div class="example-container br">
+                <h5>Monday</h5>
+              
+                <div
+                  cdkDropList
+                  #moList="cdkDropList"
+                  [cdkDropListData]="mo"
+                  [cdkDropListConnectedTo]="[todoList,suList,tuList,weList,thList,frList,saList]"
+                  class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  @for (item of mo; track item) {
+                    <div class="example-box" cdkDrag>{{item}}</div>
+                  }
+                </div>
+              </div>
+              <div class="example-container br">
+                <h5>Tuesday</h5>
+              
+                <div
+                  cdkDropList
+                  #tuList="cdkDropList"
+                  [cdkDropListData]="tu"
+                  [cdkDropListConnectedTo]="[todoList,suList,moList,weList,thList,frList,saList]"
+                  class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  @for (item of tu; track item) {
+                    <div class="example-box" cdkDrag>{{item}}</div>
+                  }
+                </div>
+              </div>
+              <div class="example-container br">
+                <h5>Wednesday</h5>
+              
+                <div
+                  cdkDropList
+                  #weList="cdkDropList"
+                  [cdkDropListData]="we"
+                  [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,thList,frList,saList]"
+                  class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  @for (item of we; track item) {
+                    <div class="example-box" cdkDrag>{{item}}</div>
+                  }
+                </div>
+              </div>
+              <div class="example-container br">
+                <h5>Thursday</h5>
+              
+                <div
+                  cdkDropList
+                  #thList="cdkDropList"
+                  [cdkDropListData]="th"
+                  [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,weList,frList,saList]"
+                  class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  @for (item of th; track item) {
+                    <div class="example-box" cdkDrag>{{item}}</div>
+                  }
+                </div>
+              </div>
+              <div class="example-container br">
+                <h5>Friday</h5>
+              
+                <div
+                  cdkDropList
+                  #frList="cdkDropList"
+                  [cdkDropListData]="fr"
+                  [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,weList,thList,saList]"
+                  class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  @for (item of fr; track item) {
+                    <div class="example-box" cdkDrag>{{item}}</div>
+                  }
+                </div>
+              </div>
+              <div class="example-container br">
+                <h5>Saturday</h5>
+              
+                <div
+                  cdkDropList
+                  #saList="cdkDropList"
+                  [cdkDropListData]="sa"
+                  [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,weList,thList,frList]"
+                  class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  @for (item of sa; track item) {
+                    <div class="example-box" cdkDrag>{{item}}</div>
+                  }
+                </div>
+              </div>
+            </div>
+      
+          <button (click)="saveToLocalStorage()" class="btn rounded-2 border-0 btn-danger my-3" routerLink="page1" routerLinkActive="btn-light">Save</button>
+      
+      </div>
+      </div>
+   </div>
+
+    
+</div>
+
+
+</div>

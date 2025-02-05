@@ -74,7 +74,7 @@
 .sidebar {
   top: 7rem;
   left: 2rem; /* Hidden by default */
-  width: 300px;
+  width: 200px;
   height: calc(100vh - 9rem);
   background-color: #000;
   color: #fff;
