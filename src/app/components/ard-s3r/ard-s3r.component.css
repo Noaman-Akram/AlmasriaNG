@@ -22,8 +22,23 @@
 .w-s{
     width: 180px;
 }
+.p-multiselect:not(.p-disabled).p-focus{
+    border-color:  #dee2e6;
+}
+.p-select:not(.p-disabled).p-focus{
+    border-color:  #dee2e6;
+}
 .hs{
     height: 36px;
+}
+.p-multiselect {
+    border: 1px solid #dee2e6
+}
+.p-select{
+    border: 1px solid #dee2e6
+}
+.p-multiselect-label {
+    color: #000000; 
 }
 .bgs{
     background-color: var(--bs-body-bg);
@@ -33,6 +48,12 @@
 }
 .form-control{
     width: 40%;
+}
+.select-h{
+    padding: 0rem 0rem;
+}
+.hs{
+    height: 36px;
 }
 .form-select{
     width: 40%;
@@ -49,3 +70,23 @@
 .w-s2{
     width: 410px;
 }
+.form-select2{
+    width: 100%;
+}
+
+/* Change the text color of selected items in the dropdown */
+::ng-deep .p-multiselect .p-multiselect-label {
+    color: #000 !important; /* Change to your desired color */
+  }
+::ng-deep .p-select .p-select-label {
+    color: #000 !important; /* Change to your desired color */
+  }
+  
+::ng-deep  .p-select-label.p-placeholder {
+    color: #000 !important;
+}
+  /* Change background and text color of selected items in the dropdown panel */
+  ::ng-deep .p-multiselect .p-multiselect-item.p-highlight {
+    background-color: #007bff !important; /* Blue background for selected items */
+    color: #fff !important; /* White text for selected items */
+  }

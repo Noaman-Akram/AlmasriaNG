@@ -57,7 +57,7 @@
                         [attr.aria-expanded]="!isCollapsed"
                         aria-controls="collapseExample"
                       >
-                      <i class="pi pi-plus me-2"></i> Add
+                      <i [class]="isCollapsed ? 'pi-plus' : 'pi-angle-down'" class="pi ts me-2"></i> Add
                       </button>
                     </p>
                     <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">

@@ -10,15 +10,15 @@ import { GadwalComponent } from './components/gadwal/gadwal.component';
 import { CdkDragDropConnectedSortingExampleComponent } from './components/cdk-drag-drop-connected-sorting-example/cdk-drag-drop-connected-sorting-example.component';
 
 export const routes: Routes = [
-    { path:'',redirectTo:'page1',pathMatch:'full' }, // Default route (Home)
+    { path:'',redirectTo:'ard-s3r',pathMatch:'full' }, // Default route (Home)
   { path: 'page1', component: Page1Component,title:'page1' },
   { path: 'page2', component: Page2Component,title:'page2' },
   { path: 'page3', component: Page3Component,title:'page3' },
   { path: 'page4', component: Page4Component,title:'page4' },
   { path: 'ard-s3r', component: ArdS3rComponent,title:'عرض سعر' },
   { path: 'gorder', component: GorderComponent,title:'تشغيل اوردر' },
-  { path: 'signin', component: SigninComponent,title:'/signin' },
-  { path: 'gadwal', component: GadwalComponent,title:'/gadwal' },
+  { path: 'signin', component: SigninComponent,title:'signin' },
+  { path: 'gadwal', component: GadwalComponent,title:'جدول' },
   { path: 'cdk-drag-drop-connected-sorting-example', component: CdkDragDropConnectedSortingExampleComponent,title:'/cdk-drag-drop-connected-sorting-example' },
   { path: '**', redirectTo: '' },
 ];
