@@ -21,13 +21,17 @@
          <label for="formGroupExampleInput" class="form-label">Customer name</label>
          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input placeholder">
        </div>
-       <div class="mb-3">
+       <div class="mb-3 d-flex align-items-end">
+         <div class="d-flex flex-column">
          <div for="formGroupExampleInput2" class="form-label">Address</div>
-         <div class="d-flex">
            <div class="card flex justify-center me-4">
              <p-select [options]="cities3" [(ngModel)]="selectedCity3" optionLabel="name" placeholder="Select a City" class="w-full md:w-56 bg-white form-control form2 text-black select-h hs align-items-center" />
          </div>
-           <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Another input placeholder">
+         </div>
+         <input type="text" class="form-control me-3 hs" id="formGroupExampleInput2" placeholder="Details">
+         <div class="d-flex flex-column">
+          <div for="formGroupExampleInput2" class="form-label">Location Link</div>
+         <input type="text" class="form-control w-100" id="formGroupExampleInput2" placeholder="">
          </div>
        </div>
        <div for="formGroupExampleInput2" class="form-label">Work Space</div>
@@ -36,13 +40,15 @@
      </div>
    </div>
 
-   <div class="d-flex align-items-center my-3" *ngFor="let item of orderItems2; let i = index">
+   <div class="d-flex align-items-center my-3" *ngFor="let item of orderItems; let i = index">
     <!-- Marble Material -->
-    <div class="mb-3 me-5 mt-3">
+    <div class="mb-3 me-5 ws">
       <label class="form-label">Marble Material</label>
-      <div>
-        <p-multiselect class="mb-3 bg-white form-control form2 text-black select-h hs align-items-center" [options]="cities4" [(ngModel)]="selectedCities4" optionLabel="name" placeholder="Select Cities" [maxSelectedLabels]="3" styleClass="w-full md:w-80" />
-    </div>
+      <select class="form-select w-100" aria-label="Default select example">
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+      </select>
     </div>
   
     <!-- Dimensions -->
@@ -79,7 +85,7 @@
     </button>
   
     <!-- Delete Button (visible if more than one row) -->
-    <button class="btn btn-danger h-50" type="button" *ngIf="orderItems2.length > 1" (click)="removeRow(i)">
+    <button class="btn btn-danger h-50" type="button" *ngIf="orderItems.length > 1" (click)="removeRow(i)">
       <i class="pi pi-minus"></i>
     </button>
   </div>
@@ -95,7 +101,7 @@
                         class="form-control"
                         placeholder="yyyy-mm-dd"
                         name="dp"
-                        [(ngModel)]="model"
+                        [(ngModel)]="model2"
                         ngbDatepicker
                         #d="ngbDatepicker"
                     />
@@ -112,9 +118,9 @@
                         name="dp"
                         [(ngModel)]="model"
                         ngbDatepicker
-                        #d="ngbDatepicker"
+                        #d2="ngbDatepicker"
                     />
-                    <button class="btn btn-outline-secondary pi pi-calendar" (click)="d.toggle()" type="button"></button>
+                    <button class="btn btn-outline-secondary pi pi-calendar" (click)="d2.toggle()" type="button"></button>
                 </div>
             </div>
         </form>
@@ -122,11 +128,11 @@
   <div class="d-flex">
     <div class="mb-3 me-5 ws">
       <div class="form-label">Pre-paid</div>
-      <h6 class="form-control form2">0 EGP</h6>
+      <input type="text" class="form-control w-100" id="formGroupExampleInput2" placeholder="">
     </div>
     <div class="mb-3 me-5 ws">
       <div class="form-label">Total Cost</div>
-      <h6 class="form-control form2 bg-secondary-subtle">4000 EGP</h6>
+      <h6 class="form-control form2 bg-secondary-subtle">{{ grandTotal }} EGP</h6>
     </div>
   </div>
   <div class="d-flex">
@@ -136,7 +142,7 @@
   </div>
   </div>
   <div class="d-flex">
-    <button class="btn btn-danger" type="submit"> <i class="pi pi-plus me-2"></i> Submit</button>
+    <button class="btn btn-danger" type="submit"> <i class="pi pi-plus me-2"></i>Submit</button>
   </div>  
 </div>
   </div>

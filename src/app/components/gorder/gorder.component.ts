@@ -28,7 +28,7 @@ interface City4 {
   code: string
 }
 
-interface OrderItem2 {
+interface OrderItem {
   marbleMaterial: string;
   amount: number | null;
   cost: number | null;
@@ -91,28 +91,27 @@ export class GorderComponent implements OnInit {
   }
     today: Date = new Date();
     model: NgbDateStruct | undefined;
+    model2: NgbDateStruct | undefined;
     marginLeft = 200; // Default margin
     isSidebarOpen = false;
 
-  orderItems2: OrderItem2[] = [];
+    orderItems: OrderItem[] = [];
   
     constructor(private linkService: LinkService) {
       // Subscribe to changes in isSidebarOpen
-      this.linkService.isSidebarOpen$.subscribe((value) => {
-        this.isSidebarOpen = value;
-      });
-      this.addRow();
+    this.linkService.isSidebarOpen$.subscribe((value) => {
+      this.isSidebarOpen = value;
+    });
+    // Initialize with one row
+    this.addRow();
     }
-  
     // Function to update margin based on isSidebarOpen
-    updateMargin() : number {
+    updateMargin(): number {
       this.marginLeft = this.isSidebarOpen ? 100 : 200;
       return this.marginLeft;
-    }
-
-
+    }  
     addRow(): void {
-      this.orderItems2.push({
+      this.orderItems.push({
         marbleMaterial: '',
         amount: null,
         cost: null,
@@ -122,16 +121,19 @@ export class GorderComponent implements OnInit {
     }
     // Removes an order row based on index
   removeRow(index: number): void {
-    if (this.orderItems2.length > 1) {
-      this.orderItems2.splice(index, 1);
+    if (this.orderItems.length > 1) {
+      this.orderItems.splice(index, 1);
     }
   }
     // Recalculates the total cost when amount or cost changes
     calculateTotal(index: number): void {
-      const item = this.orderItems2[index];
+      const item = this.orderItems[index];
       const amt = item.amount ?? 0;
       const cst = item.cost ?? 0;
       item.totalCost = amt * cst;
     }
-
+  
+    get grandTotal(): number {
+      return this.orderItems.reduce((sum, item) => sum + item.totalCost, 0);
+    }
 }

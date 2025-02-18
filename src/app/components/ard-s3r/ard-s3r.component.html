@@ -35,11 +35,13 @@
 </div>
 <div class="d-flex align-items-center my-3" *ngFor="let item of orderItems; let i = index">
   <!-- Marble Material -->
-  <div class="mb-3 me-5 mt-3">
+  <div class="mb-3 me-5 ws">
     <label class="form-label">Marble Material</label>
-    <div>
-      <p-multiselect class="mb-3 bg-white form-control form2 text-black select-h hs align-items-center" [options]="cities2" [(ngModel)]="selectedCities2" optionLabel="name" placeholder="Select Cities" [maxSelectedLabels]="3" styleClass="w-full md:w-80" />
-  </div>
+    <select class="form-select w-100" aria-label="Default select example">
+      <option value="1">One</option>
+      <option value="2">Two</option>
+      <option value="3">Three</option>
+    </select>
   </div>
 
   <!-- Dimensions -->
@@ -79,6 +81,11 @@
   <button class="btn btn-danger h-50" type="button" *ngIf="orderItems.length > 1" (click)="removeRow(i)">
     <i class="pi pi-minus"></i>
   </button>
+</div>
+
+<div class="mb-3 me-5 ws">
+  <div class="form-label">Total Cost</div>
+  <h6 class="form-control form2 bg-secondary-subtle">{{ grandTotal }} EGP</h6>
 </div>
 
 <!-- Submit Button -->
