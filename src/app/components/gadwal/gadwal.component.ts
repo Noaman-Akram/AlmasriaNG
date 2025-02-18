@@ -15,7 +15,7 @@ import {
   styleUrl: './gadwal.component.css'
 })
 export class GadwalComponent implements OnInit {
-  todo = ['Get to work', 'Pick up groceries', 'Go home', 'Fall asleep','55','22','77'];
+  todo = ['Get to work', 'Pick up groceries', 'Go home', 'Fall asleep','55','22','77','99'];
 
   su: string[] =[];
   mo: string[] =[];

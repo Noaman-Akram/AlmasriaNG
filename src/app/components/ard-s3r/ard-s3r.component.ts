@@ -47,13 +47,13 @@ export class ArdS3rComponent implements OnInit {
 
     selectedCity3: City3 | undefined;
 
+  cities2: City3[] | undefined;
+
+    selectedCity2: City3 | undefined;
+
   cities!: City[];
 
-    selectedCities!: City[];
-
-    cities2!: City2[];
-
-    selectedCities2!: City2[];
+    selectedCities!: City2[];
 
     ngOnInit() {
         this.cities = [
@@ -96,13 +96,11 @@ export class ArdS3rComponent implements OnInit {
     // Initialize with one row
     this.addRow();
   }
-
   // Updates margin based on sidebar state
   updateMargin(): number {
     this.marginLeft = this.isSidebarOpen ? 100 : 200;
     return this.marginLeft;
   }
-
   // Adds a new order row with default values
   addRow(): void {
     this.orderItems.push({
@@ -125,5 +123,8 @@ removeRow(index: number): void {
     const amt = item.amount ?? 0;
     const cst = item.cost ?? 0;
     item.totalCost = amt * cst;
+  }
+  get grandTotal(): number {
+    return this.orderItems.reduce((sum, item) => sum + item.totalCost, 0);
   }
 }
