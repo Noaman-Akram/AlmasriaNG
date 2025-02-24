@@ -1,31 +1,40 @@
 import { Component , OnInit} from '@angular/core';
 import { LinkService } from '../../link.service';
-import {
-  CdkDragDrop,
-  moveItemInArray,
-  transferArrayItem,
-  CdkDrag,
-  CdkDropList,
-} from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
+import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-gadwal',
-  imports: [CdkDropList, CdkDrag],
+  imports: [CdkDropList, CdkDrag, CommonModule],
   templateUrl: './gadwal.component.html',
   styleUrl: './gadwal.component.css'
 })
 export class GadwalComponent implements OnInit {
-  todo = ['Get to work', 'Pick up groceries', 'Go home', 'Fall asleep','55','22','77','99'];
+  todo: string[] = ['Get to work', 'Pick up groceries', 'Go home', 'Fall asleep','no3','malek'];
 
-  su: string[] =[];
-  mo: string[] =[];
-  tu: string[] =[];
-  we: string[] =[];
-  th: string[] =[];
-  fr: string[] =[];
-  sa: string[] =[];
+  repeatedTodo: { text: string, color: string }[] = [];
 
-  drop(event: CdkDragDrop<string[]>) {
+  sundayList: { text: string, color: string }[] = [];
+  mondayList: { text: string, color: string }[] = [];
+  tuesdayList: { text: string, color: string }[] = [];
+  wednesdayList: { text: string, color: string }[] = [];
+  thursdayList: { text: string, color: string }[] = [];
+  fridayList: { text: string, color: string }[] = [];
+  saturdayList: { text: string, color: string }[] = [];
+
+  ngOnInit() {
+    this.generateRepeatedTodo();
+  }
+
+  // دالة لتكرار العناصر 3 مرات
+  generateRepeatedTodo() {
+    const colors = ['rgb(220 53 69)', '#ffc107', '#198754'];
+    this.repeatedTodo = this.todo.flatMap((item) =>
+      colors.map((color) => ({ text: item, color }))
+    );
+  }
+
+  drop(event: CdkDragDrop<{ text: string, color: string }[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -33,10 +42,14 @@ export class GadwalComponent implements OnInit {
         event.previousContainer.data,
         event.container.data,
         event.previousIndex,
-        event.currentIndex,
+        event.currentIndex
       );
     }
-    this.saveToLocalStorage(); // Save after every change
+  }
+  
+  getColor(index: number): string {
+    const colors = ['red', 'yellow', 'green'];
+    return colors[index % colors.length];
   }
 
   marginLeft = 200; // Default margin
@@ -49,55 +62,11 @@ export class GadwalComponent implements OnInit {
       });
     }
 
-    ngOnInit() {
-      // Load saved data from localStorage
-      this.loadFromLocalStorage();
-    }
-  
+
     // Function to update margin based on isSidebarOpen
     updateMargin() {
       this.marginLeft = this.isSidebarOpen ? 100 : 200;
       return this.marginLeft;
     }
-
-    saveToLocalStorage() {
-      const data = {
-        todo: this.todo,
-        su: this.su,
-        mo: this.mo,
-        tu: this.tu,
-        we: this.we,
-        th: this.th,
-        fr: this.fr,
-        sa: this.sa
-      };
-      localStorage.setItem('dragDropData', JSON.stringify(data));
-    }
-  
-    loadFromLocalStorage() {
-      const savedData = localStorage.getItem('dragDropData');
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        this.todo = parsedData.todo || [];
-        this.su = parsedData.su || [];
-        this.mo = parsedData.mo || [];
-        this.tu = parsedData.tu || [];
-        this.we = parsedData.we || [];
-        this.th = parsedData.th || [];
-        this.fr = parsedData.fr || [];
-        this.sa = parsedData.sa || [];
-      }
-    }
-  
-    resetData() {
-      localStorage.removeItem('dragDropData');
-      this.todo = ['Get to work', 'Pick up groceries', 'Go home', 'Fall asleep', '55', '22', '77'];
-      this.su = [];
-      this.mo = [];
-      this.tu = [];
-      this.we = [];
-      this.th = [];
-      this.fr = [];
-      this.sa = [];
-    }
+    
 }
