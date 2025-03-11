@@ -3,7 +3,7 @@
      <div class="d-flex flex-wrap ">
       <div class="d-flex col-2">
         <div class="example-container">
-          <h2>To Do List</h2>
+          <h2>To Do</h2>
       <div 
       cdkDropList
       #todoList="cdkDropList" 
@@ -11,7 +11,8 @@
       [cdkDropListConnectedTo]="[suList,moList,tuList,weList,thList,frList,saList]"
       (cdkDropListDropped)="drop($event)" 
       class="drop-list">
-        <div *ngFor="let item of repeatedTodo" cdkDrag class="card" [ngStyle]="{'background-color': item.color}">
+        <div *ngFor="let item of repeatedTodo" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
+        [cdkDragDisabled]="!isEditEnabled">
           {{ item.text }}
         </div>
       </div>
@@ -54,7 +55,8 @@
         [cdkDropListConnectedTo]="[todoList,moList,tuList,weList,thList,frList,saList]"
         (cdkDropListDropped)="drop($event)" 
         class="drop-list">
-          <div *ngFor="let item of sundayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}">
+          <div *ngFor="let item of sundayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
+          [cdkDragDisabled]="!isEditEnabled">
             {{ item.text }}
           </div>
         </div>
@@ -68,7 +70,8 @@
         [cdkDropListConnectedTo]="[todoList,suList,tuList,weList,thList,frList,saList]"
         (cdkDropListDropped)="drop($event)" 
         class="drop-list">
-          <div *ngFor="let item of mondayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}">
+          <div *ngFor="let item of mondayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
+          [cdkDragDisabled]="!isEditEnabled">
             {{ item.text }}
           </div>
         </div>
@@ -82,7 +85,8 @@
         [cdkDropListConnectedTo]="[todoList,suList,moList,weList,thList,frList,saList]"
         (cdkDropListDropped)="drop($event)" 
         class="drop-list">
-          <div *ngFor="let item of tuesdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}">
+          <div *ngFor="let item of tuesdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
+          [cdkDragDisabled]="!isEditEnabled">
             {{ item.text }}
           </div>
         </div>
@@ -96,7 +100,8 @@
         [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,thList,frList,saList]"
         (cdkDropListDropped)="drop($event)" 
         class="drop-list">
-          <div *ngFor="let item of wednesdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}">
+          <div *ngFor="let item of wednesdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
+          [cdkDragDisabled]="!isEditEnabled">
             {{ item.text }}
           </div>
         </div>
@@ -110,7 +115,7 @@
         [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,weList,frList,saList]"
         (cdkDropListDropped)="drop($event)" 
         class="drop-list">
-          <div *ngFor="let item of thursdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}">
+          <div *ngFor="let item of thursdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"[cdkDragDisabled]="!isEditEnabled">
             {{ item.text }}
           </div>
         </div>
@@ -124,7 +129,7 @@
         [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,weList,thList,saList]"
         (cdkDropListDropped)="drop($event)" 
         class="drop-list">
-          <div *ngFor="let item of fridayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}">
+          <div *ngFor="let item of fridayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"[cdkDragDisabled]="!isEditEnabled">
             {{ item.text }}
           </div>
         </div>
@@ -138,13 +143,14 @@
         [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,weList,thList,frList]"
         (cdkDropListDropped)="drop($event)" 
         class="drop-list">
-          <div *ngFor="let item of saturdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}">
+          <div *ngFor="let item of saturdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"[cdkDragDisabled]="!isEditEnabled">
             {{ item.text }}
           </div>
         </div>
                 </div>
               </div>
-              <!-- <button (click)="saveToLocalStorage()" class="btn rounded-2 border-0 btn-danger my-3" routerLink="page1" routerLinkActive="btn-light">Save</button> -->
+              <button class="btn rounded-2 border-0 btn-danger my-3" (click)="toggleEdit()">
+                {{ isEditEnabled ? 'Disable Edit' : 'Enable Edit' }} </button>
         </div>
         </div>
      </div>
