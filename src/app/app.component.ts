@@ -8,6 +8,8 @@ import { TableModule } from 'primeng/table';
 import { PrimeNG } from 'primeng/config';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { SupabaseService } from './services/supabase.service';
+
 
 @Component({
   selector: 'app-root',

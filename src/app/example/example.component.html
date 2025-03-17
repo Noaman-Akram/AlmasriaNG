@@ -1,0 +1,6 @@
+<div *ngIf="data.length === 0">No data available</div>
+<div *ngIf="data.length > 0">
+  <ul>
+    <li *ngFor="let item of data">{{ item | json }}</li>
+  </ul>
+</div>
