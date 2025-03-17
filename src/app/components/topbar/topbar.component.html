@@ -25,41 +25,20 @@
     <div class="navTab bg-danger d-flex flex-column justify-content-between p-4">
         <div class="links overflow-hidden ">  
             <ul class="list-unstyled w-100 h-100">
-                <div class="">
-                  <!-- <li>
-                    <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="page1" routerLinkActive="btn-light">Page1</a>
-                  </li>
-                  <li>
-                    <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="page2" routerLinkActive="btn-light">Page2</a>
-                  </li>
-                  <li>
-                    <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="page3" routerLinkActive="btn-light">Page3</a>
-                  </li> -->
-
-                      <!-- <li class="btn rounded-2 border-0 btn-danger my-3 d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-controls="flush-collapseOne">
-                        <i class="pi pi-plus me-2"></i> Add
-                      </li>
-                    <div id="flush-collapseOne" class="accordion-collapse collapse">
-                      <li>
-                        <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="ard-s3r" routerLinkActive="btn-light"> عرض سعر </a>
-                      </li>
-                    </div>
-                    <div id="flush-collapseOne" class="accordion-collapse collapse">
-                      <li>
-                        <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="gorder" routerLinkActive="btn-light">تشغيل اوردر</a>
-                      </li>
-                    </div> -->
-
-                    <p>
+                <div class="d-flex flex-column align-items-center">
+                  <div class="">
+                    <button class="d-flex align-items-center btn rounded-2 border-0 btn-danger my-3 mx-4" routerLink="dashboard" routerLinkActive="btn-light"> <i class="pi-th-large pi me-2"></i>Dashboard</button>
+                  </div>
+                  <div>
                       <button
                         class="btn rounded-2 border-0 btn-danger my-3 d-flex align-items-center"
                         (click)="collapse.toggle()"
                         [attr.aria-expanded]="!isCollapsed"
                         aria-controls="collapseExample"
                       >
-                      <i [class]="isCollapsed ? 'pi-plus' : 'pi-angle-down'" class="pi ts me-2"></i> Add
+                      <i [class]="isCollapsed ? 'pi-plus' : 'pi-angle-down'" class="pi me-2"></i> Add
                       </button>
-                    </p>
+                    </div>
                     <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
                       <div class="card bg-transparent border-0">
                         <li>
@@ -68,10 +47,16 @@
                         <li>
                           <a class="btn rounded-2 border-0 btn-danger my-3" routerLink="gorder" routerLinkActive="btn-light">تشغيل اوردر</a>
                         </li>
-                        <li>
-                          <a class="btn rounded-2 border-0 btn-danger my-3 mx-4" routerLink="gadwal" routerLinkActive="btn-light">جدول</a>
-                        </li>
                       </div>
+                    </div>
+                    <div>
+                      <button class="btn rounded-2 border-0 btn-danger my-3 mx-4" routerLink="gadwal" routerLinkActive="btn-light"> <i class="pi-table pi me-2"></i>جدول</button>
+                    </div>
+                    <div>
+                      <button class="btn rounded-2 border-0 btn-danger my-3 mx-4" routerLink="finance" routerLinkActive="btn-light"> <i class="pi-chart-line pi me-2"></i>Finance</button>
+                    </div>
+                    <div>
+                      <button class="btn rounded-2 border-0 btn-danger my-3 mx-4" routerLink="orders" routerLinkActive="btn-light"> <i class="pi-shopping-bag pi me-2"></i>Orders</button>
                     </div>
                </div>
             </ul>
