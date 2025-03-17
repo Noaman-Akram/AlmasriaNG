@@ -1,5 +1,5 @@
 // ard-s3r.component.ts
-import { Component , OnInit } from '@angular/core';
+import { Component , inject, OnInit } from '@angular/core';
 import { LinkService } from '../../link.service';
 import {
   NgbAlertModule,
@@ -11,6 +11,9 @@ import { JsonPipe } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { Select } from 'primeng/select';
+import { Order } from '../../services/supabase.service';
+import { SupabaseService } from '../../services/supabase.service';
+import { Injector } from '@angular/core';
 
 interface City {
   name: string,
@@ -42,6 +45,9 @@ interface OrderItem {
   styleUrls: ['./ard-s3r.component.css']
 })
 export class ArdS3rComponent implements OnInit {
+  order!:Order;
+
+ private supabaseService! : SupabaseService;
 
   cities3: City3[] | undefined;
 
@@ -55,7 +61,23 @@ export class ArdS3rComponent implements OnInit {
 
     selectedCities!: City2[];
 
+
+
+
+    constructor(private linkService: LinkService, private injector: Injector) {
+
+
+      // Subscribe to sidebar open/close events
+      this.linkService.isSidebarOpen$.subscribe((value) => {
+        this.isSidebarOpen = value;
+      });
+      // Initialize with one row
+      this.addRow();
+    }
+
     ngOnInit() {
+
+
         this.cities = [
             {name: 'New York', code: 'NY'},
             {name: 'Rome', code: 'RM'},
@@ -78,6 +100,12 @@ export class ArdS3rComponent implements OnInit {
         { name: 'Istanbul', code: 'IST' },
         { name: 'Paris', code: 'PRS' }
     ];
+
+    console.log('from component , sb is injecting .....');
+
+
+    this.supabaseService = this.injector.get(SupabaseService);
+    console.log('from component , sb injected!');
     }
   
   today: Date = new Date();
@@ -87,15 +115,8 @@ export class ArdS3rComponent implements OnInit {
 
   // Our dynamic order items array
   orderItems: OrderItem[] = [];
+//, private supabaseService: SupabaseService when i add this the app doesnt load 
 
-  constructor(private linkService: LinkService) {
-    // Subscribe to sidebar open/close events
-    this.linkService.isSidebarOpen$.subscribe((value) => {
-      this.isSidebarOpen = value;
-    });
-    // Initialize with one row
-    this.addRow();
-  }
   // Updates margin based on sidebar state
   updateMargin(): number {
     this.marginLeft = this.isSidebarOpen ? 100 : 200;
@@ -127,4 +148,38 @@ removeRow(index: number): void {
   get grandTotal(): number {
     return this.orderItems.reduce((sum, item) => sum + item.totalCost, 0);
   }
+
+  newOrder = {
+
+    customer_id: null,
+    customer_name: 'moh fthy',
+    work_type: 'F',
+    address: 'helawa',
+    order_status: 'install'
+  }
+  addTestOrder(){
+    this.supabaseService.insertToDB('Orders', this.newOrder) 
+    .then(order => console.log("Inserted Order:", order))
+  .catch(err => console.error(err));
+  }
+/* 
+    addTestOrder() {
+    const newOrder: Order = {
+      id: Math.floor(Math.random() * 1000), // Use a random ID for now
+      customer_id: null,
+      customer_name: 'cx name',
+      work_type: 'K',
+      address: 'helwna',
+      order_status: 'cutting'
+    };
+      
+    this.supabaseService.addOrder(newOrder).then(() => {
+      console.log('Order added successfully');
+    }).catch(error => {
+      console.error('Failed to add customer', error);
+    });
+  }   */
+
+    
+  
 }

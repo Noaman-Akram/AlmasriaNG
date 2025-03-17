@@ -1,3 +1,28 @@
 <div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary">
-    <div class="z-1 w-100">orders works!</div>
+  <div class="z-1 w-100">Orders Works!</div>
+  
+  <p-table [value]="orders" [rows]="10" [paginator]="true">
+    <!-- Order ID Column -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Order ID</th>
+        <th>Customer ID</th>
+        <th>Customer Name</th>
+        <th>Work Type</th>
+        <th>Status</th>
+        <th>Address</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-order>
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.customer_id }}</td>
+        <td>{{ order.customer_name }}</td>
+        <td>{{ order.work_type }}</td>
+        <td>{{ order.order_status }}</td>
+        <td>{{ order.address }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
