@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive} from '@angular/router';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-
+import { SidebarService } from '../../sidebar.service';
 
 @Component({
   selector: 'app-topbar',
@@ -12,7 +12,9 @@ import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './topbar.component.css'
 })
 export class TopbarComponent {
-  constructor(private LinkService: LinkService) {}
+  constructor(private LinkService: LinkService, private sidebarService: SidebarService) {}
+
+  leftSidebarVisible: boolean = true; // الحالة الافتراضية للـ Left Sidebar
 
   isSidebarOpen = false; // Tracks whether the sidebar is open
   isCollapsed = false;
@@ -25,4 +27,6 @@ export class TopbarComponent {
   closeSidebar() {
     this.isSidebarOpen = false; // Close the sidebar
   }  
+
+  
 }

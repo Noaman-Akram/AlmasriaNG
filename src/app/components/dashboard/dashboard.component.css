@@ -13,3 +13,24 @@
 .sidebar.active {
     margin-left: 100px; /* Slide-in effect */
 }
+.icon {
+    transition: all 0.5s;
+}
+
+.bg-icon {
+    background: #cec4e2;
+    color: #6f42c1;
+}
+.bg-success2{
+    background-color: #86e5c9;
+    color: #085a41;
+}
+.ico-circle {
+    height: 60px;
+    width: 60px;
+    font-size: 2rem;
+    border-radius: 50%;
+    line-height: 1.55;
+    text-align: center;
+    display: block;
+}

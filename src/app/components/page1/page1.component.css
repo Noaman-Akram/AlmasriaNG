@@ -1,15 +1,208 @@
 .salah{
-    margin-left: 300px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    justify-content: space-between;
-    padding: 7rem 2rem 2rem 4rem;
-    transition: margin-left 0.2s;
+  margin-left: 300px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: space-evenly;
+  padding: 7rem 2rem 2rem 4rem;
+  transition: margin-left 0.2s;
+  min-width: 120%;
 }
 .sidebar{
-    margin-left: 300px;
+  margin-left: 300px;
 }
 .sidebar.active {
-    margin-left: 100px; /* Slide-in effect */
+  margin-left: 100px; /* Slide-in effect */
+}
+.mse{
+  padding-top: 10%;
+  padding-bottom: 1%;
+}
+.right-side-nav {
+  position: fixed;
+  top: 0;
+  right: -300px; /* البداية تكون خارج الشاشة */
+  height: 100vh;
+  width: 300px;
+  background-color: #f8f9fa;
+  padding: 20px;
+  z-index: 1000;
+  transition: right 0.5s ease-in-out; /* إضافة تأثير الحركة للانتقال */
+}
+
+/* عند تفعيل الـ Sidebar لتظهر */
+.right-side-nav.open {
+  right: 0; /* تظهر في الجهة اليمنى */
+}
+/* .open {
+  padding-left: 0px;
+  transition: right 1s ease;
+} */
+.input-group .form-control {
+  position: relative;
+  flex: 0.6 0;
+  width: 50%;
+  min-width: 0;
+}
+.w-s{
+  width: 200px;
+  border-radius: 12px;
+  margin-top: 35%;
+}
+.hs{
+  height: 36px;
+}
+.bgs{
+  background-color: var(--bs-body-bg);
+  background-clip: padding-box;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+}
+.form-control{
+  width: 40%;
+}
+.form-select{
+  width: 40%;
+}
+.form2{
+  width: 100%;
+}
+.ws{
+  width: 209px;
+}
+.z{
+  z-index: 100;
+}
+.wfc{
+  width: 75%;
+}
+.hfc{
+  height: 56%;
+}
+.w-s2{
+  width: 410px;
+}
+.sala{
+  color: #6b7280;
+  font-size: 1rem;
+}
+.sala2{
+  font-size: 1rem;
+  color: rebeccapurple;
+}
+.br{
+  border-radius: 12px;
+}
+
+.example-container {
+  width: 400px;
+  max-width: 100%;
+  margin: 0 25px 25px 0;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.example-list {
+  border: solid 1px #ccc;
+  min-height: 400px;
+  width: 160px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  display: block;
+}
+
+.example-box {
+  padding: 20px 10px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+  font-size: 14px;
+  align-items: center;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+  border: none;
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.sideNav {
+  transition: transform 0.3s ease-in-out; /* Transition animation */
+  transform: translateX(0); /* Default state (open) */
+}
+
+.sideNavClosed {
+  transform: translateX(170%); /* Sidebar moves out of view */
+}
+
+
+
+
+
+/* calendar.component.css */
+.week-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.day-column {
+  background: #f0f0f0;
+  border-radius: 8px;
+  padding: 15px;
+  min-width: 250px;
+}
+
+.card-list {
+  min-height: 200px;
+  border: 2px dashed #ccc;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.card {
+  background: white;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 4px;
+  cursor: move;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* styles.css */
+.card-list {
+  position: relative; /* تأكد من أن القائمة تحتوي على position */
+}
+
+.cdk-drag-preview {
+  z-index: 1000; /* تجنب تداخل البطاقات مع العناصر الأخرى */
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.5; /* مؤشر مرئي أثناء السحب */
 }
