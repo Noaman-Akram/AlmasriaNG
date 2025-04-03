@@ -2,40 +2,47 @@
     <div class="z-1 w-100">
         <div>
             <div>
-                <table class="table">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Code</th>
-                        <th scope="col">Customer</th>
-                        <th scope="col">Work Type</th>
-                        <th scope="col">Created Date</th>
-                        <th scope="col">Total</th>
-                        <th scope="col">Payment</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>mdo</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>fat</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>twitter</td>
-                      </tr>
-                    </tbody>
-                  </table>
+              <div class="mb-4">
+                <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
+                <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
+                <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
+            </div>
+            <div class="card">
+                <p-table
+                    [value]="customers"
+                    [paginator]="true"
+                    [rows]="5"
+                    [first]="first"
+                    [showCurrentPageReport]="true"
+                    [tableStyle]="{ 'min-width': '50rem' }"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    (onPage)="pageChange($event)"
+                    [rowsPerPageOptions]="[10, 25, 50]"
+                >
+                    <ng-template #header>
+                        <tr>
+                            <th style="width:25%">Name</th>
+                            <th style="width:25%">Country</th>
+                            <th style="width:25%">Company</th>
+                            <th style="width:25%">Representative</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-customer>
+                        <tr>
+                            <td>{{ customer.name }}</td>
+                            <td>{{ customer.country.name }}</td>
+                            <td>{{ customer.company }}</td>
+                            <td>{{ customer.representative.name }}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template #paginatorleft>
+                        <p-button type="button" icon="pi pi-plus" text />
+                    </ng-template>
+                    <ng-template #paginatorright>
+                        <p-button type="button" icon="pi pi-cloud" text />
+                    </ng-template>
+                </p-table>
+            </div>
             </div>
         </div>
     </div>
