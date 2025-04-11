@@ -1,167 +1,360 @@
-// ard-s3r.component.ts
-import { Component , inject, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { LinkService } from '../../link.service';
-import {
-  NgbAlertModule,
-  NgbDatepickerModule,
-  NgbDateStruct,
-} from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule } from '@angular/forms';
-import { JsonPipe } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { NgbDatepickerModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { JsonPipe, CommonModule } from '@angular/common';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { Select } from 'primeng/select';
-import { Order } from '../../services/supabase.service';
-import { SupabaseService } from '../../services/supabase.service';
-import { Injector } from '@angular/core';
+import { SelectModule } from 'primeng/select';
+import { Customer, SupabaseService } from '../../services/supabase.service';
 
-interface City {
-  name: string,
-  code: string
-}
-interface City2 {
-  name: string,
-  code: string
-}
-interface City3 {
-  name: string,
-  code: string
-}
-
-// Define an interface for your order row
-interface OrderItem {
-  marbleMaterial: string;
-  amount: number | null;
-  cost: number | null;
-  totalCost: number;
-  dimension: string;
+interface WorkType {
+  name: string;
+  code: string;
 }
 
 @Component({
   selector: 'app-ard-s3r',
-  // Include needed modules in the imports array (Angular 14+/standalone syntax)
-  imports: [NgbDatepickerModule, NgbAlertModule, FormsModule, JsonPipe, CommonModule,MultiSelectModule,Select],
+  standalone: true,
+  imports: [
+    NgbDatepickerModule,
+    NgbAlertModule,
+    ReactiveFormsModule,
+    JsonPipe,
+    CommonModule,
+    MultiSelectModule,
+    SelectModule
+  ],
   templateUrl: './ard-s3r.component.html',
   styleUrls: ['./ard-s3r.component.css']
 })
 export class ArdS3rComponent implements OnInit {
-  order!:Order;
-
- private supabaseService! : SupabaseService;
-
-  cities3: City3[] | undefined;
-
-    selectedCity3: City3 | undefined;
-
-  cities2: City3[] | undefined;
-
-    selectedCity2: City3 | undefined;
-
-  cities!: City[];
-
-    selectedCities!: City2[];
-
-
-
-
-    constructor(private linkService: LinkService, private injector: Injector) {
-
-
-      // Subscribe to sidebar open/close events
-      this.linkService.isSidebarOpen$.subscribe((value) => {
-        this.isSidebarOpen = value;
-      });
-      // Initialize with one row
-      this.addRow();
-    }
-
-    ngOnInit() {
-
-
-        this.cities = [
-            {name: 'New York', code: 'NY'},
-            {name: 'Rome', code: 'RM'},
-            {name: 'London', code: 'LDN'},
-            {name: 'Istanbul', code: 'IST'},
-            {name: 'Paris', code: 'PRS'}
-        ];
-        this.cities2 = [
-          {name: 'New York', code: 'NY'},
-          {name: 'Rome', code: 'RM'},
-          {name: 'London', code: 'LDN'},
-          {name: 'Istanbul', code: 'IST'},
-          {name: 'Paris', code: 'PRS'}
-      ];
-
-      this.cities3 = [
-        { name: 'New York', code: 'NY' },
-        { name: 'Rome', code: 'RM' },
-        { name: 'London', code: 'LDN' },
-        { name: 'Istanbul', code: 'IST' },
-        { name: 'Paris', code: 'PRS' }
-    ];
-
-    console.log('from component , sb is injecting .....');
-
-
-    this.supabaseService = this.injector.get(SupabaseService);
-    console.log('from component , sb injected!');
-    }
-  
+  private supabaseService: SupabaseService;
+  orderForm: FormGroup;
+  nextId: number = 0;
+  finalOrderCode: string = '';
   today: Date = new Date();
-  model: NgbDateStruct | undefined;
-  marginLeft = 200; // Default margin
+  marginLeft = 200;
   isSidebarOpen = false;
+  submitMessage: string = '';
+  isSubmitting: boolean = false;
 
-  // Our dynamic order items array
-  orderItems: OrderItem[] = [];
-//, private supabaseService: SupabaseService when i add this the app doesnt load 
+  cities = [
+    { label: 'Cairo', value: 'cairo' },
+    { label: 'Alexandria', value: 'alexandria' },
+    { label: 'Giza', value: 'giza' },
+    { label: 'Luxor', value: 'luxor' },
+    { label: 'Aswan', value: 'aswan' },
+    { label: 'Sharm El Sheikh', value: 'sharm-el-sheikh' },
+    { label: 'Hurghada', value: 'hurghada' },
+    { label: 'Mansoura', value: 'mansoura' },
+    { label: 'Tanta', value: 'tanta' },
+    { label: 'Port Said', value: 'port-said' },
+    { label: 'Suez', value: 'suez' },
+    { label: 'Ismailia', value: 'ismailia' },
+    { label: 'Fayoum', value: 'fayoum' },
+    { label: 'Minya', value: 'minya' },
+    { label: 'Assiut', value: 'assiut' },
+    { label: 'Sohag', value: 'sohag' },
+    { label: 'Qena', value: 'qena' },
+    { label: 'Beni Suef', value: 'beni-suef' },
+    { label: 'Damanhur', value: 'damanhur' },
+    { label: 'Zagazig', value: 'zagazig' },
+    { label: 'Damietta', value: 'damietta' },
+    { label: 'Arish', value: 'arish' },
+    { label: 'Other', value: 'other' }
+  ];
 
-  // Updates margin based on sidebar state
+  workTypes: WorkType[] = [
+    { name: 'Kitchen', code: 'K' },
+    { name: 'Walls', code: 'W' },
+    { name: 'Floor', code: 'F' },
+    { name: 'Other', code: 'X' }
+  ];
+
+  constructor(
+    private fb: FormBuilder,
+    private linkService: LinkService,
+    private injector: Injector
+  ) {
+    this.supabaseService = this.injector.get(SupabaseService);
+
+    this.orderForm = this.fb.group({
+      customerName: ['', Validators.required],
+      city: ['', Validators.required],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
+      addressDetails: ['', Validators.required],
+      workType: this.fb.control([], Validators.required),
+      orderItems: this.fb.array([]),
+      existingCustomer: [false],    // checkbox
+      customerId: [null],          // dropdown if existing customer
+      hasCompany: [false],         // checkbox
+      companyName: ['']            // input if hasCompany is true
+    });
+
+    this.linkService.isSidebarOpen$.subscribe(value => {
+      this.isSidebarOpen = value;
+    });
+
+    this.addOrderItem(); // Start with one row
+  }
+  customersList: any[] = []; // or type Customer[] if you have an interface
+
+  async ngOnInit() {
+    const lastId = await this.supabaseService.getLastOrderId();
+    this.nextId = lastId + 1;
+    this.orderForm.get('workType')?.valueChanges.subscribe(() => {
+      this.updateOrderId();
+    });
+    this.updateOrderId();
+ 
+
+
+    this.supabaseService.retrieveDB('Customers')
+    .then((customers) => {
+      this.customersList = customers;
+    })
+    .catch(err => console.error('Error retrieving customers:', err));
+
+
+    this.setupCheckboxListeners();
+
+  }
+
+
+  private setupCheckboxListeners(): void {
+    // existingCustomer checkbox
+    this.orderForm.get('existingCustomer')?.valueChanges.subscribe((checked: boolean) => {
+      const customerNameControl = this.orderForm.get('customerName');
+      const customerIdControl = this.orderForm.get('customerId');
+  
+      if (checked) {
+        // Disable the text input for name, reset it
+       // customerNameControl?.disable();
+        customerNameControl?.reset();
+  
+        // Make the dropdown required
+        customerIdControl?.setValidators([Validators.required]);
+        
+        
+        
+      } else {
+        // Re-enable the text input
+        customerNameControl?.enable();
+  
+        // Clear validators for the dropdown
+        customerIdControl?.clearValidators();
+        customerIdControl?.reset();
+      }
+      customerNameControl?.updateValueAndValidity();
+      customerIdControl?.updateValueAndValidity();
+    });
+    this.orderForm.get('customerId')?.valueChanges.subscribe((selectedId: number) => {
+      if (selectedId) {
+        const customer = this.customersList.find(c => c.id === selectedId);
+        if (customer) {
+          // Auto-fill the phone number.
+          this.orderForm.patchValue({
+            phoneNumber: customer.phone_number
+          });
+          // Assume customer.address is in the format "City, Address Details".
+          if (customer.address) {
+            const addressParts = customer.address.split(', ');
+            const cityName = addressParts[0];
+            const cityObj = this.cities.find(c => c.label.toLowerCase() === cityName.toLowerCase());
+            this.orderForm.patchValue({
+              city: cityObj || null,
+              addressDetails: addressParts.slice(1).join(', ')
+            });
+          }
+        }
+      } else {
+        // Optionally, clear the auto-filled fields if no customer is selected.
+        this.orderForm.patchValue({
+          phoneNumber: '',
+          city: '',
+          addressDetails: ''
+        });
+      }
+    });
+  
+  
+    // hasCompany checkbox
+    this.orderForm.get('hasCompany')?.valueChanges.subscribe((checked: boolean) => {
+      const companyNameControl = this.orderForm.get('companyName');
+  
+      if (checked) {
+        // Make companyName required
+        companyNameControl?.setValidators([Validators.required]);
+      } else {
+        // Clear it out
+        companyNameControl?.clearValidators();
+        companyNameControl?.reset();
+      }
+      companyNameControl?.updateValueAndValidity();
+    });
+  }
+  
+
+  get orderItemsArray(): FormArray {
+    return this.orderForm.get('orderItems') as FormArray;
+  }
+
+  updateOrderId() {
+    const selectedWorkTypes = this.orderForm.get('workType')?.value || [];
+    const combinedCodes = selectedWorkTypes.map((wt: WorkType) => wt.code).join('');
+    this.finalOrderCode = combinedCodes ? `${combinedCodes}-${this.nextId}` : `-${this.nextId}`;
+  }
+
   updateMargin(): number {
     this.marginLeft = this.isSidebarOpen ? 100 : 200;
     return this.marginLeft;
   }
-  // Adds a new order row with default values
-  addRow(): void {
-    this.orderItems.push({
-      marbleMaterial: '',
-      amount: null,
-      cost: null,
-      totalCost: 0,
-      dimension: 'Unit'
+
+  addOrderItem() {
+    const orderItemGroup = this.fb.group({
+      marbleMaterial: ['', Validators.required],
+      dimension: ['',Validators.required],
+      amount: [null, [Validators.required, Validators.min(1)]],
+      cost: [null, [Validators.required, Validators.min(0)]]
     });
+    this.orderItemsArray.push(orderItemGroup);
   }
-  // Removes an order row based on index
-removeRow(index: number): void {
-  if (this.orderItems.length > 1) {
-    this.orderItems.splice(index, 1);
+
+  removeOrderItem(index: number) {
+    if (this.orderItemsArray.length > 1) {
+      this.orderItemsArray.removeAt(index);
+    }
+  }
+
+  calculateTotal(index: number): number {
+    const item = this.orderItemsArray.at(index);
+    const amount = item.get('amount')?.value || 0;
+    const cost = item.get('cost')?.value || 0;
+    return amount * cost;
+  }
+
+  get grandTotal(): number {
+    return this.orderItemsArray.controls.reduce((sum, control) => {
+      const amount = control.get('amount')?.value || 0;
+      const cost = control.get('cost')?.value || 0;
+      return sum + (amount * cost);
+    }, 0);
+  }
+
+  async submitOrder() {
+    if (this.orderForm.invalid) {
+      this.orderForm.markAllAsTouched();
+      this.submitMessage = 'Please fill in all required fields correctly.';
+      return;
+    }
+
+    this.isSubmitting = true;
+    const formValue = this.orderForm.value;
+    const grandTotal = this.grandTotal;
+    
+    let customerId: number | null = null;
+
+  // 1. Handle new customer insertion if needed
+  if (!formValue.existingCustomer) {
+    const customer: Customer = {  
+      name: formValue.customerName,
+      phone_number: formValue.phoneNumber,
+      address: `${formValue.city.value}, ${formValue.addressDetails}`,
+      company: formValue.hasCompany ? formValue.companyName : null,
+      paid_total: 0,
+      to_be_paid: grandTotal,
+      created_at: new Date().toISOString()
+    };
+
+    // Wait for the insert to complete and get the inserted customer
+    const insertedCustomer = await this.supabaseService.insertToDB('Customers', customer);
+    
+    if (insertedCustomer?.id) {
+      customerId = insertedCustomer.id; // Get the auto-generated ID
+    } else {
+      console.error('Failed to insert customer');
+      return; // Exit if customer creation failed
+    }
+  } else {
+    customerId = formValue.customerId; // Use existing customer ID
+  }
+
+    
+    const newOrder = {
+     // order_id: '',
+   //   customer_id: formValue.existingCustomer ? formValue.customerId : null,
+      customer_name: formValue.customerName,
+      phone_number: formValue.phoneNumber,
+      customer_id: customerId,
+      
+      work_types: `{${formValue.workType.map((wt: WorkType) => wt.code).join(',')}}`,
+      address: `${formValue.city.value}, ${formValue.addressDetails}`,
+      order_status: 'pending'
+    };
+  
+    const orderItems = formValue.orderItems.map((item: any) => ({
+      marbleMaterial: item.marbleMaterial,
+      dimension: item.dimension,
+      amount: item.amount,
+      cost: item.cost,
+      total: item.amount * item.cost
+    }));
+  
+    this.supabaseService.insertToDB('Orders', newOrder)
+      .then((result) => {
+        if(result) {
+          this.submitMessage = 'Order submitted successfully!';
+          console.log("Inserted Order:", result);
+        }
+        else {
+          this.submitMessage = 'Order submission failed: No order ID returned';
+        }
+        // Instead of storing, just use newOrder and orderItems directly in the template
+       // this.orderForm.reset();
+       // this.orderItemsArray.clear();
+        //this.addOrderItem();
+        this.nextId++;
+       this.updateOrderId();
+      })
+      .catch(err => {
+        this.submitMessage = 'Error submitting order: ' + err.message;
+        console.log("Error submitting order:", err);
+
+      })
+      .finally(() => {
+        this.isSubmitting = false;
+      });
   }
 }
-  // Recalculates the total cost when amount or cost changes
-  calculateTotal(index: number): void {
-    const item = this.orderItems[index];
-    const amt = item.amount ?? 0;
-    const cst = item.cost ?? 0;
-    item.totalCost = amt * cst;
-  }
-  get grandTotal(): number {
-    return this.orderItems.reduce((sum, item) => sum + item.totalCost, 0);
-  }
 
-  newOrder = {
-
+/*
+newOrder = {
+    order_id: '',
     customer_id: null,
-    customer_name: 'moh fthy',
-    work_type: 'F',
-    address: 'helawa',
-    order_status: 'install'
+    customer_name: '',
+    work_types: '',
+    address: '',
+    order_status: 'pending'
   }
   addTestOrder(){
     this.supabaseService.insertToDB('Orders', this.newOrder) 
     .then(order => console.log("Inserted Order:", order))
   .catch(err => console.error(err));
   }
+
+  addNewOrder(){
+    this.supabaseService.insertToDB('Customers', this.newOrder) 
+
+  }
+  submitOrder() {
+    if (this.orderForm.valid) {
+      console.log('Final Order:', this.orderForm.value);
+    } else {
+      console.log('Form is invalid');
+    }
+  }
+
+  
 /* 
     addTestOrder() {
     const newOrder: Order = {
@@ -179,7 +372,3 @@ removeRow(index: number): void {
       console.error('Failed to add customer', error);
     });
   }   */
-
-    
-  
-}

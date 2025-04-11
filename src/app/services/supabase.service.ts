@@ -1,11 +1,13 @@
+//supabase service ts 
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
+import { style } from '@angular/animations';
 
 // Interfaces / Modals 
 
 export interface Customer {
-  id: number;
+  id?: number;
   name: string;
   address: string;
   created_at: string; // date ISO timestamp
@@ -18,7 +20,6 @@ export interface Customer {
 export type WorkType = 'K' | 'W' | 'F' | 'X';
 
 export interface Order {
-  id: number;
   customer_id: number | null;
   customer_name: string;
   work_type: WorkType; // JSONB, you might want to use a specific type
@@ -134,6 +135,7 @@ export class SupabaseService {
       console.error(`Error inserting into ${table}:`, error);
       return null;
     }
+    console.info(`From sp service Inserted into ${table}:`, insertedData);
     
     return insertedData ? insertedData[0] : null;
   }
@@ -155,9 +157,25 @@ export class SupabaseService {
     return data as T[];  // Cast the data to the correct type
   }
 
-
-
-
+  async getLastOrderId(): Promise<number> {
+    // We assume 'id' is your auto-increment primary key in 'Orders'
+    const { data, error } = await this.supabase
+      .from('Orders')
+      .select('id')
+      .order('id', { ascending: false })
+      .limit(1);
+  
+    if (error) {
+      console.error('Error fetching last order ID:', error);
+      return 0; // Return 0 if there's an error
+    }
+  
+    if (data && data.length > 0) {
+      return data[0].id;
+    } else {
+      return 0; // If no records, start from 0
+    }
+  }
 
 
 }

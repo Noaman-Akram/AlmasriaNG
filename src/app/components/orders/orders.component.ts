@@ -15,12 +15,15 @@ export class OrdersComponent {
   isSidebarOpen = false;
 
   orders = [
-    { id: 0, customer_name: 'Laoding...', work_type: 'Laoding...', order_status: 'Laoding...', address: 'Laoding...' }  ];
+    { customer_name: 'Laoding...', work_type: 'Laoding...', order_status: 'Laoding...', address: 'Laoding...' },
+    { customer_name: 'dizzyFake', work_type: 'data fale...', order_status: 'ttty', address: 'Gamb betk' }
+  
+  ];
   
   displayedColumns: string[] = ['id', 'customer_id', 'customer_name', 'work_type', 'order_status', 'address'];
 
   ngOnInit(){
-    this.fetchOrders();
+  this.fetchOrders();
   }
   constructor(private linkService: LinkService, private supabaseService: SupabaseService) {
     // Subscribe to changes in isSidebarOpen
