@@ -1,21 +1,18 @@
-<div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary w-100">
+<div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary w-100 pe-3">
   <div class="z-1 w-100">
      <div class="d-flex flex-wrap ">
       <div class="d-flex col-2">
         <div class="example-container">
           <h2>To Do</h2>
-      <div 
-      cdkDropList
-      #todoList="cdkDropList" 
-      [cdkDropListData]="repeatedTodo"
-      [cdkDropListConnectedTo]="[suList,moList,tuList,weList,thList,frList,saList]"
-      (cdkDropListDropped)="drop($event)" 
-      class="drop-list">
-        <div *ngFor="let item of repeatedTodo" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
-        [cdkDragDisabled]="!isEditEnabled">
-          {{ item.text }}
-        </div>
+    <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="orders" [cdkDropListConnectedTo]="[sunList,monList,tuesList,wednesList,thursList,friList,saturList]" class="example-list" (cdkDropListDropped)="drop($event)">
+      <div class="order-card example-box pb-3" *ngFor="let item of orders; trackBy: trackById" cdkDrag [ngStyle]="{'background-color': item.background}" 
+           [cdkDragDisabled]="item.background === 'white'" (click)="showDetails(item)">
+        <h5 class="card-title pb-3">Order ID: {{ item.id }}</h5>
+        <p class="card-text">Order Name: {{ item.name }}</p>
+        <p class="card-text">Customer Name: {{ item.customer_name }}</p>
+        <button class="btn rounded-2 border-0 btn-danger" *ngIf="item.background === 'white'" (click)="addSimilarOrders(item, orders.indexOf(item))">Add</button>
       </div>
+    </div>
     </div>
       </div>
         <div class="d-flex flex-wrap align-content-start col-10">
@@ -46,113 +43,103 @@
           
           <div class="w-100">
               <div class="d-flex">
-                <div class="example-container br">
+                <div class="example-container ">
                   <h2>Sunday</h2>
-        <div 
-        cdkDropList 
-        #suList="cdkDropList"
-        [cdkDropListData]="sundayList" 
-        [cdkDropListConnectedTo]="[todoList,moList,tuList,weList,thList,frList,saList]"
-        (cdkDropListDropped)="drop($event)" 
-        class="drop-list">
-          <div *ngFor="let item of sundayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
-          [cdkDragDisabled]="!isEditEnabled">
-            {{ item.text }}
-          </div>
-        </div>
+                  <div cdkDropList #sunList="cdkDropList" [cdkDropListData]="sundayList" [cdkDropListConnectedTo]="[todoList,monList,tuesList,wednesList,thursList,friList,saturList]" class="example-list" (cdkDropListDropped)="drop($event)">
+                    <div class="example-box" *ngFor="let item of sundayList; trackBy: trackById" cdkDrag [ngStyle]="{'background-color': item.background}">
+                      <h5 class="card-title pb-3">Order ID: {{ item.id }}</h5>
+                      <p class="card-text">Order Name: {{ item.name }}</p>
+                      <p class="card-text">Customer Name: {{ item.customer_name }}</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="example-container br">
+                <div class="example-container">
                   <h2>Monday</h2>
-        <div 
-        cdkDropList 
-        #moList="cdkDropList"
-        [cdkDropListData]="mondayList" 
-        [cdkDropListConnectedTo]="[todoList,suList,tuList,weList,thList,frList,saList]"
-        (cdkDropListDropped)="drop($event)" 
-        class="drop-list">
-          <div *ngFor="let item of mondayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
-          [cdkDragDisabled]="!isEditEnabled">
-            {{ item.text }}
-          </div>
-        </div>
+                  <div cdkDropList #monList="cdkDropList" [cdkDropListData]="mondayList" [cdkDropListConnectedTo]="[todoList,sunList,tuesList,wednesList,thursList,friList,saturList]" class="example-list" (cdkDropListDropped)="drop($event)">
+                    <div class="example-box" *ngFor="let item of mondayList; trackBy: trackById" cdkDrag [ngStyle]="{'background-color': item.background}">
+                      <h5 class="card-title pb-3">Order ID: {{ item.id }}</h5>
+                      <p class="card-text">Order Name: {{ item.name }}</p>
+                      <p class="card-text">Customer Name: {{ item.customer_name }}</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="example-container br">
+                <div class="example-container">
                   <h2>Tuesday</h2>
-        <div 
-        cdkDropList 
-        #tuList="cdkDropList"
-        [cdkDropListData]="tuesdayList" 
-        [cdkDropListConnectedTo]="[todoList,suList,moList,weList,thList,frList,saList]"
-        (cdkDropListDropped)="drop($event)" 
-        class="drop-list">
-          <div *ngFor="let item of tuesdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
-          [cdkDragDisabled]="!isEditEnabled">
-            {{ item.text }}
-          </div>
-        </div>
+                  <div cdkDropList #tuesList="cdkDropList" [cdkDropListData]="tuesdayList" [cdkDropListConnectedTo]="[todoList,monList,sunList,wednesList,thursList,friList,saturList]" class="example-list" (cdkDropListDropped)="drop($event)">
+                    <div class="example-box" *ngFor="let item of tuesdayList; trackBy: trackById" cdkDrag [ngStyle]="{'background-color': item.background}">
+                      <h5 class="card-title pb-3">Order ID: {{ item.id }}</h5>
+                      <p class="card-text">Order Name: {{ item.name }}</p>
+                      <p class="card-text">Customer Name: {{ item.customer_name }}</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="example-container br">
+                <div class="example-container">
                   <h2>Wednesday</h2>
-        <div 
-        cdkDropList 
-        #weList="cdkDropList"
-        [cdkDropListData]="wednesdayList" 
-        [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,thList,frList,saList]"
-        (cdkDropListDropped)="drop($event)" 
-        class="drop-list">
-          <div *ngFor="let item of wednesdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"
-          [cdkDragDisabled]="!isEditEnabled">
-            {{ item.text }}
-          </div>
-        </div>
+                  <div cdkDropList #wednesList="cdkDropList" [cdkDropListData]="wednesdayList" [cdkDropListConnectedTo]="[todoList,monList,tuesList,sunList,thursList,friList,saturList]" class="example-list" (cdkDropListDropped)="drop($event)">
+                    <div class="example-box" *ngFor="let item of wednesdayList; trackBy: trackById" cdkDrag [ngStyle]="{'background-color': item.background}">
+                      <h5 class="card-title pb-3">Order ID: {{ item.id }}</h5>
+                      <p class="card-text">Order Name: {{ item.name }}</p>
+                      <p class="card-text">Customer Name: {{ item.customer_name }}</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="example-container br">
+                <div class="example-container">
                   <h2>Thursday</h2>
-        <div 
-        cdkDropList 
-        #thList="cdkDropList"
-        [cdkDropListData]="thursdayList" 
-        [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,weList,frList,saList]"
-        (cdkDropListDropped)="drop($event)" 
-        class="drop-list">
-          <div *ngFor="let item of thursdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"[cdkDragDisabled]="!isEditEnabled">
-            {{ item.text }}
-          </div>
-        </div>
+                  <div cdkDropList #thursList="cdkDropList" [cdkDropListData]="thursdayList" [cdkDropListConnectedTo]="[todoList,monList,tuesList,wednesList,sunList,friList,saturList]" class="example-list" (cdkDropListDropped)="drop($event)">
+                    <div class="example-box" *ngFor="let item of thursdayList; trackBy: trackById" cdkDrag [ngStyle]="{'background-color': item.background}">
+                      <h5 class="card-title pb-3">Order ID: {{ item.id }}</h5>
+                      <p class="card-text">Order Name: {{ item.name }}</p>
+                      <p class="card-text">Customer Name: {{ item.customer_name }}</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="example-container br">
+                <div class="example-container">
                   <h2>Friday</h2>
-        <div 
-        cdkDropList 
-        #frList="cdkDropList"
-        [cdkDropListData]="fridayList" 
-        [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,weList,thList,saList]"
-        (cdkDropListDropped)="drop($event)" 
-        class="drop-list">
-          <div *ngFor="let item of fridayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"[cdkDragDisabled]="!isEditEnabled">
-            {{ item.text }}
-          </div>
-        </div>
+                  <div cdkDropList #friList="cdkDropList" [cdkDropListData]="fridayList" [cdkDropListConnectedTo]="[todoList,monList,tuesList,wednesList,thursList,sunList,saturList]" class="example-list" (cdkDropListDropped)="drop($event)">
+                    <div class="example-box" *ngFor="let item of fridayList; trackBy: trackById" cdkDrag [ngStyle]="{'background-color': item.background}">
+                      <h5 class="card-title pb-3">Order ID: {{ item.id }}</h5>
+                      <p class="card-text">Order Name: {{ item.name }}</p>
+                      <p class="card-text">Customer Name: {{ item.customer_name }}</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="example-container br">
-                  <h2>Saturday </h2>
-        <div 
-        cdkDropList 
-        #saList="cdkDropList"
-        [cdkDropListData]="saturdayList" 
-        [cdkDropListConnectedTo]="[todoList,suList,moList,tuList,weList,thList,frList]"
-        (cdkDropListDropped)="drop($event)" 
-        class="drop-list">
-          <div *ngFor="let item of saturdayList" cdkDrag class="card" [ngStyle]="{'background-color': item.color}"[cdkDragDisabled]="!isEditEnabled">
-            {{ item.text }}
-          </div>
-        </div>
+                <div class="example-container">
+                  <h2>Saturday</h2>
+                  <div cdkDropList #saturList="cdkDropList" [cdkDropListData]="saturdayList" [cdkDropListConnectedTo]="[todoList,monList,tuesList,wednesList,thursList,friList,sunList]" class="example-list" (cdkDropListDropped)="drop($event)">
+                    <div class="example-box" *ngFor="let item of saturdayList; trackBy: trackById" cdkDrag [ngStyle]="{'background-color': item.background}">
+                      <h5 class="card-title pb-3">Order ID: {{ item.id }}</h5>
+                      <p class="card-text">Order Name: {{ item.name }}</p>
+                      <p class="card-text">Customer Name: {{ item.customer_name }}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <button class="btn rounded-2 border-0 btn-danger my-3" (click)="toggleEdit()">
-                {{ isEditEnabled ? 'Disable Edit' : 'Enable Edit' }} </button>
         </div>
         </div>
      </div>
+
+    <!-- Right Sidebar -->
+    <div [ngClass]="{'open': isRightSidebarOpen}" class="h-100 d-flex top-0 position-fixed bg-transparent right-side-nav mse">
+      <nav class="position-relative overflow-hidden justify-content-center align-items-center bg-danger w-s">
+      <div class="navTab bg-danger d-flex flex-column justify-content-between p-4">
+        <button (click)="toggleRightSidebar()" class="btn rounded-2 border-0 btn-danger position-fixed"><i class="pi-times pi"></i></button>
+        <div cdkDropList [cdkDropListData]="orders" class="links overflow-hidden mt-5">  
+          <ul class="list-unstyled w-100 h-100">
+              <div *ngIf="selectedOrder" class="d-flex flex-column align-items-center text-white">
+                <h5 class="">Order ID: {{ selectedOrder.id }}</h5>
+                <p class="">Order Name: {{ selectedOrder.name }}</p>
+                <p class="">Customer Name: {{ selectedOrder.customer_name }}</p>
+                <p class="">Created Date: {{ selectedOrder.created_date }}</p>
+                <p class="">Assigned To: {{ selectedOrder.assigned_to }}</p>
+                <p class="">Updated Date: {{ selectedOrder.updated_date }}</p>
+                <p class="">Price: {{ selectedOrder.price }}</p>
+                <p class="">Notes: {{ selectedOrder.notes }}</p>
+                <p class="">Tottal Cost: {{ selectedOrder.total_cost }}</p>
+             </div>
+          </ul>
+      </div>
+      </div>
+    </nav>
+    </div>
+    </div>
   </div>
   </div>

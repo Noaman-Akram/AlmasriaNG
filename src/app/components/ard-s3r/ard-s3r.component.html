@@ -1,99 +1,199 @@
-<div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary">
+<div [style.margin-left.px]="updateMargin()" class="salah bg-body-tertiary">
   <div class="z-2">
-<div class="d-flex mb-3">
-      <div class=" w-s2 hs bgs rounded-3 me-4">
+    <div class="d-flex mb-3">
+      <div class="w-s2 hs bgs rounded-3 me-4">
         <div class="d-flex align-items-end justify-content-evenly w-100 pt-2 text-secondary">
-            <h6 class="">Today's Date</h6>
-            <h6>{{ today | date:'fullDate' }}</h6>
+          <h6>Today's Date</h6>
+          <h6>{{ today | date:'fullDate' }}</h6>
         </div>
       </div>
-      <div class=" w-s hs bgs rounded-3">
-           <div class="d-flex align-items-end justify-content-evenly w-100 pt-2 text-secondary">
-               <h6 class="">Order ID</h6>
-               <h6 class="">KFSG1</h6>
-           </div>
+      <div class="w-s hs bgs rounded-3">
+        <div class="d-flex align-items-end justify-content-evenly w-100 pt-2 text-secondary">
+          <h6>Order ID</h6>
+          <h6>{{ finalOrderCode }}</h6>
+        </div>
       </div>
-</div>
-<div class="d-flex flex-column my-3">
-   <div class="mb-3">
-      <label for="formGroupExampleInput" class="form-label">Customer name</label>
-      <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input placeholder">
     </div>
-    <div class="mb-3">
-      <div for="formGroupExampleInput2" class="form-label">Address</div>
+
+    <form [formGroup]="orderForm" (ngSubmit)="submitOrder()">
+      <div class="d-flex flex-column my-3">
+        <!-- existingCustomer checkbox -->
+<div class="form-check mb-3">
+  <input class="form-check-input"
+         type="checkbox"
+         formControlName="existingCustomer"
+         id="existingCustomer" />
+  <label class="form-check-label" for="existingCustomer">
+    Existing customer
+  </label>
+</div>
+
+<!-- If NOT existing customer, show the name input -->
+<div class="mb-3" *ngIf="!orderForm.get('existingCustomer')?.value">
+  <label for="customerName" class="form-label">Customer name</label>
+  <input type="text"
+         formControlName="customerName"
+         class="form-control"
+         id="customerName"
+         placeholder="Input Customer name">
+  <small *ngIf="orderForm.get('customerName')?.invalid && orderForm.get('customerName')?.touched" class="text-danger">
+    Customer name is required
+  </small>
+</div>
+
+<!-- If existing customer, show a dropdown of all customers -->
+<div class="mb-3" *ngIf="orderForm.get('existingCustomer')?.value">
+  <label for="customerId" class="form-label">Select Customer</label>
+  <select formControlName="customerId" class="form-select" id="customerId">
+    <option value="">-- Select a Customer --</option>
+    <option *ngFor="let cust of customersList" [ngValue]="cust.id">
+      {{ cust.id }} - {{ cust.name }}
+    </option>
+  </select>
+  <small *ngIf="orderForm.get('customerId')?.invalid && orderForm.get('customerId')?.touched" class="text-danger">
+    Please select a customer
+  </small>
+  <small *ngIf="orderForm.get('customerId')?.invalid && orderForm.get('customerId')?.touched" class="text-danger">
+    Please select a customer
+  </small>
+</div>
+
+<!-- hasCompany checkbox -->
+<div class="form-check mb-3">
+  <input class="form-check-input"
+         type="checkbox"
+         formControlName="hasCompany"
+         id="hasCompany" />
+  <label class="form-check-label" for="hasCompany">
+    Company?
+  </label>
+</div>
+
+<!-- Company name input, shown if hasCompany is checked -->
+<div class="mb-3" *ngIf="orderForm.get('hasCompany')?.value">
+  <label for="companyName" class="form-label">Company Name</label>
+  <input type="text"
+         formControlName="companyName"
+         class="form-control"
+         id="companyName"
+         placeholder="Enter company name">
+  <small *ngIf="orderForm.get('companyName')?.invalid && orderForm.get('companyName')?.touched" class="text-danger">
+    Company name is required
+  </small>
+</div>
+        <div class="mb-3">
+          <label for="phoneNumber" class="form-label">Phone Number </label>
+          <input type="text" formControlName="phoneNumber" class="form-control" id="phoneNumber" placeholder="input phone number" />
+        
+          <small *ngIf="orderForm.get('phoneNumber')?.touched && orderForm.get('phoneNumber')?.errors?.['required']" class="text-danger">
+            Phone number is required
+          </small>
+        
+          <small *ngIf="orderForm.get('phoneNumber')?.touched && orderForm.get('phoneNumber')?.errors?.['pattern']" class="text-danger">
+            Enter a valid phone number
+          </small>
+        </div>
+        <div class="mb-3">
+          <div class="form-label">Address</div>
+          <div class="d-flex">
+            <div class="card flex justify-center me-4">
+              <p-select [options]="cities" formControlName="city" optionLabel="label" placeholder="Select a City"
+                class="w-full md:w-56 bg-white form-control form2 text-black select-h hs align-items-center" />
+              <small *ngIf="orderForm.get('city')?.invalid && orderForm.get('city')?.touched" class="text-danger">
+                Please select a city
+              </small>
+            </div>
+            <input type="text" formControlName="addressDetails" class="form-control" id="addressDetails" placeholder="Input address details">
+            <small *ngIf="orderForm.get('addressDetails')?.invalid && orderForm.get('addressDetails')?.touched" class="text-danger">
+              Address details are required
+            </small>
+          </div>
+        </div>
+        <div class="form-label">Work Type</div>
+        <div>
+          <p-multiselect [options]="workTypes" formControlName="workType" optionLabel="name" placeholder="Select Work Type"
+            [maxSelectedLabels]="3" styleClass="w-full md:w-80 mb-3 bg-white form-control text-black select-h hs align-items-center" />
+          <small *ngIf="orderForm.get('workType')?.invalid && orderForm.get('workType')?.touched" class="text-danger">
+            Please select at least one work type
+          </small>
+        </div>
+      </div>
+
+      <div formArrayName="orderItems">
+        <div *ngFor="let item of orderItemsArray.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center my-3">
+          <div class="mb-3 me-5 ws">
+            <label class="form-label">Marble Material</label>
+            <select formControlName="marbleMaterial" class="form-select w-100">
+              <option value="">Select Material</option>
+              <option value="Granite">Granite</option>
+              <option value="Marble">Marble</option>
+              <option value="Quartz">Quartz</option>
+            </select>
+            <small *ngIf="item.get('marbleMaterial')?.invalid && item.get('marbleMaterial')?.touched" class="text-danger">
+              Please select a material
+            </small>
+          </div>
+
+          <div class="mb-3 me-5 ws">
+            <label class="form-label">Dimensions</label>
+            <select formControlName="dimension" class="form-select w-100" placeholder="Unit">
+              <option value="m2">m2</option>
+              <option value="Metre">Metre</option>
+            </select>
+          </div>
+
+          <div class="mb-3 me-5">
+            <label class="form-label">Amount</label>
+            <input type="number" formControlName="amount" class="form-control form2" placeholder="Enter amount">
+            <small *ngIf="item.get('amount')?.hasError('required') && item.get('amount')?.touched" class="text-danger">
+              Amount is required
+            </small>
+            <small *ngIf="item.get('amount')?.hasError('min') && item.get('amount')?.touched" class="text-danger">
+              Amount must be at least 1
+            </small>
+          </div>
+
+          <div class="mb-3 me-5">
+            <label class="form-label">Cost</label>
+            <input type="number" formControlName="cost" class="form-control form2" placeholder="Enter cost">
+            <small *ngIf="item.get('cost')?.hasError('required') && item.get('cost')?.touched" class="text-danger">
+              Cost is required
+            </small>
+            <small *ngIf="item.get('cost')?.hasError('min') && item.get('cost')?.touched" class="text-danger">
+              Cost cannot be negative
+            </small>
+          </div>
+
+          <div class="mb-3 me-5 ws">
+            <label class="form-label">Total Cost</label>
+            <h6 class="form-control form2 bg-secondary-subtle">{{ calculateTotal(i) }} EGP</h6>
+          </div>
+
+          <button class="btn btn-success h-50 me-2" type="button" (click)="addOrderItem()">
+            <i class="pi pi-plus"></i>
+          </button>
+
+          <button class="btn btn-danger h-50" type="button" *ngIf="orderItemsArray.length > 1" (click)="removeOrderItem(i)">
+            <i class="pi pi-minus"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-3 me-5 ws">
+        <div class="form-label">Grand Total</div>
+        <h6 class="form-control form2 bg-secondary-subtle">{{ grandTotal }} EGP</h6>
+      </div>
+
+      <div *ngIf="submitMessage" class="alert" [ngClass]="{'alert-success': submitMessage.includes('success'), 'alert-danger': !submitMessage.includes('success')}">
+        {{ submitMessage }}
+      </div>
+
       <div class="d-flex">
-        <div class="card flex justify-center me-4">
-          <p-select [options]="cities3" [(ngModel)]="selectedCity3" optionLabel="name" placeholder="Select a City" class="w-full md:w-56 bg-white form-control form2 text-black select-h hs align-items-center" />
+        <button type="submit" [disabled]="orderForm.invalid || isSubmitting" class="btn btn-danger">
+          <i class="pi pi-plus me-2"></i> {{ isSubmitting ? 'Submitting...' : 'Submit Order' }}
+        </button>
       </div>
-        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Another input placeholder">
-      </div>
-    </div>
-    <div for="formGroupExampleInput2" class="form-label">Work Space</div>
-    <div>
-      <p-multiselect class="mb-3 bg-white form-control text-black select-h hs align-items-center" [options]="cities" [(ngModel)]="selectedCities" optionLabel="name" placeholder="Select Cities" [maxSelectedLabels]="3" styleClass="w-full md:w-80" />
-  </div>
-</div>
-<div class="d-flex align-items-center my-3" *ngFor="let item of orderItems; let i = index">
-  <!-- Marble Material -->
-  <div class="mb-3 me-5 ws">
-    <label class="form-label">Marble Material</label>
-    <select class="form-select w-100" aria-label="Default select example">
-      <option value="1">One</option>
-      <option value="2">Two</option>
-      <option value="3">Three</option>
-    </select>
-  </div>
-
-  <!-- Dimensions -->
-  <div class="mb-3 me-5 ws">
-    <label class="form-label">Dimensions</label>
-    <select class="form-select w-100" [(ngModel)]="item.dimension">
-      <option value="Unit">Unit</option>
-      <option value="m2">m2</option>
-      <option value="Metre">Metre</option>
-    </select>
-  </div>
-
-  <!-- Amount -->
-  <div class="mb-3 me-5">
-    <label class="form-label">Amount</label>
-    <input type="number" class="form-control form2" [(ngModel)]="item.amount" (input)="calculateTotal(i)" placeholder="Enter amount">
-  </div>
-
-  <!-- Cost -->
-  <div class="mb-3 me-5">
-    <label class="form-label">Cost</label>
-    <input type="number" class="form-control form2" [(ngModel)]="item.cost" (input)="calculateTotal(i)" placeholder="Enter cost">
-  </div>
-
-  <!-- Total Cost (Read-only) -->
-  <div class="mb-3 me-5 ws">
-    <label class="form-label">Total Cost</label>
-    <h6 class="form-control form2 bg-secondary-subtle">{{ item.totalCost }} EGP</h6>
-  </div>
-
-  <!-- Add Button -->
-  <button class="btn btn-success h-50 me-2" type="button" (click)="addRow()">
-    <i class="pi pi-plus"></i>
-  </button>
-
-  <!-- Delete Button (visible if more than one row) -->
-  <button class="btn btn-danger h-50" type="button" *ngIf="orderItems.length > 1" (click)="removeRow(i)">
-    <i class="pi pi-minus"></i>
-  </button>
-</div>
-
-<div class="mb-3 me-5 ws">
-  <div class="form-label">Total Cost</div>
-  <h6 class="form-control form2 bg-secondary-subtle">{{ grandTotal }} EGP</h6>
-</div>
-
-<!-- Submit Button -->
-<!-- (click)="addTestOrder()" -->
-<div class="d-flex">
-  <button (click)="addTestOrder()" class="btn btn-danger" type="button">
-    <i class="pi pi-plus me-2"></i> Submit
-  </button>
-</div>
+    </form>
+    <pre>{{ orderForm.value | json }}</pre>
   </div>
 </div>

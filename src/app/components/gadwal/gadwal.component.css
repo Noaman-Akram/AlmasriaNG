@@ -6,6 +6,7 @@
   justify-content: space-evenly;
   padding: 7rem 2rem 2rem 4rem;
   transition: margin-left 0.2s;
+  min-width: 120%;
 }
 .sidebar{
   margin-left: 300px;
@@ -13,6 +14,30 @@
 .sidebar.active {
   margin-left: 100px; /* Slide-in effect */
 }
+.mse{
+  padding-top: 10%;
+  padding-bottom: 1%;
+}
+.right-side-nav {
+  position: fixed;
+  top: 0;
+  right: -300px; /* البداية تكون خارج الشاشة */
+  height: 100vh;
+  width: 300px;
+  background-color: #f8f9fa;
+  padding: 20px;
+  z-index: 1000;
+  transition: right 0.5s ease-in-out; /* إضافة تأثير الحركة للانتقال */
+}
+
+/* عند تفعيل الـ Sidebar لتظهر */
+.right-side-nav.open {
+  right: 0; /* تظهر في الجهة اليمنى */
+}
+/* .open {
+  padding-left: 0px;
+  transition: right 1s ease;
+} */
 .input-group .form-control {
   position: relative;
   flex: 0.6 0;
@@ -20,7 +45,9 @@
   min-width: 0;
 }
 .w-s{
-  width: 180px;
+  width: 200px;
+  border-radius: 12px;
+  margin-top: 35%;
 }
 .hs{
   height: 36px;
@@ -68,153 +95,67 @@
 }
 
 .example-container {
-    width: 150px;
-    max-width: 100%;
-    margin: 0 25px 25px 0;
-    display: inline-block;
-    vertical-align: top;
-  }
-  .tr-s{
-      transition: 0.7s;
-  }
-  .example-list {
-    min-height: 60px;
-    background: white;
-    border-radius: 4px;
-    overflow: hidden;
-    display: block;
-    width: 270px;
-  }
-  .h-s{
-      height: 80px;
-  }
-  .example-box {
-    padding: 20px 10px;
-    border-bottom: solid 1px #ccc;
-    color: rgba(0, 0, 0, 0.87);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    box-sizing: border-box;
-    cursor: move;
-    background: white;
-    font-size: 14px;
-  }
-  
-  .cdk-drag-preview {
-    box-sizing: border-box;
-    border-radius: 4px;
-    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-                0 8px 10px 1px rgba(0, 0, 0, 0.14),
-                0 3px 14px 2px rgba(0, 0, 0, 0.12);
-  }
-  
-  .cdk-drag-placeholder {
-    opacity: 0;
-  }
-  
-  .cdk-drag-animating {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  }
-  
-  .example-box:last-child {
-    border: none;
-  }
-  
-  .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  }
-  
-.drop-area{
-  border: #ccc dashed 2px;
+  width: 400px;
+  max-width: 100%;
+  margin: 0 25px 25px 0;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.example-list {
+  border: solid 1px #ccc;
+  min-height: 400px;
+  width: 160px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  display: block;
+}
+
+.example-box {
   padding: 20px 10px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   box-sizing: border-box;
-  margin-top: 15px;
-}
-.todo-list, .sunday-list {
-  width: 250px;
-  min-height: 200px;
-  border: 2px dashed #ccc;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: #f9f9f9;
+  cursor: move;
+  background: white;
+  font-size: 14px;
+  align-items: center;
 }
 
-.card {
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
-  cursor: grab;
-  color: white;
-  font-weight: bold;
-}
-.sunday-card {
-  background-color: lightcoral;
-}
-[cdkDropList] {
-  min-height: 50px;
-  padding: 10px;
-  margin-bottom: 10px;
-  background-color: white;
-}
-.container {
-  display: flex;
-  gap: 20px;
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
-.list-container {
-  width: 200px;
-  min-height: 300px;
-  padding: 10px;
-  border: 2px dashed #ccc;
+.cdk-drag-placeholder {
+  opacity: 0;
 }
 
-.list {
-  min-height: 100px;
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.card {
-  padding: 10px;
-  margin: 5px;
-  border-radius: 5px;
-  color: white;
-  cursor: grab;
-}
-.empty-list {
-  background-color: #f9f9f9;
-}
-.container {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-}
-h2{
-  font-size: x-large;
-}
-.list-container {
-  width: 40%;
-  text-align: center;
+.example-box:last-child {
+  border: none;
 }
 
-.drop-list {
-  min-height: 800px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background-color: white;
-  border-radius: 12px;
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.card {
-  padding: 10px;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
-  text-align: center;
-  cursor: grab;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+.sideNav {
+  transition: transform 0.3s ease-in-out; /* Transition animation */
+  transform: translateX(0); /* Default state (open) */
+}
+
+.sideNavClosed {
+  transform: translateX(170%); /* Sidebar moves out of view */
 }

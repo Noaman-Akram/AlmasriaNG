@@ -1,1 +1,226 @@
-<p [style.margin-left.px]='updateMargin()' class="salah">page1 works!</p>
+<div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary">
+    <div class="z-2">
+      <div class="calendar-container">
+        <!-- Orders Sidebar -->
+        <div class="orders-sidebar">
+          <div class="orders-header">
+            <h2 class="orders-title">Orders</h2>
+            <div>
+              <button class="reset-button" (click)="resetOrders()">
+                Reset
+              </button>
+              <button class="add-order-button" (click)="showNewOrderForm = true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Add Order
+              </button>
+            </div>
+          </div>
+          
+          <!-- New Order Form -->
+          <div *ngIf="showNewOrderForm" class="new-order-form">
+            <h3 class="form-title">New Order</h3>
+            <div class="form-group">
+              <label for="orderTitle">Order ID</label>
+              <input type="text" id="orderTitle" [(ngModel)]="newOrder.title" placeholder="e.g. K-114">
+            </div>
+            <div class="form-group">
+              <label for="customerName">Customer Name</label>
+              <input type="text" id="customerName" [(ngModel)]="newOrder.customer" placeholder="Customer name">
+            </div>
+            <div class="form-actions">
+              <button class="cancel-button" (click)="showNewOrderForm = false">Cancel</button>
+              <button class="save-button" (click)="addNewOrder()">Save</button>
+            </div>
+          </div>
+          
+          <!-- Orders List -->
+          <div class="orders-list">
+            <h3 class="orders-list-title">All Orders</h3>
+            <div *ngFor="let order of orders" class="order-card">
+              <div style="position: relative;">
+                <div class="order-customer">
+                  <svg class="w-25 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
+                  </svg>
+                  <span>{{order.customer}}</span>
+                </div>
+                <h3 class="order-id">{{order.title}}</h3>
+                
+                <div class="order-actions">
+                  <div class="order-status-dots">
+                    <div *ngFor="let stage of ORDER_STAGES" 
+                        class="status-dot" 
+                        [class]="order.stages[stage.id]?.scheduled ? stage.color : ''">
+                    </div>
+                  </div>
+                  
+                  <button
+                    (click)="toggleOrder(order.id)"
+                    class="toggle-button"
+                  >
+                    <span *ngIf="expandedOrders[order.id]">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m18 15-6-6-6 6"/>
+                      </svg>
+                    </span>
+                    <span *ngIf="!expandedOrders[order.id]">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m6 9 6 6 6-6"/>
+                      </svg>
+                    </span>
+                  </button>
+                  
+                  <button class="delete-button" (click)="deleteOrder(order.id)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+      
+              <!-- Order Details -->
+              <div [@expandCollapse]="expandedOrders[order.id] ? 'expanded' : 'collapsed'">
+                <div class="order-details">
+                  <div class="detail-row">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">{{order.name}}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Customer:</span>
+                    <span class="detail-value">{{order.customer_name}}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Created:</span>
+                    <span class="detail-value">{{formatDate(order.created_date, 'MMM d, yyyy')}}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Updated:</span>
+                    <span class="detail-value">{{formatDate(order.updated_date, 'MMM d, yyyy')}}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Assigned To:</span>
+                    <span class="detail-value">{{order.assigned_to || 'Unassigned'}}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Price:</span>
+                    <span class="detail-value">${{order.price.toLocaleString()}}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Total Cost:</span>
+                    <span class="detail-value">${{order.total_cost.toLocaleString()}}</span>
+                  </div>
+                  <div class="detail-row" *ngIf="order.notes">
+                    <span class="detail-label">Notes:</span>
+                    <span class="detail-value">{{order.notes}}</span>
+                  </div>
+                  <div class="detail-row" *ngIf="order.img_url">
+                    <span class="detail-label">Image:</span>
+                    <img [src]="order.img_url" alt="Order image" class="order-image" 
+                         onerror="this.src='assets/images/placeholder.jpg'; this.onerror=null;">
+                  </div>
+                </div>
+      
+                <!-- Stages -->
+                <div class="stages-container">
+                  <h4 class="stages-title">Stages</h4>
+                  <div *ngFor="let stage of ORDER_STAGES"
+                       [draggable]="true"
+                       (dragstart)="handleDragStart(order.id, stage.id)"
+                       class="stage-card"
+                       [class]="stage.id">
+                    <div class="stage-title">{{stage.label}}</div>
+                    <div *ngIf="order.stages[stage.id]?.scheduled" class="stage-date">
+                      Scheduled: {{safeFormatScheduledDate(order.stages[stage.id], 'MMM d, yyyy')}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Calendar -->
+        <div class="calendar-section">
+          <div class="calendar-header">
+            <h1 class="calendar-title">Calendar</h1>
+            <div class="date-navigation">
+              <button class="nav-button" (click)="goToPreviousWeek()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
+              <span class="date-range">
+                {{formatDate(getStartOfWeek(), 'MMMM d')}} - {{formatDate(getEndOfWeek(), 'MMMM d, yyyy')}}
+              </span>
+              <button class="nav-button" (click)="goToNextWeek()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+      
+          <div class="weekday-header">
+            <div *ngFor="let day of weekDayNames" class="weekday">
+              {{day}}
+            </div>
+          </div>
+      
+          <div class="calendar-grid">
+            <div *ngFor="let date of weekDates"
+                 (dragover)="handleDragOver($event)"
+                 (drop)="handleDrop(date)"
+                 class="calendar-day"
+                 [class.today]="isToday(date)">
+              <div class="day-number">
+                {{formatDate(date, 'd')}}
+              </div>
+      
+              <!-- Scheduled items -->
+              <div class="scheduled-items">
+                <div *ngFor="let item of getScheduledItemsForDate(date)"
+                     class="stage-item"
+                     [class]="item.stageId + '-stage'">
+                  <div class="font-medium">{{item.orderTitle}}</div>
+                  <div class="text-xs">{{item.stage.label}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      
+      
+            
+
+      <!-- Right Sidebar -->
+    <div [ngClass]="{'open': isRightSidebarOpen}" class="h-100 d-flex top-0 position-fixed bg-transparent right-side-nav mse">
+      <nav class="position-relative overflow-hidden justify-content-center align-items-center bg-danger w-s">
+      <div class="navTab bg-danger d-flex flex-column justify-content-between p-4">
+        <button (click)="toggleRightSidebar()" class="btn rounded-2 border-0 btn-danger position-fixed"><i class="pi-times pi"></i></button>
+        <div cdkDropList [cdkDropListData]="orders" class="links overflow-hidden mt-5">  
+          <div class="list-unstyled w-100 h-100">
+              <div *ngIf="selectedOrder" class="d-flex flex-column align-items-center text-white">
+                <h5 class="text-white">Order ID: {{ selectedOrder.id }}</h5>
+                <p class="">Order Name: {{ selectedOrder.name }}</p>
+                <p class="">Customer Name: {{ selectedOrder.customer_name }}</p>
+                <p class="">Created Date: {{ selectedOrder.created_date }}</p>
+                <p class="">Assigned To: {{ selectedOrder.assigned_to }}</p>
+                <p class="">Updated Date: {{ selectedOrder.updated_date }}</p>
+                <p class="">Price: {{ selectedOrder.price }}</p>
+                <p class="">Notes: {{ selectedOrder.notes }}</p>
+                <p class="">Tottal Cost: {{ selectedOrder.total_cost }}</p>
+             </div>
+          </div>
+      </div>
+      </div>
+    </nav>
+    </div>
+      
+      
+    </div>
+</div>

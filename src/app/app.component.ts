@@ -9,11 +9,12 @@ import { PrimeNG } from 'primeng/config';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { SupabaseService } from './services/supabase.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, TopbarComponent, CommonModule, DragDropModule, ButtonModule, PanelMenuModule,TableModule],
+  imports: [RouterOutlet, TopbarComponent, CommonModule, DragDropModule, ButtonModule, PanelMenuModule,TableModule, ReactiveFormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
