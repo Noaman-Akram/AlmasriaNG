@@ -1,31 +1,26 @@
 import { Component } from '@angular/core';
 import { LinkService } from '../../link.service';
-import { Order, SupabaseService } from '../../services/supabase.service';
+import { Customer } from '../../customer';
+import { CustomerService } from '../../customer.service';
 import { TableModule } from 'primeng/table';
+import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @Component({
   selector: 'app-orders',
-  imports: [TableModule],
+  imports: [TableModule, CommonModule, ButtonModule, HttpClientModule],
   templateUrl: './orders.component.html',
-  styleUrl: './orders.component.css'
+  styleUrl: './orders.component.css',
+  providers: [CustomerService],
+  standalone: true,
 })
 export class OrdersComponent {
   marginLeft = 200; // Default margin
   isSidebarOpen = false;
 
-  orders = [
-    { customer_name: 'Laoding...', work_type: 'Laoding...', order_status: 'Laoding...', address: 'Laoding...' },
-    { customer_name: 'dizzyFake', work_type: 'data fale...', order_status: 'ttty', address: 'Gamb betk' }
-  
-  ];
-  
-  displayedColumns: string[] = ['id', 'customer_id', 'customer_name', 'work_type', 'order_status', 'address'];
-
-  ngOnInit(){
-  this.fetchOrders();
-  }
-  constructor(private linkService: LinkService, private supabaseService: SupabaseService) {
+  constructor(private linkService: LinkService,private customerService: CustomerService) {
     // Subscribe to changes in isSidebarOpen
     this.linkService.isSidebarOpen$.subscribe((value) => {
       this.isSidebarOpen = value;
@@ -37,19 +32,46 @@ export class OrdersComponent {
     this.marginLeft = this.isSidebarOpen ? 100 : 200;
     return this.marginLeft;
   }
-  
-  
-  fetchOrders() {
-    this.supabaseService.retrieveDB<Order>('Orders')  // Specify the type here
-      .then((orders: Order[]) => {
-        console.log('Fetched in Orders Page!');  // Log the confirm to see if data is coming through
-        this.orders = orders;  // Set the fetched orders to the component's orders array
-      })
-      .catch((err) => {
-        console.error('Error fetching orders:', err);
-      });
+
+
+
+  ///////////////////////////////////////////////////////////////////
+
+
+
+
+  customers!: Customer[];
+
+    first = 0;
+
+    rows = 10;
+
+    ngOnInit() {
+        this.customerService.getCustomersLarge().then((customers) => (this.customers = customers));
+    }
+
+    next() {
+        this.first = this.first + this.rows;
+    }
+
+    prev() {
+        this.first = this.first - this.rows;
+    }
+
+    reset() {
+        this.first = 0;
+    }
+
+    pageChange(event: { first: number; rows: number; }) {
+      this.first = event.first;
+      this.rows = event.rows;
   }
-  
 
+    isLastPage(): boolean {
+        return this.customers ? this.first + this.rows >= this.customers.length : true;
+    }
+
+    isFirstPage(): boolean {
+        return this.customers ? this.first === 0 : true;
+    }
 }
-

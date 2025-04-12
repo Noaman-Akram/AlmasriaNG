@@ -154,7 +154,8 @@ export class ArdS3rComponent implements OnInit {
         if (customer) {
           // Auto-fill the phone number.
           this.orderForm.patchValue({
-            phoneNumber: customer.phone_number
+            phoneNumber: customer.phone_number,
+            customerName: customer.name 
           });
           // Assume customer.address is in the format "City, Address Details".
           if (customer.address) {

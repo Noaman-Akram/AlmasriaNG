@@ -156,7 +156,38 @@ export class SupabaseService {
   
     return data as T[];  // Cast the data to the correct type
   }
+  async updateDB<T extends { id?: number; detail_id?: number }>(table: string, id: number, data: Partial<T>): Promise<T | null> {
+    const idField = table === 'OrderDetails' ? 'detail_id' : 'id'; // Handle different primary key for OrderDetails
+    const { data: updatedData, error } = await this.supabase
+      .from(table)
+      .update(data)
+      .eq(idField, id)
+      .select()
+      .single();
 
+    if (error) {
+      console.error(`Error updating ${table} with ${idField} ${id}:`, error);
+      throw error;
+    }
+
+    console.info(`Updated in ${table}:`, updatedData);
+    return (updatedData as T) || null;
+  }
+  async deleteDB<T>(table: string, filters: Partial<T>): Promise<T[]> {
+    const { data: deletedData, error } = await this.supabase
+      .from(table)
+      .delete()
+      .match(filters)
+      .select();
+
+    if (error) {
+      console.error(`Error deleting from ${table}:`, error);
+      throw error;
+    }
+
+    console.info(`Deleted from ${table}:`, deletedData);
+    return (deletedData as T[]) || [];
+  }
   async getLastOrderId(): Promise<number> {
     // We assume 'id' is your auto-increment primary key in 'Orders'
     const { data, error } = await this.supabase

@@ -1,28 +1,49 @@
 <div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary">
-  <div class="z-1 w-100">Orders Works!</div>
-  
-  <p-table [value]="orders" [rows]="10" [paginator]="true">
-    <!-- Order ID Column -->
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Order ID</th>
-        <th>Customer ID</th>
-        <th>Customer Name</th>
-        <th>Work Type</th>
-        <th>Status</th>
-        <th>Address</th>
-      </tr>
-    </ng-template>
-
-    <ng-template pTemplate="body" let-order>
-      <tr>
-        <td>{{ order.id }}</td>
-        <td>{{ order.customer_id }}</td>
-        <td>{{ order.customer_name }}</td>
-        <td>{{ order.work_type }}</td>
-        <td>{{ order.order_status }}</td>
-        <td>{{ order.address }}</td>
-      </tr>
-    </ng-template>
-  </p-table>
+    <div class="z-1 w-100">
+        <div>
+            <div>
+              <div class="mb-4">
+                <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
+                <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
+                <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
+            </div>
+            <div class="card">
+                <p-table
+                    [value]="customers"
+                    [paginator]="true"
+                    [rows]="5"
+                    [first]="first"
+                    [showCurrentPageReport]="true"
+                    [tableStyle]="{ 'min-width': '50rem' }"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    (onPage)="pageChange($event)"
+                    [rowsPerPageOptions]="[10, 25, 50]"
+                >
+                    <ng-template #header>
+                        <tr>
+                            <th style="width:25%">Name</th>
+                            <th style="width:25%">Country</th>
+                            <th style="width:25%">Company</th>
+                            <th style="width:25%">Representative</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-customer>
+                        <tr>
+                            <td>{{ customer.name }}</td>
+                            <td>{{ customer.country.name }}</td>
+                            <td>{{ customer.company }}</td>
+                            <td>{{ customer.representative.name }}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template #paginatorleft>
+                        <p-button type="button" icon="pi pi-plus" text />
+                    </ng-template>
+                    <ng-template #paginatorright>
+                        <p-button type="button" icon="pi pi-cloud" text />
+                    </ng-template>
+                </p-table>
+            </div>
+            </div>
+        </div>
+    </div>
 </div>
