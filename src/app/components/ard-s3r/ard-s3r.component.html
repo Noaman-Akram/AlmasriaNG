@@ -16,6 +16,7 @@
     </div>
 
     <form [formGroup]="orderForm" (ngSubmit)="submitOrder()">
+      <button (click)="fillTestData()" class="btn btn-secondary">Fill Test Data</button>
       <div class="d-flex flex-column my-3">
         <!-- existingCustomer checkbox -->
 <div class="form-check mb-3">
@@ -195,5 +196,114 @@
       </div>
     </form>
     <pre>{{ orderForm.value | json }}</pre>
+      <!-- Recent Orders Table -->
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light">
+          <h5 class="mb-0">Recent Orders</h5>
+          <button class="btn btn-sm btn-outline-primary" (click)="loadRecentOrders()">
+            <i class="pi pi-refresh"></i> Refresh
+          </button>
+        </div>
+        <div class="card-body p-0">
+          <div *ngIf="isLoadingOrders" class="text-center py-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          
+          <div *ngIf="!isLoadingOrders && recentOrders.length === 0" class="text-center py-3">
+            <p class="text-muted mb-0">No recent orders found</p>
+          </div>
+          
+          <div *ngIf="!isLoadingOrders && recentOrders.length > 0">
+            <div class="table-responsive">
+              <table class="table table-hover table-striped mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Work Types</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let order of recentOrders">
+                    <td><span class="badge bg-secondary">{{ order.id }}</span></td>
+                    <td>{{ order.customer_name }}</td>
+                    <td>{{ formatWorkTypes(order.work_types) }}</td>
+                    <td>
+                      <span class="badge"
+                            [ngClass]="{
+                              'bg-warning': order.order_status === 'pending',
+                              'bg-primary': order.order_status === 'in-progress',
+                              'bg-success': order.order_status === 'completed',
+                              'bg-danger': order.order_status === 'cancelled'
+                            }">
+                        {{ order.order_status }}
+                      </span>
+                    </td>
+                    <td>{{ order.created_at | date:'short' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
   </div>
 </div>
+
+<!-- Success Modal Template -->
+<ng-template #successModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Order Submitted</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.close()"></button>
+  </div>
+  <div class="modal-body print-container">
+    <p class="print-header">Thank you for your order!</p>
+    <div class="order-summary">
+      <p><strong>Customer Name:</strong> {{ orderForm.value.customerName }}</p>
+      <p><strong>Phone Number:</strong> {{ orderForm.value.phoneNumber }}</p>
+      <p>
+        <strong>Address:</strong> 
+        {{ orderForm.value.city?.label || orderForm.value.city }},
+        {{ orderForm.value.addressDetails }}
+      </p>
+      <p>
+        <strong>Work Types:</strong> 
+        <span *ngFor="let wt of orderForm.value.workType">{{ wt.name }} </span>
+      </p>
+      <p><strong>Start Date:</strong> {{ orderForm.value.startDate }}</p>
+      <p><strong>End Date:</strong> {{ orderForm.value.endDate }}</p>
+      <div *ngIf="orderForm.value.orderItems && orderForm.value.orderItems.length">
+        <h5>Order Items:</h5>
+        <table class="order-items-table">
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Dimension</th>
+              <th>Amount</th>
+              <th>Cost</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of orderForm.value.orderItems">
+              <td>{{ item.marbleMaterial }}</td>
+              <td>{{ item.dimension }}</td>
+              <td>{{ item.amount }}</td>
+              <td>{{ item.cost }}</td>
+              <td>{{ item.amount * item.cost }} EGP</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="grand-total"><strong>Grand Total:</strong> {{ grandTotal }} EGP</p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="printOrder()">Print Order</button>
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>

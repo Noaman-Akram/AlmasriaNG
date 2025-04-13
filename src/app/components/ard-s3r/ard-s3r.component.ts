@@ -1,26 +1,35 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, ViewChild, TemplateRef } from '@angular/core';
 import { LinkService } from '../../link.service';
-import { NgbDatepickerModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepickerModule, NgbAlertModule, NgbModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { JsonPipe, CommonModule } from '@angular/common';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { Customer, SupabaseService } from '../../services/supabase.service';
-
 interface WorkType {
   name: string;
   code: string;
 }
+// Interface for recent orders
+interface RecentOrder {
+  id?: number;
+  customer_name?: string;
+  work_types?: string;
+  order_status?: string; // Corrected from potential typo
+  created_at?: string;
+}
+
 
 @Component({
   selector: 'app-ard-s3r',
   standalone: true,
   imports: [
+    ReactiveFormsModule,   // REQUIRED for reactive forms
     NgbDatepickerModule,
     NgbAlertModule,
-    ReactiveFormsModule,
-    JsonPipe,
+    NgbModalModule,        // For modal functionality
     CommonModule,
+    JsonPipe,
     MultiSelectModule,
     SelectModule
   ],
@@ -37,6 +46,43 @@ export class ArdS3rComponent implements OnInit {
   isSidebarOpen = false;
   submitMessage: string = '';
   isSubmitting: boolean = false;
+
+  selectedFile: File | null = null;
+
+  recentOrders: RecentOrder[] = [];
+isLoadingOrders: boolean = false;
+
+// Add this method to the component class
+async loadRecentOrders() {
+  this.isLoadingOrders = true;
+  try {
+    const orders = await this.supabaseService.retrieveDB('Orders', {
+      limit: 5
+    });
+    this.recentOrders = orders as RecentOrder[];
+  } catch (err) {
+    console.error('Error loading recent orders:', err);
+  } finally {
+    this.isLoadingOrders = false;
+  }
+}
+
+// Helper method to format work types
+formatWorkTypes(workTypesInput: any): string {
+  if (!workTypesInput) {
+    return '';
+  }
+  // If it's a string, remove braces
+  if (typeof workTypesInput === 'string') {
+    return workTypesInput.replace(/{|}/g, '');
+  }
+  // If it's an array, join its elements with commas (or format as needed)
+  if (Array.isArray(workTypesInput)) {
+    return workTypesInput.join(', ');
+  }
+  // Otherwise, convert it to string
+  return workTypesInput.toString();
+}
 
   cities = [
     { label: 'Cairo', value: 'cairo' },
@@ -71,10 +117,43 @@ export class ArdS3rComponent implements OnInit {
     { name: 'Other', code: 'X' }
   ];
 
+  @ViewChild('successModal') successModal!: TemplateRef<any>;
+  private modalRef!: NgbModalRef;
+  
+  fillTestData(): void {
+    this.orderForm.patchValue({
+      existingCustomer: false,
+      customerName: 'Test Customer',
+      phoneNumber: '01000000000',
+      city: this.cities.find(c => c.value === 'cairo'),
+      addressDetails: '123 Test Street',
+      workType: [
+        { name: 'Kitchen', code: 'K' },
+        { name: 'Walls', code: 'W' }
+      ],
+      hasCompany: false,
+      companyName: '',
+    });
+  
+    // For order items, either clear existing items or add them
+    while (this.orderItemsArray.length) {
+      this.orderItemsArray.removeAt(0);
+    }
+    this.addOrderItem(); // add 1 row
+    this.orderItemsArray.at(0).patchValue({
+      marbleMaterial: 'Marble',
+      dimension: 'm2',
+      amount: 2,
+      cost: 300
+    });
+  }
+
+
   constructor(
     private fb: FormBuilder,
     private linkService: LinkService,
-    private injector: Injector
+    private injector: Injector,
+    private modalService: NgbModal // inject NgbModal service
   ) {
     this.supabaseService = this.injector.get(SupabaseService);
 
@@ -96,7 +175,16 @@ export class ArdS3rComponent implements OnInit {
     });
 
     this.addOrderItem(); // Start with one row
+    
   }
+
+  openSuccessModal() {
+    this.modalRef = this.modalService.open(this.successModal, {
+      ariaLabelledBy: 'modal-basic-title',
+      size: 'lg'
+    });
+  }
+
   customersList: any[] = []; // or type Customer[] if you have an interface
 
   async ngOnInit() {
@@ -117,10 +205,13 @@ export class ArdS3rComponent implements OnInit {
 
 
     this.setupCheckboxListeners();
+    this.loadRecentOrders();
 
   }
 
-
+  printOrder() {
+    window.print();
+  }
   private setupCheckboxListeners(): void {
     // existingCustomer checkbox
     this.orderForm.get('existingCustomer')?.valueChanges.subscribe((checked: boolean) => {
@@ -324,6 +415,9 @@ export class ArdS3rComponent implements OnInit {
       })
       .finally(() => {
         this.isSubmitting = false;
+        setTimeout(() => {
+          this.openSuccessModal();
+        }, 100);
       });
   }
 }
