@@ -122,91 +122,128 @@
 
       <div formArrayName="orderItems">
         <div *ngFor="let item of orderItemsArray.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center my-3">
+          <!-- Material Type -->
           <div class="mb-3 me-5 ws">
             <label class="form-label">Material Type</label>
-          
             <div class="form-check">
               <input
                 class="form-check-input"
                 type="radio"
                 formControlName="MaterialType"
-                [value]="'Granite'"
-                id="radioDefault1"
+                value="Granite"
+                [id]="'radioGranite' + i"
               />
-              <label class="form-check-label" for="radioDefault1">Granite</label>
+              <label class="form-check-label" [for]="'radioGranite' + i">Granite</label>
             </div>
-          
             <div class="form-check">
               <input
                 class="form-check-input"
                 type="radio"
                 formControlName="MaterialType"
-                [value]="'Marble'"
-                id="radioDefault2"
+                value="Marble"
+                [id]="'radioMarble' + i"
               />
-              <label class="form-check-label" for="radioDefault2">Marble</label>
+              <label class="form-check-label" [for]="'radioMarble' + i">Marble</label>
             </div>
-          
             <small
-              *ngIf="
-                orderForm.get('MaterialType')?.invalid &&
-                orderForm.get('MaterialType')?.touched
-              "
+              *ngIf="item.get('MaterialType')?.invalid && item.get('MaterialType')?.touched"
               class="text-danger"
             >
               Please select a material type.
             </small>
           </div>
-          
+      
+          <!-- Material Name -->
           <div class="mb-3 me-5 ws">
             <label class="form-label">Material Name</label>
-              <input type="text" formControlName="MaterialName" class="form-control w-100" placeholder="">
-            <small *ngIf="item.get('MaterialName')?.invalid && item.get('MaterialName')?.touched" class="text-danger">
-              Please select a material
+            <input
+              type="text"
+              formControlName="MaterialName"
+              class="form-control w-100"
+              placeholder="Enter material name"
+            />
+            <small
+              *ngIf="item.get('MaterialName')?.invalid && item.get('MaterialName')?.touched"
+              class="text-danger"
+            >
+              <span *ngIf="item.get('MaterialName')?.errors?.['required']">Material name is required.</span>
+              <span *ngIf="item.get('MaterialName')?.errors?.['pattern']">Only letters and spaces are allowed.</span>
             </small>
           </div>
-
+      
+          <!-- Dimensions -->
           <div class="mb-3 me-5 ws">
             <label class="form-label">Dimensions</label>
-            <select formControlName="dimension" class="form-select w-100" placeholder="Unit">
-              <option value="m2">m2</option>
-              <option value="Metre">ml</option>
-              <option value="Metre">m3</option>
+            <select formControlName="dimension" class="form-select w-100">
+              <option value="" disabled>Select unit</option>
+              <option value="m2">m²</option>
+              <option value="ml">m (linear)</option>
+              <option value="m3">m³</option>
             </select>
+            <small
+              *ngIf="item.get('dimension')?.invalid && item.get('dimension')?.touched"
+              class="text-danger"
+            >
+              Please select a dimension.
+            </small>
           </div>
-
+      
+          <!-- Amount -->
           <div class="mb-3 me-5">
             <label class="form-label">Amount</label>
-            <input type="number" formControlName="amount" class="form-control form2" placeholder="Enter amount">
-            <small *ngIf="item.get('amount')?.hasError('required') && item.get('amount')?.touched" class="text-danger">
-              Amount is required
-            </small>
-            <small *ngIf="item.get('amount')?.hasError('min') && item.get('amount')?.touched" class="text-danger">
-              Amount must be at least 1
+            <input
+              type="number"
+              formControlName="amount"
+              class="form-control form2"
+              placeholder="Enter amount"
+              (keypress)="allowOnlyNumbers($event)"
+            />
+            <small
+              *ngIf="item.get('amount')?.invalid && item.get('amount')?.touched"
+              class="text-danger"
+            >
+              <span *ngIf="item.get('amount')?.errors?.['required']">Amount is required.</span>
+              <span *ngIf="item.get('amount')?.errors?.['min']">Amount must be at least 1.</span>
             </small>
           </div>
-
+      
+          <!-- Cost -->
           <div class="mb-3 me-5">
             <label class="form-label">Cost</label>
-            <input type="number" formControlName="cost" class="form-control form2" placeholder="Enter cost">
-            <small *ngIf="item.get('cost')?.hasError('required') && item.get('cost')?.touched" class="text-danger">
-              Cost is required
-            </small>
-            <small *ngIf="item.get('cost')?.hasError('min') && item.get('cost')?.touched" class="text-danger">
-              Cost cannot be negative
+            <input
+              type="number"
+              formControlName="cost"
+              class="form-control form2"
+              placeholder="Enter cost"
+              (keypress)="allowOnlyNumbers($event)"
+            />
+            <small
+              *ngIf="item.get('cost')?.invalid && item.get('cost')?.touched"
+              class="text-danger"
+            >
+              <span *ngIf="item.get('cost')?.errors?.['required']">Cost is required.</span>
+              <span *ngIf="item.get('cost')?.errors?.['min']">Cost cannot be negative.</span>
             </small>
           </div>
-
+      
+          <!-- Total Cost -->
           <div class="mb-3 me-5 ws">
             <label class="form-label">Total Cost</label>
-            <h6 class="form-control form2 bg-secondary-subtle">{{ calculateTotal(i) }} EGP</h6>
+            <h6 class="form-control form2 bg-secondary-subtle">
+              {{ calculateTotal(i) | number:'1.0-0' }} EGP
+            </h6>
           </div>
-
+      
+          <!-- Add/Remove Buttons -->
           <button class="btn btn-success h-50 me-2" type="button" (click)="addOrderItem()">
             <i class="pi pi-plus"></i>
           </button>
-
-          <button class="btn btn-danger h-50" type="button" *ngIf="orderItemsArray.length > 1" (click)="removeOrderItem(i)">
+          <button
+            class="btn btn-danger h-50"
+            type="button"
+            *ngIf="orderItemsArray.length > 1"
+            (click)="removeOrderItem(i)"
+          >
             <i class="pi pi-minus"></i>
           </button>
         </div>
@@ -222,28 +259,17 @@
             type="number"
             formControlName="ExtraEstimatedCost"
             class="form-control w-100"
-            placeholder="Enter extra cost"
+            placeholder="Enter extra cost (optional)"
           />
           <small
-  *ngIf="
-    orderForm.get('ExtraEstimatedCost')?.errors?.['required'] &&
-    orderForm.get('ExtraEstimatedCost')?.touched
-  "
-  class="text-danger"
->
-  Extra Estimated Cost is required
-</small>
-
-<small
-  *ngIf="
-    orderForm.get('ExtraEstimatedCost')?.errors?.['numberOnly'] &&
-    orderForm.get('ExtraEstimatedCost')?.touched
-  "
-  class="text-danger"
->
-  Only numbers are allowed
-</small>
-
+            *ngIf="
+              orderForm.get('ExtraEstimatedCost')?.errors?.['numberOnly'] &&
+              orderForm.get('ExtraEstimatedCost')?.touched
+            "
+            class="text-danger"
+          >
+            Only numbers are allowed
+          </small>
         </div>
         <div class="mb-3 me-5 ws">
           <div class="form-label">Total Price</div>
@@ -283,6 +309,23 @@
       </div>
     </form>
     <pre>{{ orderForm.value | json }}</pre>
+
+
+    <div class="debug">
+      <p>Form Valid: {{ orderForm.valid }}</p>
+      <p>Form Errors: {{ orderForm.errors | json }}</p>
+      <p>Form Value: {{ orderForm.value | json }}</p>
+      <p>Order Items Valid: {{ orderForm.get('orderItems')?.valid }}</p>
+      <div *ngFor="let item of orderItemsArray.controls; let i = index">
+        <p>Item {{ i }} Valid: {{ item.valid }}</p>
+        <p>Item {{ i }} Errors: {{ item.errors | json }}</p>
+        <p>MaterialType Errors: {{ item.get('MaterialType')?.errors | json }}</p>
+        <p>MaterialName Errors: {{ item.get('MaterialName')?.errors | json }}</p>
+        <p>dimension Errors: {{ item.get('dimension')?.errors | json }}</p>
+        <p>amount Errors: {{ item.get('amount')?.errors | json }}</p>
+        <p>cost Errors: {{ item.get('cost')?.errors | json }}</p>
+      </div>
+    </div>
       <!-- Recent Orders Table -->
       <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center bg-light">
