@@ -124,23 +124,44 @@
         <div *ngFor="let item of orderItemsArray.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center my-3">
           <div class="mb-3 me-5 ws">
             <label class="form-label">Material Type</label>
+          
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault1">
-              <label class="form-check-label" for="radioDefault1">
-                Granite
-              </label>
+              <input
+                class="form-check-input"
+                type="radio"
+                formControlName="MaterialType"
+                [value]="'Granite'"
+                id="radioDefault1"
+              />
+              <label class="form-check-label" for="radioDefault1">Granite</label>
             </div>
+          
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault2">
-              <label class="form-check-label" for="radioDefault2">
-                Marble
-              </label>
+              <input
+                class="form-check-input"
+                type="radio"
+                formControlName="MaterialType"
+                [value]="'Marble'"
+                id="radioDefault2"
+              />
+              <label class="form-check-label" for="radioDefault2">Marble</label>
             </div>
+          
+            <small
+              *ngIf="
+                orderForm.get('MaterialType')?.invalid &&
+                orderForm.get('MaterialType')?.touched
+              "
+              class="text-danger"
+            >
+              Please select a material type.
+            </small>
           </div>
+          
           <div class="mb-3 me-5 ws">
             <label class="form-label">Material Name</label>
-              <input type="text" formControlName="addressDetails" class="form-control w-100" placeholder="">
-            <small *ngIf="item.get('marbleMaterial')?.invalid && item.get('marbleMaterial')?.touched" class="text-danger">
+              <input type="text" formControlName="MaterialName" class="form-control w-100" placeholder="">
+            <small *ngIf="item.get('MaterialName')?.invalid && item.get('MaterialName')?.touched" class="text-danger">
               Please select a material
             </small>
           </div>
@@ -190,11 +211,66 @@
           </button>
         </div>
       </div>
+      <div class="d-flex align-items-center my-3">
+        <div class="mb-3 me-5 ws">
+          <div class="form-label">Total Cost</div>
+          <h6 class="form-control form2 bg-secondary-subtle">{{ grandTotal }} EGP</h6>
+        </div>
+        <div class="mb-3 me-5 ws">
+          <div class="form-label">Extra Estimated Cost</div>
+          <input
+            type="number"
+            formControlName="ExtraEstimatedCost"
+            class="form-control w-100"
+            placeholder="Enter extra cost"
+          />
+          <small
+  *ngIf="
+    orderForm.get('ExtraEstimatedCost')?.errors?.['required'] &&
+    orderForm.get('ExtraEstimatedCost')?.touched
+  "
+  class="text-danger"
+>
+  Extra Estimated Cost is required
+</small>
 
-      <div class="mb-3 me-5 ws">
-        <div class="form-label">Grand Total</div>
-        <h6 class="form-control form2 bg-secondary-subtle">{{ grandTotal }} EGP</h6>
+<small
+  *ngIf="
+    orderForm.get('ExtraEstimatedCost')?.errors?.['numberOnly'] &&
+    orderForm.get('ExtraEstimatedCost')?.touched
+  "
+  class="text-danger"
+>
+  Only numbers are allowed
+</small>
+
+        </div>
+        <div class="mb-3 me-5 ws">
+          <div class="form-label">Total Price</div>
+          <input
+            type="number"
+            formControlName="TotalPrice"
+            class="form-control w-100"
+            placeholder="Enter total price"
+          />
+          <small
+            *ngIf="orderForm.get('TotalPrice')?.invalid && orderForm.get('TotalPrice')?.touched"
+            class="text-danger"
+          >
+            Total Price is required
+          </small>
+          <small
+  *ngIf="
+    orderForm.get('TotalPrice')?.errors?.['numberOnly'] &&
+    orderForm.get('TotalPrice')?.touched
+  "
+  class="text-danger"
+>
+  Only numbers are allowed
+</small>
+        </div>
       </div>
+      
 
       <div *ngIf="submitMessage" class="alert" [ngClass]="{'alert-success': submitMessage.includes('success'), 'alert-danger': !submitMessage.includes('success')}">
         {{ submitMessage }}
