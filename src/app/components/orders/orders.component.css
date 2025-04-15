@@ -13,5 +13,95 @@
 .sidebar.active {
     margin-left: 100px; /* Slide-in effect */
 }
-.card{
+
+
+
+
+
+
+.p-datatable-header {
+    background-color: rgb(220 53 69)!important;
+}
+
+[_nghost-ng-c278789824] .pi-filter-slash {
+    color: #ed8989;
+}
+:host ::ng-deep .p-datatable .p-datatable-header {
+    background-color: rgb(220, 53, 69);
+    padding: 0.75rem;
+    border-radius: 6px 6px 0 0;
+}
+/* Add these styles to your CSS file to make all text black */
+:host ::ng-deep .p-datatable {
+    background-color: white;
+    color: black;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    background-color: white;
+    color: black;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr {
+    background-color: white;
+    color: black;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    color: black;
+}
+
+:host ::ng-deep .p-paginator {
+    background-color: white;
+    color: black;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page {
+    color: black;
+}
+
+:host ::ng-deep .p-dropdown-label, 
+:host ::ng-deep .p-multiselect-label,
+:host ::ng-deep .p-inputtext {
+    color: black;
+}
+
+:host ::ng-deep .p-column-filter-menu-button,
+:host ::ng-deep .pi {
+    color: black;
+}
+
+/* For the card container */
+.card {
+    background-color: white;
+    color: black;
+}
+
+/* For any icons that might need color adjustment */
+:host ::ng-deep .pi-search,
+:host ::ng-deep .pi-filter-slash {
+    color: black;
+}
+
+/* For dropdown items */
+:host ::ng-deep .p-dropdown-item,
+:host ::ng-deep .p-multiselect-item {
+    color: black;
+}
+/* Style for the Clear button */
+:host ::ng-deep .p-datatable .p-datatable-header .p-button.p-button-outlined {
+    background-color: white;
+    border-color: white;
+    color: black;
+}
+
+/* Hover state for the button */
+:host ::ng-deep .p-datatable .p-datatable-header .p-button.p-button-outlined:hover {
+    background-color: #f8f9fa; /* Slightly different white on hover */
+    border-color: #e9ecef;
+}
+
+/* Style for the filter-slash icon in the button */
+:host ::ng-deep .p-datatable .p-datatable-header .p-button.p-button-outlined .pi-filter-slash {
+    color: black;
 }
