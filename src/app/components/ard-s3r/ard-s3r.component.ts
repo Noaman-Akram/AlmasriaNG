@@ -56,9 +56,10 @@ isLoadingOrders: boolean = false;
 async loadRecentOrders() {
   this.isLoadingOrders = true;
   try {
-    const orders = await this.supabaseService.retrieveDB('Orders', {
-      limit: 5
-    });
+    // Fetch the last 5 records based on the primary key, assuming 'id' is auto-incremented
+    const orders = await this.supabaseService.retrieveDB('Orders', {}, 5, "id",false );  // Default is by 'id' (auto-incremented), no need for `created_at`
+
+    // Set the fetched orders into the component
     this.recentOrders = orders as RecentOrder[];
   } catch (err) {
     console.error('Error loading recent orders:', err);
@@ -66,6 +67,9 @@ async loadRecentOrders() {
     this.isLoadingOrders = false;
   }
 }
+
+
+
 
 // Helper method to format work types
 formatWorkTypes(workTypesInput: any): string {
@@ -378,7 +382,7 @@ formatWorkTypes(workTypesInput: any): string {
       customer_name: formValue.customerName,
       phone_number: formValue.phoneNumber,
       customer_id: customerId,
-      
+      company: formValue.hasCompany ? formValue.companyName : null,
       work_types: `{${formValue.workType.map((wt: WorkType) => wt.code).join(',')}}`,
       address: `${formValue.city.value}, ${formValue.addressDetails}`,
       order_status: 'pending'
@@ -392,6 +396,13 @@ formatWorkTypes(workTypesInput: any): string {
       total: item.amount * item.cost
     }));
   
+    const insertedOrder = await this.supabaseService.insertToDB('Orders', newOrder);
+
+    if (!insertedOrder?.id) {
+      console.error('Failed to insert order');
+      return; // Exit if order creation failed
+    }
+
     this.supabaseService.insertToDB('Orders', newOrder)
       .then((result) => {
         if(result) {
@@ -422,48 +433,3 @@ formatWorkTypes(workTypesInput: any): string {
   }
 }
 
-/*
-newOrder = {
-    order_id: '',
-    customer_id: null,
-    customer_name: '',
-    work_types: '',
-    address: '',
-    order_status: 'pending'
-  }
-  addTestOrder(){
-    this.supabaseService.insertToDB('Orders', this.newOrder) 
-    .then(order => console.log("Inserted Order:", order))
-  .catch(err => console.error(err));
-  }
-
-  addNewOrder(){
-    this.supabaseService.insertToDB('Customers', this.newOrder) 
-
-  }
-  submitOrder() {
-    if (this.orderForm.valid) {
-      console.log('Final Order:', this.orderForm.value);
-    } else {
-      console.log('Form is invalid');
-    }
-  }
-
-  
-/* 
-    addTestOrder() {
-    const newOrder: Order = {
-      id: Math.floor(Math.random() * 1000), // Use a random ID for now
-      customer_id: null,
-      customer_name: 'cx name',
-      work_type: 'K',
-      address: 'helwna',
-      order_status: 'cutting'
-    };
-      
-    this.supabaseService.addOrder(newOrder).then(() => {
-      console.log('Order added successfully');
-    }).catch(error => {
-      console.error('Failed to add customer', error);
-    });
-  }   */

@@ -20,6 +20,7 @@ export interface Customer {
 export type WorkType = 'K' | 'W' | 'F' | 'X';
 
 export interface Order {
+  id?: number;
   customer_id: number | null;
   customer_name: string;
   work_type: WorkType; // JSONB, you might want to use a specific type
@@ -139,23 +140,31 @@ export class SupabaseService {
     
     return insertedData ? insertedData[0] : null;
   }
-
-  async retrieveDB<T>(table: string, filters: Partial<T> = {}): Promise<T[]> {
+  async retrieveDB<T>(table: string, filters: Partial<T> = {}, limit?: number, orderBy: string = 'id', ascending: boolean = true): Promise<T[]> {
     let query = this.supabase.from(table).select('*');
     
     if (Object.keys(filters).length) {
       query = query.match(filters);  // Apply filters dynamically
     }
+    
+    if (limit) {
+      query = query.limit(limit);  // Apply limit if provided
+    }
+  
+    // Apply sorting: use the column (orderBy) and direction (ascending/descending)
+    query = query.order(orderBy, { ascending });
   
     const { data, error } = await query;
-  
+    
     if (error) {
       console.error(`Error retrieving from ${table}:`, error);
       return [];
     }
-  
+    
     return data as T[];  // Cast the data to the correct type
   }
+  
+  
   async updateDB<T extends { id?: number; detail_id?: number }>(table: string, id: number, data: Partial<T>): Promise<T | null> {
     const idField = table === 'OrderDetails' ? 'detail_id' : 'id'; // Handle different primary key for OrderDetails
     const { data: updatedData, error } = await this.supabase
