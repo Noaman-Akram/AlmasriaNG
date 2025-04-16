@@ -1,11 +1,22 @@
 import { Component, OnInit, Injector, ViewChild, TemplateRef } from '@angular/core';
 import { LinkService } from '../../link.service';
 import { NgbDatepickerModule, NgbAlertModule, NgbModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { JsonPipe, CommonModule } from '@angular/common';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { Customer, SupabaseService } from '../../services/supabase.service';
+
+
+function numberOnlyValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+  if (value === null || value === undefined || value === '') {
+    return null; // Allow empty values (handled by required validator if needed)
+  }
+  const isValid = !isNaN(value) && /^[0-9]*$/.test(value.toString());
+  return isValid ? null : { numberOnly: true };
+}
+
 interface WorkType {
   name: string;
   code: string;
@@ -157,10 +168,10 @@ formatWorkTypes(workTypesInput: any): string {
     private fb: FormBuilder,
     private linkService: LinkService,
     private injector: Injector,
-    private modalService: NgbModal // inject NgbModal service
+    private modalService: NgbModal
   ) {
     this.supabaseService = this.injector.get(SupabaseService);
-
+  
     this.orderForm = this.fb.group({
       customerName: ['', Validators.required],
       city: ['', Validators.required],
@@ -168,18 +179,26 @@ formatWorkTypes(workTypesInput: any): string {
       addressDetails: ['', Validators.required],
       workType: this.fb.control([], Validators.required),
       orderItems: this.fb.array([]),
-      existingCustomer: [false],    // checkbox
-      customerId: [null],          // dropdown if existing customer
-      hasCompany: [false],         // checkbox
-      companyName: ['']            // input if hasCompany is true
+      existingCustomer: [false],
+      customerId: [null],
+      hasCompany: [false],
+      companyName: [''],
+      ExtraEstimatedCost: [null, [numberOnlyValidator]], // Remove Validators.required
+      TotalPrice: ['', [Validators.required, numberOnlyValidator]],
     });
-
+  
     this.linkService.isSidebarOpen$.subscribe(value => {
       this.isSidebarOpen = value;
     });
-
+  
     this.addOrderItem(); // Start with one row
-    
+  }
+
+  allowOnlyNumbers(event: KeyboardEvent) {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+    }
   }
 
   openSuccessModal() {
@@ -305,13 +324,14 @@ formatWorkTypes(workTypesInput: any): string {
     this.marginLeft = this.isSidebarOpen ? 100 : 200;
     return this.marginLeft;
   }
-
+  
   addOrderItem() {
     const orderItemGroup = this.fb.group({
-      marbleMaterial: ['', Validators.required],
-      dimension: ['',Validators.required],
-      amount: [null, [Validators.required, Validators.min(1)]],
-      cost: [null, [Validators.required, Validators.min(0)]]
+      MaterialType: ['', Validators.required], // Radio button, required
+      MaterialName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s]+$/)]], // Text only, required
+      dimension: ['', Validators.required], // Dropdown, required
+      amount: [null, [Validators.required, Validators.min(1)]], // Positive number, required
+      cost: [null, [Validators.required, Validators.min(0)]], // Non-negative number, required
     });
     this.orderItemsArray.push(orderItemGroup);
   }
