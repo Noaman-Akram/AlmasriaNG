@@ -3,9 +3,9 @@
         <div class="card">
              <p-table #dt1 [value]="customers" dataKey="id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [loading]="loading" [paginator]="true" [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']">
                 <ng-template #caption>
-                    <div class="flex">
-                        <p-button label="Clear" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
-                        <p-iconfield iconPosition="left" class="ml-auto">
+                    <div class="">
+                        <p-button class="pb-3" label="Clear" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                        <p-iconfield iconPosition="left" class="mt-3">
                             <p-inputicon>
                                 <i class="pi pi-search"></i>
                             </p-inputicon>
@@ -16,20 +16,20 @@
                 <ng-template #header>
                     <tr>
                         <th style="min-width:15rem">
-                            <div class="flex items-center">
-                                Name
+                            <div class="d-flex align-items-center flex items-center">
+                                ID
                                 <p-columnFilter type="text" field="name" display="menu" />
                             </div>
                         </th>
                         <th style="min-width:15rem">
-                            <div class="flex items-center">
-                                Country
+                            <div class="d-flex align-items-center flex items-center">
+                                Customer Name
                                 <p-columnFilter type="text" field="country.name" display="menu" />
                             </div>
                         </th>
                         <th style="min-width:15rem">
-                            <div class="flex items-center">
-                                Agent
+                            <div class="d-flex align-items-center">
+                                Address
                                 <p-columnFilter field="representative" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
                                     <ng-template #filter let-value let-filter="filterCallback">
                                         <p-multiselect [(ngModel)]="value" [options]="representatives" placeholder="Any" (onChange)="filter($event.value)" optionLabel="name" style="min-width: 14rem" [panelStyle]="{ minWidth: '16rem' }">
@@ -45,20 +45,20 @@
                             </div>
                         </th>
                         <th style="min-width:10rem">
-                            <div class="flex items-center">
-                                Date
+                            <div class="d-flex align-items-center">
+                                Status
                                 <p-columnFilter type="date" field="date" display="menu"></p-columnFilter>
                             </div>
                         </th>
                         <th style="min-width:10rem">
-                            <div class="flex items-center">
-                                Balance
+                            <div class="d-flex align-items-center">
+                                Price
                                 <p-columnFilter type="numeric" field="balance" display="menu" currency="USD" />
                             </div>
                         </th>
                         <th style="min-width:10rem">
-                            <div class="flex items-center">
-                                Status
+                            <div class="d-flex align-items-center">
+                                Cost
                                 <p-columnFilter field="status" matchMode="equals" display="menu">
                                     <ng-template #filter let-value let-filter="filterCallback">
                                         <p-select [(ngModel)]="value" [options]="statuses" (onChange)="filter($event.value)" placeholder="Select One" styleClass="w-full">
@@ -71,8 +71,8 @@
                             </div>
                         </th>
                         <th style="min-width:10rem">
-                            <div class="flex items-center">
-                                Activity
+                            <div class="d-flex align-items-center">
+                                Type
                                 <p-columnFilter field="activity" matchMode="between" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
                                     <ng-template #filter let-value let-filter="filterCallback">
                                         <p-slider [(ngModel)]="value" [range]="true" styleClass="m-4" (onSlideEnd)="filter($event.values)" />
@@ -85,8 +85,14 @@
                             </div>
                         </th>
                         <th style="width: 3rem">
-                            <div class="flex items-center">
-                                Verified
+                            <div class="d-flex align-items-center">
+                                Created at
+                                <p-columnFilter type="boolean" field="verified" display="menu" />
+                            </div>
+                        </th>
+                        <th style="width: 3rem">
+                            <div class="d-flex align-items-center">
+                                Phone Number
                                 <p-columnFilter type="boolean" field="verified" display="menu" />
                             </div>
                         </th>
