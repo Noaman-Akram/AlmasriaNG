@@ -32,7 +32,7 @@
     border-radius: 6px 6px 0 0;
 }
 /* Add these styles to your CSS file to make all text black */
-:host ::ng-deep .p-datatable {
+:host ::ng-deep .p-datatable .p-inputtext{
     background-color: white;
     color: black;
 }
