@@ -55,6 +55,11 @@
 .hs{
     height: 36px;
 }
+#pn_id_3 > p-overlay > div > div > div > div, .p-select-list-container{
+  min-height: 400px !important;
+  height: 400px !important;
+  max-height: 1000px !important;
+}
 .form-select{
     width: 40%;
 }

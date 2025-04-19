@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, Abs
 import { JsonPipe, CommonModule } from '@angular/common';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
-import { Customer, SupabaseService } from '../../services/supabase.service';
+import { Customer, Order, SupabaseService } from '../../services/supabase.service';
 
 
 function numberOnlyValidator(control: AbstractControl): ValidationErrors | null {
@@ -363,93 +363,103 @@ formatWorkTypes(workTypesInput: any): string {
       this.submitMessage = 'Please fill in all required fields correctly.';
       return;
     }
-
+  
     this.isSubmitting = true;
     const formValue = this.orderForm.value;
     const grandTotal = this.grandTotal;
-    
     let customerId: number | null = null;
+  
+    try {
+      // 1. Handle new customer insertion if needed
+      if (!formValue.existingCustomer) {
+        const customer: Customer = {  
+          name: formValue.customerName,
+          phone_number: formValue.phoneNumber,
+          address: `${formValue.city.value}, ${formValue.addressDetails}`,
+          company: formValue.hasCompany ? formValue.companyName : null,
+          paid_total: 0,
+          to_be_paid: grandTotal,
+          created_at: new Date().toISOString()
+        };
+  
+        const insertedCustomer = await this.supabaseService.insertToDB('Customers', customer);
+  
+        if (insertedCustomer?.id) {
+          customerId = insertedCustomer.id; // Get the auto-generated ID
+        } else {
+          throw new Error('Failed to insert customer');
+        }
+      } else {
+        customerId = formValue.customerId; // Use existing customer ID
+      }
+  
+      // 2. Create the order
+      const newOrder: Order = {
+        customer_name: formValue.customerName,
+        customer_id: customerId,
+        company: formValue.hasCompany ? formValue.companyName : null,
+        work_types: `{${formValue.workType.map((wt: WorkType) => wt.code).join(',')}}`,
+        address: `${formValue.city.value}, ${formValue.addressDetails}`,
+        order_status: 'pending',
+        order_price: grandTotal,
+        order_cost: grandTotal,
+        created_by: 'admin',
+        code: this.finalOrderCode
+      };
+  
+      const insertedOrder = await this.supabaseService.insertToDB('Orders', newOrder);
+      if (!insertedOrder?.id) {
+        throw new Error('Failed to insert order');
+      }
+  
+      // 3. Insert order items (measurements)
+      const orderItems = formValue.orderItems.map((item: any) => ({
+        order_id: insertedOrder.id, // Link the measurement to the order
+        marbleMaterial: item.marbleMaterial,
+        dimension: item.dimension,
+        amount: item.amount,
+        cost: item.cost,
+        total: item.amount * item.cost
+      }));
+  
+      const measurementInsertion = await this.supabaseService.insertToDB('Measurements', orderItems);
+      if (!measurementInsertion) {
+        throw new Error('Failed to insert measurements');
+      }
+  
+      // 4. Success
+      this.submitMessage = 'Order submitted successfully!';
+      console.log('Inserted Order:', insertedOrder);
+  
+      // Reset the form after successful submission
+      this.orderForm.reset();
+      this.orderItemsArray.clear();
+      this.addOrderItem();
+      this.nextId++;
+      this.updateOrderId();
+  
+      setTimeout(() => {
+        this.openSuccessModal();
+      }, 100);
+  
+    } catch (err: unknown) {
+       // Check if the error is an instance of Error
+  if (err instanceof Error) {
+    // Log the exact error message to console
+    console.error('Error occurred:', err);
 
-  // 1. Handle new customer insertion if needed
-  if (!formValue.existingCustomer) {
-    const customer: Customer = {  
-      name: formValue.customerName,
-      phone_number: formValue.phoneNumber,
-      address: `${formValue.city.value}, ${formValue.addressDetails}`,
-      company: formValue.hasCompany ? formValue.companyName : null,
-      paid_total: 0,
-      to_be_paid: grandTotal,
-      created_at: new Date().toISOString()
-    };
-
-    // Wait for the insert to complete and get the inserted customer
-    const insertedCustomer = await this.supabaseService.insertToDB('Customers', customer);
-    
-    if (insertedCustomer?.id) {
-      customerId = insertedCustomer.id; // Get the auto-generated ID
-    } else {
-      console.error('Failed to insert customer');
-      return; // Exit if customer creation failed
-    }
+    // Propagate exact error message to the UI
+    this.submitMessage = err.message || 'Something went wrong, please try again.';
   } else {
-    customerId = formValue.customerId; // Use existing customer ID
+    // If it's not an instance of Error, just log a generic message
+    console.error('Unknown error occurred:', err);
+
+    this.submitMessage = 'Something went wrong, please try again.';
   }
-
-    
-    const newOrder = {
-     // order_id: '',
-   //   customer_id: formValue.existingCustomer ? formValue.customerId : null,
-      customer_name: formValue.customerName,
-      phone_number: formValue.phoneNumber,
-      customer_id: customerId,
-      company: formValue.hasCompany ? formValue.companyName : null,
-      work_types: `{${formValue.workType.map((wt: WorkType) => wt.code).join(',')}}`,
-      address: `${formValue.city.value}, ${formValue.addressDetails}`,
-      order_status: 'pending'
-    };
-  
-    const orderItems = formValue.orderItems.map((item: any) => ({
-      marbleMaterial: item.marbleMaterial,
-      dimension: item.dimension,
-      amount: item.amount,
-      cost: item.cost,
-      total: item.amount * item.cost
-    }));
-  
-    const insertedOrder = await this.supabaseService.insertToDB('Orders', newOrder);
-
-    if (!insertedOrder?.id) {
-      console.error('Failed to insert order');
-      return; // Exit if order creation failed
+    } finally {
+      this.isSubmitting = false;
     }
-
-    this.supabaseService.insertToDB('Orders', newOrder)
-      .then((result) => {
-        if(result) {
-          this.submitMessage = 'Order submitted successfully!';
-          console.log("Inserted Order:", result);
-        }
-        else {
-          this.submitMessage = 'Order submission failed: No order ID returned';
-        }
-        // Instead of storing, just use newOrder and orderItems directly in the template
-       // this.orderForm.reset();
-       // this.orderItemsArray.clear();
-        //this.addOrderItem();
-        this.nextId++;
-       this.updateOrderId();
-      })
-      .catch(err => {
-        this.submitMessage = 'Error submitting order: ' + err.message;
-        console.log("Error submitting order:", err);
-
-      })
-      .finally(() => {
-        this.isSubmitting = false;
-        setTimeout(() => {
-          this.openSuccessModal();
-        }, 100);
-      });
   }
+  
 }
 

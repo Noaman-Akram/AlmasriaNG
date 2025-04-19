@@ -20,12 +20,18 @@ export interface Customer {
 export type WorkType = 'K' | 'W' | 'F' | 'X';
 
 export interface Order {
-  id?: number;
-  customer_id: number | null;
-  customer_name: string;
-  work_type: WorkType; // JSONB, you might want to use a specific type
-  address: string;
-  order_status: string;
+  id?: number; 
+  customer_id: number | null; 
+  customer_name: string; 
+  address: string; 
+  order_status: string; 
+  order_price: number | null; 
+  order_cost: number | null; 
+  work_types: string; 
+  created_at?: string;
+  created_by: string | null; 
+  company: string | null; 
+  code: string; 
 }
 
 export interface OrderDetail {
