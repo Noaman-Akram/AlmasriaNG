@@ -52,7 +52,7 @@ interface ScheduledItem {
 @Component({
   selector: 'app-page1',
   standalone: true,
-  imports: [CommonModule,CdkDropList,CdkDrag,FormsModule], 
+  imports: [CommonModule,CdkDropList,FormsModule], 
   templateUrl: './page1.component.html',
   styleUrl: './page1.component.css',
   animations: [
