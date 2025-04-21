@@ -6,6 +6,7 @@ import { JsonPipe, CommonModule } from '@angular/common';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { Customer, Order, SupabaseService } from '../../services/supabase.service';
+import { log } from 'node:console';
 
 
 function numberOnlyValidator(control: AbstractControl): ValidationErrors | null {
@@ -138,10 +139,10 @@ formatWorkTypes(workTypesInput: any): string {
   fillTestData(): void {
     this.orderForm.patchValue({
       existingCustomer: false,
-      customerName: 'Test Customer',
+      customerName: 'TestBtN',
       phoneNumber: '01000000000',
       city: this.cities.find(c => c.value === 'cairo'),
-      addressDetails: '123 Test Street',
+      addressDetails: 'س 1411 الموازى',
       workType: [
         { name: 'Kitchen', code: 'K' },
         { name: 'Walls', code: 'W' }
@@ -328,7 +329,7 @@ formatWorkTypes(workTypesInput: any): string {
   addOrderItem() {
     const orderItemGroup = this.fb.group({
       MaterialType: ['', Validators.required], // Radio button, required
-      MaterialName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s]+$/)]], // Text only, required
+      MaterialName: ['', [Validators.required, Validators.pattern(/^[\u0600-\u06FFa-zA-Z\s]+$/)]], // Text only, required
       dimension: ['', Validators.required], // Dropdown, required
       amount: [null, [Validators.required, Validators.min(1)]], // Positive number, required
       cost: [null, [Validators.required, Validators.min(0)]], // Non-negative number, required
@@ -383,7 +384,7 @@ formatWorkTypes(workTypesInput: any): string {
         };
   
         const insertedCustomer = await this.supabaseService.insertToDB('Customers', customer);
-  
+        console.log("1. insertedCustomer from submitOrder, ard-s3r component:", insertedCustomer);
         if (insertedCustomer?.id) {
           customerId = insertedCustomer.id; // Get the auto-generated ID
         } else {
@@ -391,6 +392,7 @@ formatWorkTypes(workTypesInput: any): string {
         }
       } else {
         customerId = formValue.customerId; // Use existing customer ID
+        console.log("1. customerId from submitOrder, ard-s3r component: skipped insert of existing customer : ", customerId);
       }
   
       // 2. Create the order
@@ -408,6 +410,7 @@ formatWorkTypes(workTypesInput: any): string {
       };
   
       const insertedOrder = await this.supabaseService.insertToDB('Orders', newOrder);
+      console.log("2. insertedOrder from submitOrder, ard-s3r component:", insertedOrder);
       if (!insertedOrder?.id) {
         throw new Error('Failed to insert order');
       }
@@ -415,21 +418,27 @@ formatWorkTypes(workTypesInput: any): string {
       // 3. Insert order items (measurements)
       const orderItems = formValue.orderItems.map((item: any) => ({
         order_id: insertedOrder.id, // Link the measurement to the order
-        marbleMaterial: item.marbleMaterial,
-        dimension: item.dimension,
-        amount: item.amount,
+        material_type: item.MaterialType,
+        material_name: item.MaterialName,
+        unit: item.dimension,
+        quantity: item.amount,
         cost: item.cost,
-        total: item.amount * item.cost
+        total_cost: item.amount * item.cost
       }));
-  
-      const measurementInsertion = await this.supabaseService.insertToDB('Measurements', orderItems);
-      if (!measurementInsertion) {
-        throw new Error('Failed to insert measurements');
+      
+      for (const item of orderItems) {
+        console.log("Trying to insert the order items into mesaurments:", item);
+
+        const measurementInsertion = await this.supabaseService.insertToDB('Measurements', item);
+        console.log("3. measurementInsertion from submitOrder, ard-s3r component:", measurementInsertion);
+        if (!measurementInsertion) {
+          throw new Error('Failed to insert measurements');
+        }
       }
   
       // 4. Success
       this.submitMessage = 'Order submitted successfully!';
-      console.log('Inserted Order:', insertedOrder);
+      console.log('Success opertaion reached end from ard-s3r component!~');
   
       // Reset the form after successful submission
       this.orderForm.reset();

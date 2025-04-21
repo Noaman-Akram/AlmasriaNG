@@ -1,0 +1,46 @@
+<div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary">
+    <div class="z-1 w-100">
+ <!-- components/table-list/table-list.component.html -->
+<div class="container my-4">
+    <h1>All Tables</h1>
+    <ng-container *ngIf="tableNames.length; else loading">
+      <div *ngFor="let tbl of tableNames" class="mb-2">
+        <button
+          class="btn btn-outline-primary w-100 text-start"
+          (click)="toggle(tbl)"
+        >
+          <i
+            class="pi me-2"
+            [class.pi-plus]="!expanded[tbl]"
+            [class.pi-minus]="expanded[tbl]"
+          ></i>
+          {{ tbl }}
+        </button>
+  
+        <div
+          class="border rounded p-2 mt-1"
+          *ngIf="expanded[tbl]"
+        >
+          <table class="table table-sm table-striped" *ngIf="rows[tbl]?.length; else empty">
+            <thead>
+              <tr><th *ngFor="let c of cols[tbl]">{{ c }}</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of rows[tbl]">
+                <td *ngFor="let c of cols[tbl]">{{ r[c] }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <ng-template #empty>
+            <p class="text-muted small">No rows in {{ tbl }}</p>
+          </ng-template>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #loading>
+      <p>Loading table list…</p>
+    </ng-template>
+  </div>
+  
+    </div>
+</div>

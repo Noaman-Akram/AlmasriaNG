@@ -251,7 +251,7 @@
       <div class="d-flex align-items-center my-3">
         <div class="mb-3 me-5 ws">
           <div class="form-label">Total Cost</div>
-          <h6 class="form-control form2 bg-secondary-subtle">{{ grandTotal }} EGP</h6>
+          <h6 class="form-control form2 bg-secondary-subtle">{{ grandTotal | number:'1.0-0'}} EGP</h6>
         </div>
         <div class="mb-3 me-5 ws">
           <div class="form-label">Extra Estimated Cost</div>
@@ -426,14 +426,14 @@
             <tr *ngFor="let item of orderForm.value.orderItems">
               <td>{{ item.marbleMaterial }}</td>
               <td>{{ item.dimension }}</td>
-              <td>{{ item.amount }}</td>
-              <td>{{ item.cost }}</td>
-              <td>{{ item.amount * item.cost }} EGP</td>
+              <td>{{ item.amount | number:'1.0-0'}}</td>
+              <td>{{ item.cost | number:'1.0-0'}}</td>
+              <td>{{ item.amount * item.cost | number:'1.0-0'}} EGP</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p class="grand-total"><strong>Grand Total:</strong> {{ grandTotal }} EGP</p>
+      <p class="grand-total"><strong>Grand Total:</strong> {{ grandTotal | number:'1.0-0'}} EGP</p>
     </div>
   </div>
   <div class="modal-footer">

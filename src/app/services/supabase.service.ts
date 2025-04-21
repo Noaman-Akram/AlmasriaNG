@@ -223,5 +223,21 @@ export class SupabaseService {
     }
   }
 
+  // 1. Introspect tables
+  async listTables(): Promise<string[]> {
+    const { data, error } = await this.supabase
+      .rpc('get_public_tables');
+    if (error) throw error;
+    return (data as any[]).map(r => r.table_name);
+  }
+
+  // 2. Generic row fetcher
+  async getRows(table: string): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from(table)
+      .select('*');
+    if (error) throw error;
+    return data || [];
+  }
 
 }

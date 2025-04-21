@@ -11,6 +11,7 @@ import { GorderComponent } from './Components/gorder/gorder.component';
 import {SigninComponent} from './Components/signin/signin.component';
 import { GadwalComponent } from './components/gadwal/gadwal.component';
 import { CdkDragDropConnectedSortingExampleComponent } from './components/cdk-drag-drop-connected-sorting-example/cdk-drag-drop-connected-sorting-example.component';
+import { TableListComponent } from './components/table-list/table-list.component';
 
 export const routes: Routes = [
     { path:'',redirectTo:'ard-s3r',pathMatch:'full' }, // Default route (Home)
@@ -26,5 +27,6 @@ export const routes: Routes = [
   { path: 'signin', component: SigninComponent,title:'signin' },
   { path: 'gadwal', component: GadwalComponent,title:'جدول' },
   { path: 'cdk-drag-drop-connected-sorting-example', component: CdkDragDropConnectedSortingExampleComponent,title:'/cdk-drag-drop-connected-sorting-example' },
+  { path: 'tables', component: TableListComponent, title: 'Tables' },
   { path: '**', redirectTo: '' },
 ];
