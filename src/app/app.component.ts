@@ -10,6 +10,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { SupabaseService } from './services/supabase.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { LicenseManager } from 'ag-grid-enterprise';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class AppComponent implements OnInit {
   }
 
   constructor(private primeng: PrimeNG , private router: Router ) {
+    LicenseManager.setLicenseKey('your_license_key_here');
     // Subscribe to router events to detect route changes
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {

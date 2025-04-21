@@ -5,7 +5,7 @@ import { LinkService } from '../../link.service';
 
 @Component({
   selector: 'app-page2',
-  imports: [NgbAlert],
+  imports : [],
   templateUrl: './page2.component.html',
   styleUrl: './page2.component.css'
 })
