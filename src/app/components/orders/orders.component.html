@@ -1,164 +1,359 @@
-<div [style.margin-left.px]='updateMargin()' class="salah bg-body-tertiary">
+<div [style.margin-left.px]="updateMargin()" class="salah bg-body-tertiary">
   <div class="z-1 w-100">
     <div class="mb-4">
       <h2 class="fs-1 fw-bolder">عروض السعر</h2>
     </div>
-      <div class="card">
-           <p-table #dt1 [value]="customers" dataKey="id" [rows]="10" 
-                  [rowsPerPageOptions]="[10, 25, 50]" [loading]="loading" 
-                  [paginator]="true" [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
-                  [sortMode]="'multiple'" [multiSortMeta]="sortMeta">
-              <ng-template #caption>
-                  <div class="">
-                      <p-button class="pb-3" label="Clear" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
-                      <p-iconfield iconPosition="left" class="mt-3">
-                          <p-inputicon>
-                              <i class="pi pi-search"></i>
-                          </p-inputicon>
-                          <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Search keyword" />
-                      </p-iconfield>
-                  </div>
-              </ng-template>
-              <ng-template #header>
-                  <tr>
-                      <th style="min-width:15rem" [sortable]="true" pSortableColumn="name">
-                          <div class="d-flex align-items-center flex items-center">
-                              ID
-                              <p-sortIcon class="ps-2" field="name"></p-sortIcon>
-                              <p-columnFilter type="text" field="name" display="menu" />
-                          </div>
-                      </th>
-                      <th style="min-width:15rem" [sortable]="true" pSortableColumn="country.name">
-                          <div class="d-flex align-items-center flex items-center">
-                              Customer Name
-                              <p-sortIcon class="ps-2" field="country.name"></p-sortIcon>
-                              <p-columnFilter type="text" field="country.name" display="menu" />
-                          </div>
-                      </th>
-                      <th style="min-width:15rem" [sortable]="true" pSortableColumn="representative.name">
-                          <div class="d-flex align-items-center">
-                              Address
-                              <p-sortIcon class="ps-2"  field="representative.name"></p-sortIcon>
-                              <p-columnFilter field="representative" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
-                                  <ng-template #filter let-value let-filter="filterCallback">
-                                      <p-multiselect [(ngModel)]="value" [options]="representatives" placeholder="Any" (onChange)="filter($event.value)" optionLabel="name" style="min-width: 14rem" [panelStyle]="{ minWidth: '16rem' }">
-                                          <ng-template let-option #item>
-                                              <div class="flex items-center gap-2">
-                                                  <img [alt]="option.label" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}" style="width: 32px" />
-                                                  <span>{{ option.name }}</span>
-                                              </div>
-                                          </ng-template>
-                                      </p-multiselect>
-                                  </ng-template>
-                              </p-columnFilter>
-                          </div>
-                      </th>
-                      <th style="min-width:10rem" [sortable]="true" pSortableColumn="date">
-                          <div class="d-flex align-items-center">
-                              Status
-                              <p-sortIcon class="ps-2" field="date"></p-sortIcon>
-                              <p-columnFilter type="date" field="date" display="menu"></p-columnFilter>
-                          </div>
-                      </th>
-                      <th style="min-width:10rem" [sortable]="true" pSortableColumn="balance">
-                          <div class="d-flex align-items-center">
-                              Price
-                              <p-sortIcon class="ps-2" field="balance"></p-sortIcon>
-                              <p-columnFilter type="numeric" field="balance" display="menu" currency="USD" />
-                          </div>
-                      </th>
-                      <th style="min-width:10rem" [sortable]="true" pSortableColumn="status">
-                          <div class="d-flex align-items-center">
-                              Cost
-                              <p-sortIcon class="ps-2" field="status"></p-sortIcon>
-                              <p-columnFilter field="status" matchMode="equals" display="menu">
-                                  <ng-template #filter let-value let-filter="filterCallback">
-                                      <p-select [(ngModel)]="value" [options]="statuses" (onChange)="filter($event.value)" placeholder="Select One" styleClass="w-full">
-                                          <ng-template let-option #item>
-                                              <p-tag [value]="option.value" [severity]="getSeverity(option.value)"></p-tag>
-                                          </ng-template>
-                                      </p-select>
-                                  </ng-template>
-                              </p-columnFilter>
-                          </div>
-                      </th>
-                      <th style="min-width:10rem" [sortable]="true" pSortableColumn="activity">
-                          <div class="d-flex align-items-center">
-                              Type
-                              <p-sortIcon class="ps-2" field="activity"></p-sortIcon>
-                              <p-columnFilter field="activity" matchMode="between" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
-                                  <ng-template #filter let-value let-filter="filterCallback">
-                                      <p-slider [(ngModel)]="value" [range]="true" styleClass="m-4" (onSlideEnd)="filter($event.values)" />
-                                      <div class="flex items-center px-2">
-                                          <span *ngIf="!value">0</span>
-                                          <span *ngIf="value">{{ value[0] }} - {{ value[1] }}</span>
-                                      </div>
-                                  </ng-template>
-                              </p-columnFilter>
-                          </div>
-                      </th>
-                      <th style="width: 3rem" [sortable]="true" pSortableColumn="verified">
-                          <div class="d-flex align-items-center">
-                              Created at
-                              <p-sortIcon class="ps-2" field="verified"></p-sortIcon>
-                              <p-columnFilter type="boolean" field="verified" display="menu" />
-                          </div>
-                      </th>
-                      <th style="width: 3rem">
-                          <div class="d-flex align-items-center">
-                              Phone Number
-                              <p-sortIcon class="ps-2" field="verified"></p-sortIcon>
-                              <p-columnFilter type="boolean" field="verified" display="menu" />
-                          </div>
-                      </th>
-                  </tr>
-              </ng-template>
-              <ng-template #body let-customer>
-                  <tr>
-                      <td>
-                          {{ customer.name }}
-                      </td>
-                      <td>
-                          <div class="flex items-center gap-2">
-                              <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" [class]="'flag flag-' + customer.country.code" style="width: 20px" />
-                              <span>{{ customer.country.name }}</span>
-                          </div>
-                      </td>
-                      <td>
-                          <div class="flex items-center gap-2">
-                              <img [alt]="customer.representative.name" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ customer.representative.image }}" width="32" />
-                              <span>{{ customer.representative.name }}</span>
-                          </div>
-                      </td>
-                      <td>
-                          {{ customer.date | date: 'MM/dd/yyyy' }}
-                      </td>
-                      <td>
-                          {{ customer.balance | currency: 'USD' : 'symbol' }}
-                      </td>
-                      <td>
-                          <p-tag [value]="customer.status" [severity]="getSeverity(customer.status)" />
-                      </td>
-                      <td>
-                          <p-progressbar [value]="customer.activity" [showValue]="false" />
-                      </td>
-                      <td class="text-center">
-                          <i
-                              class="pi"
-                              [ngClass]="{
-                                  'text-green-500 pi-check-circle': customer.verified,
-                                  'text-red-500 pi-times-circle': !customer.verified
-                              }"
-                          ></i>
-                      </td>
-                  </tr>
-              </ng-template>
-              <ng-template #emptymessage>
-                  <tr>
-                      <td colspan="7">No customers found.</td>
-                  </tr>
-              </ng-template>
-          </p-table>
-      </div>
+    <div class="card">
+      <p-table #dt1 [value]="customers" dataKey="id" [rows]="10" 
+               [rowsPerPageOptions]="[10, 25, 50]" [loading]="loading" 
+               [paginator]="true" [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+               [sortMode]="'multiple'" [multiSortMeta]="sortMeta">
+        <ng-template pTemplate="caption">
+          <div class="">
+            <p-button class="pb-3" label="Clear" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+            <p-iconfield iconPosition="left" class="mt-3">
+              <p-inputicon>
+                <i class="pi pi-search"></i>
+              </p-inputicon>
+              <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Search keyword" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="min-width:15rem" [sortable]="true" pSortableColumn="name">
+              <div class="d-flex align-items-center flex items-center">
+                ID
+                <p-sortIcon class="ps-2" field="name"></p-sortIcon>
+                <p-columnFilter type="text" field="name" display="menu" />
+              </div>
+            </th>
+            <th style="min-width:15rem" [sortable]="true" pSortableColumn="country.name">
+              <div class="d-flex align-items-center flex items-center">
+                Customer Name
+                <p-sortIcon class="ps-2" field="country.name"></p-sortIcon>
+                <p-columnFilter type="text" field="country.name" display="menu" />
+              </div>
+            </th>
+            <th style="min-width:15rem" [sortable]="true" pSortableColumn="representative.name">
+              <div class="d-flex align-items-center">
+                Address
+                <p-sortIcon class="ps-2" field="representative.name"></p-sortIcon>
+                <p-columnFilter field="representative" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                    <p-multiSelect [(ngModel)]="value" [options]="representatives" placeholder="Any" (onChange)="filter($event.value)" optionLabel="name" style="min-width: 14rem" [panelStyle]="{ minWidth: '16rem' }">
+                      <ng-template let-option pTemplate="item">
+                        <div class="flex items-center gap-2">
+                          <img [alt]="option.label" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}" style="width: 32px" />
+                          <span>{{ option.name }}</span>
+                        </div>
+                      </ng-template>
+                    </p-multiSelect>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
+            <th style="min-width:10rem" [sortable]="true" pSortableColumn="date">
+              <div class="d-flex align-items-center">
+                Status
+                <p-sortIcon class="ps-2" field="date"></p-sortIcon>
+                <p-columnFilter type="date" field="date" display="menu"></p-columnFilter>
+              </div>
+            </th>
+            <th style="min-width:10rem" [sortable]="true" pSortableColumn="balance">
+              <div class="d-flex align-items-center">
+                Price
+                <p-sortIcon class="ps-2" field="balance"></p-sortIcon>
+                <p-columnFilter type="numeric" field="balance" display="menu" currency="USD" />
+              </div>
+            </th>
+            <th style="min-width:10rem" [sortable]="true" pSortableColumn="status">
+              <div class="d-flex align-items-center">
+                Cost
+                <p-sortIcon class="ps-2" field="status"></p-sortIcon>
+                <p-columnFilter field="status" matchMode="equals" display="menu">
+                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                    <p-select [(ngModel)]="value" [options]="statuses" (onChange)="filter($event.value)" placeholder="Select One" styleClass="w-full">
+                      <ng-template let-option pTemplate="item">
+                        <p-tag [value]="option.value" [severity]="getSeverity(option.value)"></p-tag>
+                      </ng-template>
+                    </p-select>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
+            <th style="min-width:10rem" [sortable]="true" pSortableColumn="activity">
+              <div class="d-flex align-items-center">
+                Type
+                <p-sortIcon class="ps-2" field="activity"></p-sortIcon>
+                <p-columnFilter field="activity" matchMode="between" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                    <p-slider [(ngModel)]="value" [range]="true" styleClass="m-4" (onSlideEnd)="filter($event.values)" />
+                    <div class="flex items-center px-2">
+                      <span *ngIf="!value">0</span>
+                      <span *ngIf="value">{{ value[0] }} - {{ value[1] }}</span>
+                    </div>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
+            <th style="width: 3rem" [sortable]="true" pSortableColumn="verified">
+              <div class="d-flex align-items-center">
+                Created at
+                <p-sortIcon class="ps-2" field="verified"></p-sortIcon>
+                <p-columnFilter type="boolean" field="verified" display="menu" />
+              </div>
+            </th>
+            <th style="width: 3rem">
+              <div class="d-flex align-items-center">
+                Phone Number
+                <p-sortIcon class="ps-2" field="verified"></p-sortIcon>
+                <p-columnFilter type="boolean" field="verified" display="menu" />
+              </div>
+            </th>
+            <th style="width: 5rem">
+              <div class="d-flex align-items-center justify-content-center">
+                Actions
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-customer>
+          <tr>
+            <td>
+              {{ customer.name }}
+            </td>
+            <td>
+              <div class="flex items-center gap-2">
+                <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" [class]="'flag flag-' + customer.country.code" style="width: 20px" />
+                <span>{{ customer.country.name }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="flex items-center gap-2">
+                <img [alt]="customer.representative.name" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ customer.representative.image }}" width="32" />
+                <span>{{ customer.representative.name }}</span>
+              </div>
+            </td>
+            <td>
+              {{ customer.date | date: 'MM/dd/yyyy' }}
+            </td>
+            <td>
+              {{ customer.balance | currency: 'USD' : 'symbol' }}
+            </td>
+            <td>
+              <p-tag [value]="customer.status" [severity]="getSeverity(customer.status)" />
+            </td>
+            <td>
+              <p-progressbar [value]="customer.activity" [showValue]="false" />
+            </td>
+            <td class="text-center">
+              <i
+                class="pi"
+                [ngClass]="{
+                  'text-green-500 pi-check-circle': customer.verified,
+                  'text-red-500 pi-times-circle': !customer.verified
+                }"
+              ></i>
+            </td>
+            <td>
+              {{ customer.phone || '+1-555-123-4567' }}
+            </td>
+            <td>
+              <div class="flex justify-content-center">
+                <button pButton pRipple type="button" icon="pi pi-eye" 
+                        class="p-button-rounded p-button-info p-button-outlined"
+                        (click)="viewCustomerDetails(customer)"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="11">No customers found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
   </div>
+  
+  <!-- Customer Details Sidebar -->
+  <p-sidebar [(visible)]="isDetailSidebarVisible" position="right" [style]="{width:'30em'}" 
+            styleClass="customer-detail-sidebar" [closeOnEscape]="true" [dismissible]="false"
+            (onHide)="closeDetailSidebar()">
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center gap-2 px-3">
+        <h2>{{ isEditing ? 'Edit Customer' : 'Customer Details' }}</h2>
+      </div>
+    </ng-template>
+    
+    <ng-template pTemplate="content">
+      <div class="p-4" *ngIf="selectedCustomer">
+        <div *ngIf="!isEditing" class="customer-detail-section">
+          <h3 class="section-header mb-3">Basic Information</h3>
+          <div class="detail-row">
+            <span class="detail-label">ID:</span>
+            <span class="detail-value">{{ selectedCustomer.id || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Name:</span>
+            <span class="detail-value">{{ selectedCustomer.name || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Company:</span>
+            <span class="detail-value">{{ selectedCustomer.company || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <p-tag [value]="selectedCustomer.status" [severity]="getSeverity(selectedCustomer.status)" />
+          </div>
+        </div>
+
+        <div *ngIf="isEditing" class="customer-edit-section">
+          <h3 class="section-header mb-3">Edit Information</h3>
+          <form #editForm="ngForm" (ngSubmit)="saveCustomer()">
+            <div class="field mb-3">
+              <label for="name" class="block">Name</label>
+              <input pInputText id="name" [(ngModel)]="selectedCustomer.name" name="name" required class="w-full" />
+              <small *ngIf="editForm.controls['name']?.invalid && editForm.controls['name']?.touched" class="p-error">Name is required</small>
+            </div>
+            <div class="field mb-3">
+              <label for="company" class="block">Company</label>
+              <input pInputText id="company" [(ngModel)]="selectedCustomer.company" name="company" class="w-full" />
+            </div>
+            <div class="field mb-3">
+              <label for="status" class="block">Status</label>
+              <p-select id="status" [(ngModel)]="selectedCustomer.status" name="status" [options]="statuses" 
+                        optionLabel="label" optionValue="value" placeholder="Select Status" class="w-full">
+                <ng-template let-option pTemplate="item">
+                  <p-tag [value]="option.value" [severity]="getSeverity(option.value)"></p-tag>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="field mb-3">
+              <label for="country" class="block">Country</label>
+              <p-select id="country" [(ngModel)]="selectedCustomer.country" name="country" [options]="countries" 
+                        optionLabel="name" placeholder="Select Country" class="w-full">
+                <ng-template let-option pTemplate="item">
+                  <div class="flex items-center gap-2">
+                    <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" 
+                         [class]="'flag flag-' + option.code" style="width: 20px" />
+                    <span>{{ option.name }}</span>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="field mb-3">
+              <label for="balance" class="block">Balance</label>
+              <input pInputText id="balance" type="number" [(ngModel)]="selectedCustomer.balance" name="balance" class="w-full" />
+            </div>
+            <div class="field mb-3">
+              <label for="activity" class="block">Activity</label>
+              <p-slider [(ngModel)]="selectedCustomer.activity" name="activity" [min]="0" [max]="100" class="w-full" />
+            </div>
+            <div class="field mb-3">
+              <label for="representative" class="block">Representative</label>
+              <p-select id="representative" [(ngModel)]="selectedCustomer.representative" name="representative" 
+                        [options]="representatives" optionLabel="name" placeholder="Select Representative" class="w-full">
+                <ng-template let-option pTemplate="item">
+                  <div class="flex items-center gap-2">
+                    <img [alt]="option.name" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}" 
+                         style="width: 32px" />
+                    <span>{{ option.name }}</span>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="field mb-3">
+              <label for="date" class="block">Date</label>
+              <p-calendar [(ngModel)]="selectedCustomer.date" name="date" dateFormat="mm/dd/yy" class="w-full" />
+            </div>
+            <div class="field mb-3">
+              <label for="phone" class="block">Phone</label>
+              <input pInputText id="phone" [(ngModel)]="selectedCustomer.phone" name="phone" class="w-full" />
+            </div>
+            <div class="field mb-3">
+              <p-checkbox [(ngModel)]="selectedCustomer.verified" name="verified" label="Verified" [binary]="true" />
+            </div>
+          </form>
+        </div>
+        
+        <div *ngIf="!isEditing" class="customer-detail-section mt-4">
+          <h3 class="section-header mb-3">Location Information</h3>
+          <div class="detail-row">
+            <span class="detail-label">Country:</span>
+            <div class="detail-value flex align-items-center gap-2">
+              <img *ngIf="selectedCustomer.country?.code" 
+                  src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" 
+                  [class]="'flag flag-' + selectedCustomer.country?.code" 
+                  style="width: 20px" />
+              <span>{{ selectedCustomer.country?.name || 'N/A' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="!isEditing" class="customer-detail-section mt-4">
+          <h3 class="section-header mb-3">Financial Information</h3>
+          <div class="detail-row">
+            <span class="detail-label">Balance:</span>
+            <span class="detail-value">{{ selectedCustomer.balance | currency: 'USD' : 'symbol' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Activity:</span>
+            <div class="detail-value w-full">
+              <p-progressbar [value]="selectedCustomer.activity" [showValue]="true"></p-progressbar>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="!isEditing" class="customer-detail-section mt-4">
+          <h3 class="section-header mb-3">Representative</h3>
+          <div class="detail-row">
+            <div class="detail-value flex align-items-center gap-2">
+              <img *ngIf="selectedCustomer.representative?.image" 
+                  [alt]="selectedCustomer.representative?.name" 
+                  src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ selectedCustomer.representative?.image }}"
+                  style="width: 40px; height: 40px; border-radius: 50%;" />
+              <span>{{ selectedCustomer.representative?.name || 'N/A' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="!isEditing" class="customer-detail-section mt-4">
+          <h3 class="section-header mb-3">Additional Information</h3>
+          <div class="detail-row">
+            <span class="detail-label">Date:</span>
+            <span class="detail-value">{{ selectedCustomer.date | date: 'MM/dd/yyyy' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Verified:</span>
+            <span class="detail-value">
+              <i class="pi" [ngClass]="{
+                  'text-green-500 pi-check-circle': selectedCustomer.verified,
+                  'text-red-500 pi-times-circle': !selectedCustomer.verified
+              }"></i>
+              {{ selectedCustomer.verified ? 'Yes' : 'No' }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Phone:</span>
+            <span class="detail-value">{{ selectedCustomer.phone || '+1-555-123-4567' }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end p-3 gap-2">
+        <p-button *ngIf="!isEditing" icon="pi pi-pencil" label="Edit" styleClass="p-button-primary" 
+                  (click)="startEditing()"></p-button>
+        <p-button *ngIf="isEditing" icon="pi pi-check" label="Save" styleClass="p-button-success" 
+                  [disabled]="editForm?.invalid" (click)="saveCustomer()"></p-button>
+        <p-button *ngIf="isEditing" icon="pi pi-times" label="Cancel" styleClass="p-button-secondary" 
+                  (click)="cancelEditing()"></p-button>
+        <p-button *ngIf="!isEditing" icon="pi pi-times" label="Close" styleClass="p-button-secondary" 
+                  (click)="closeDetailSidebar()"></p-button>
+      </div>
+    </ng-template>
+  </p-sidebar>
 </div>

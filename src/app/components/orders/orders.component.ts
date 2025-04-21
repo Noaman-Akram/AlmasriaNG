@@ -12,8 +12,13 @@ import { InputIconModule } from "primeng/inputicon"
 import { InputTextModule } from "primeng/inputtext"
 import { MultiSelectModule } from "primeng/multiselect"
 import { SelectModule } from "primeng/select"
-import { ProgressBar } from "primeng/progressbar"
+import { ProgressBarModule } from "primeng/progressbar"
 import { HttpClientModule } from "@angular/common/http"
+import { FormsModule } from "@angular/forms"
+import { SidebarModule } from "primeng/sidebar"
+import { SliderModule } from "primeng/slider"
+import { CalendarModule } from "primeng/calendar"
+import { CheckboxModule } from "primeng/checkbox"
 import type { SortEvent } from "primeng/api"
 
 @Component({
@@ -22,14 +27,19 @@ import type { SortEvent } from "primeng/api"
     TableModule,
     HttpClientModule,
     CommonModule,
+    FormsModule,
     InputTextModule,
     TagModule,
     SelectModule,
     MultiSelectModule,
-    ProgressBar,
+    ProgressBarModule,
     ButtonModule,
     IconFieldModule,
     InputIconModule,
+    SidebarModule,
+    SliderModule,
+    CalendarModule,
+    CheckboxModule
   ],
   templateUrl: "./orders.component.html",
   styleUrl: "./orders.component.css",
@@ -37,31 +47,31 @@ import type { SortEvent } from "primeng/api"
   standalone: true,
 })
 export class OrdersComponent implements OnInit {
-  marginLeft = 200 // Default margin
+  marginLeft = 200
   isSidebarOpen = false
+  isDetailSidebarVisible = false
+  isEditing = false
+  selectedCustomer: Customer | null = null
+  originalCustomer: Customer | null = null
+  countries: any[] = []
 
-  // Add sortMeta for initial sorting (optional)
   sortMeta = [
-    { field: "name", order: 1 }, // 1 for ascending, -1 for descending
+    { field: "name", order: 1 },
   ]
 
   constructor(
     private linkService: LinkService,
-    private customerService: CustomerService,
+    public customerService: CustomerService,
   ) {
-    // Subscribe to changes in isSidebarOpen
     this.linkService.isSidebarOpen$.subscribe((value) => {
       this.isSidebarOpen = value
     })
   }
 
-  // Function to update margin based on isSidebarOpen
   updateMargin() {
     this.marginLeft = this.isSidebarOpen ? 100 : 200
     return this.marginLeft
   }
-
-  ///////////////////////////////////////////////////////////////////
 
   customers!: Customer[]
   representatives!: Representative[]
@@ -71,16 +81,22 @@ export class OrdersComponent implements OnInit {
   searchValue: string | undefined
 
   ngOnInit() {
-    this.customerService.getCustomersLarge().then((customers) => {
-      this.customers = customers
-      this.loading = false
-
-      this.customers.forEach((customer) => {
-        if (customer.date) {
-          customer.date = new Date(customer.date)
-        }
+    this.customerService.getCustomersLarge()
+      .then((customers) => {
+        this.customers = customers
+        this.loading = false
+        this.customers.forEach((customer) => {
+          if (customer.date) {
+            customer.date = new Date(customer.date)
+          }
+        })
       })
-    })
+      .catch(() => {
+        this.customerService.getMockCustomers().then((customers) => {
+          this.customers = customers
+          this.loading = false
+        })
+      })
 
     this.representatives = [
       { name: "Amy Elsner", image: "amyelsner.png" },
@@ -103,6 +119,25 @@ export class OrdersComponent implements OnInit {
       { label: "Renewal", value: "renewal" },
       { label: "Proposal", value: "proposal" },
     ]
+
+    // Expanded countries list
+    this.countries = [
+      { name: "Algeria", code: "dz" },
+      { name: "Egypt", code: "eg" },
+      { name: "Panama", code: "pa" },
+      { name: "Slovenia", code: "si" },
+      { name: "South Africa", code: "za" },
+      { name: "Brazil", code: "br" },
+      { name: "France", code: "fr" },
+      { name: "Japan", code: "jp" },
+      { name: "Germany", code: "de" },
+      { name: "Italy", code: "it" },
+      { name: "China", code: "cn" },
+      { name: "Australia", code: "au" },
+      { name: "Mexico", code: "mx" },
+      { name: "United Kingdom", code: "gb" },
+      { name: "India", code: "in" }
+    ]
   }
 
   clear(table: Table) {
@@ -110,9 +145,7 @@ export class OrdersComponent implements OnInit {
     this.searchValue = ""
   }
 
-  // Custom sort function (optional)
   customSort(event: SortEvent) {
-    // You can implement custom sorting logic here if needed
     console.log("Sort event:", event)
   }
 
@@ -133,5 +166,50 @@ export class OrdersComponent implements OnInit {
       default:
         return null
     }
+  }
+
+  viewCustomerDetails(customer: Customer) {
+    this.selectedCustomer = { ...customer, date: customer.date ? new Date(customer.date) : undefined }
+    this.isDetailSidebarVisible = true
+    this.isEditing = false
+    console.log("Viewing customer:", this.selectedCustomer)
+  }
+
+  startEditing() {
+    if (this.selectedCustomer) {
+      this.originalCustomer = { ...this.selectedCustomer }
+      this.isEditing = true
+      this.isDetailSidebarVisible = true // Ensure sidebar stays open
+      console.log("Starting edit mode for:", this.selectedCustomer)
+    }
+  }
+
+  saveCustomer() {
+    if (this.selectedCustomer && this.selectedCustomer.id) {
+      const index = this.customers.findIndex(c => c.id === this.selectedCustomer!.id)
+      if (index !== -1) {
+        this.customers[index] = { ...this.selectedCustomer }
+        console.log("Saved customer:", this.customers[index])
+      }
+      this.isEditing = false
+      this.originalCustomer = null
+    }
+  }
+
+  cancelEditing() {
+    if (this.originalCustomer) {
+      this.selectedCustomer = { ...this.originalCustomer }
+    }
+    this.isEditing = false
+    this.originalCustomer = null
+    console.log("Cancelled editing")
+  }
+
+  closeDetailSidebar() {
+    this.isDetailSidebarVisible = false
+    this.isEditing = false
+    this.selectedCustomer = null
+    this.originalCustomer = null
+    console.log("Sidebar closed")
   }
 }
