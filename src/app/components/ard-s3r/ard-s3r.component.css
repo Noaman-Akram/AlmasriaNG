@@ -31,8 +31,9 @@
 .hs{
     height: 36px;
 }
-.p-multiselect {
-    border: 1px solid #dee2e6
+.p-multiselect,.p-select {
+    border: 1px solid #dee2e6;
+    background-color: #fff;
 }
 .p-select{
     border: 1px solid #dee2e6
@@ -142,4 +143,60 @@
   /* Any other styling you want for printing... */
 }
 
-  
+  /* Light background behind the card */
+.container {
+  background-color: #f8f9fa;
+}
+
+/* Rounded inputs & selects */
+.form-control,
+.form-select,
+.btn-group .btn {
+  border-radius: 0.375rem;
+}
+
+/* Stronger card shadow */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Tighter spacing on card header */
+.card-header {
+  padding: 1rem 1.5rem;
+  font-weight: 500;
+}
+
+/* Print styles (optional) */
+@media print {
+  body *:not(.print-container *) {
+    visibility: hidden;
+  }
+  .print-container,
+  .print-container * {
+    visibility: visible;
+  }
+  .print-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+/* ensure consistent card padding */
+.card-body {
+  padding: 1.5rem;
+}
+
+/* round badges & inputs uniformly */
+.badge, .form-control, .form-select, .btn {
+  border-radius: .375rem;
+}
+
+/* slightly smaller gaps in rows */
+.row.g-3 { row-gap: .75rem; column-gap: .75rem; }
+
+/* Add to your component CSS */
+.modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+}

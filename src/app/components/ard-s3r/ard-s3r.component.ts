@@ -80,7 +80,9 @@ async loadRecentOrders() {
   }
 }
 
-
+// Add these properties to your component
+errorSummary: { [key: string]: string } = {};
+serverError: string = '';
 
 
 // Helper method to format work types
@@ -435,10 +437,11 @@ formatWorkTypes(workTypesInput: any): string {
           throw new Error('Failed to insert measurements');
         }
       }
-  
+      
       // 4. Success
       this.submitMessage = 'Order submitted successfully!';
       console.log('Success opertaion reached end from ard-s3r component!~');
+
   
       // Reset the form after successful submission
       this.orderForm.reset();
@@ -446,7 +449,8 @@ formatWorkTypes(workTypesInput: any): string {
       this.addOrderItem();
       this.nextId++;
       this.updateOrderId();
-  
+      this.loadRecentOrders();
+
       setTimeout(() => {
         this.openSuccessModal();
       }, 100);
@@ -469,6 +473,49 @@ formatWorkTypes(workTypesInput: any): string {
       this.isSubmitting = false;
     }
   }
+  get displayCustomerName(): string {
+    const existingId = this.orderForm.get('customerId')?.value;
+    const name = this.orderForm.get('customerName')?.value;
   
+    if (name) return name;
+    if (existingId) {
+      const customer = this.customersList.find(c => c.id == existingId);
+      return customer?.name ?? 'Not specified';
+    }
+  
+    return 'Not specified';
+  }
+  
+  get displayCompanyName(): string {
+    return this.orderForm.get('companyName')?.value || 'Not specified';
+  }
+  
+  get displayPhoneNumber(): string {
+    return this.orderForm.get('phoneNumber')?.value || 'Not specified';
+  }
+  
+  get displayCityAddress(): string {
+    const city = this.orderForm.get('city')?.value;
+    const address = this.orderForm.get('addressDetails')?.value;
+    return `${city ? city + ', ' : ''}${address || 'Not specified'}`;
+  }
+  
+  get displayWorkTypes(): string {
+    const types = this.orderForm.get('workType')?.value;
+    return types?.map((w: any) => w.name).join(', ') || 'None selected';
+  }
+  
+  get displayExtraCost(): number {
+    return this.orderForm.get('ExtraEstimatedCost')?.value || 0;
+  }
+  
+  get displayTotalPrice(): number {
+    return this.orderForm.get('TotalPrice')?.value || 0;
+  }
+  calculateProfitMarginPercentage(): number {
+    const totalCost = this.grandTotal + (this.orderForm.value.ExtraEstimatedCost || 0);
+    const finalPrice = this.orderForm.value.TotalPrice;
+    return totalCost > 0 ? ((finalPrice - totalCost) / totalCost) * 100 : 0;
+  }
 }
 

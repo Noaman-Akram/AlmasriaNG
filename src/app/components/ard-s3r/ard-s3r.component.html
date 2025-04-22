@@ -1,443 +1,519 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <div [style.margin-left.px]="updateMargin()" class="salah bg-body-tertiary">
-  <div class="z-2">
-    <div class="d-flex mb-3">
-      <div class="w-s2 hs bgs rounded-3 me-4">
-        <div class="d-flex align-items-end justify-content-evenly w-100 pt-2 text-secondary">
-          <h6>Today's Date</h6>
-          <h6>{{ today | date:'fullDate' }}</h6>
+  <div class="container py-4">
+    <div class="card shadow-sm">
+      <!-- Header -->
+      <div class="card-header bg-gradient bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <h4 class="mb-0"><i class="bi bi-bag-plus me-2"></i>New Order</h4>
+          <div class="d-flex align-items-center">
+            <button type="button" (click)="fillTestData()" class="btn btn-light me-2">
+              <i class="bi bi-lightning-charge"></i> Fill Test Data
+            </button>
+            <button class="btn btn-light" (click)="loadRecentOrders()" [disabled]="isLoadingOrders">
+              <span *ngIf="!isLoadingOrders"><i class="bi bi-arrow-clockwise"></i> Refresh</span>
+              <span *ngIf="isLoadingOrders" class="spinner-border spinner-border-sm me-1"></span>Loading...
+            </button>
+          </div>
         </div>
       </div>
-      <div class="w-s hs bgs rounded-3">
-        <div class="d-flex align-items-end justify-content-evenly w-100 pt-2 text-secondary">
-          <h6>Order ID</h6>
-          <h6>{{ finalOrderCode }}</h6>
+
+      <!-- Body -->
+      <div class="card-body">
+        <form [formGroup]="orderForm" (ngSubmit)="submitOrder()">
+          <!-- Date & Order ID -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="card bg-light border-0">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-calendar-event fs-4 me-3 text-primary"></i>
+                    <div>
+                      <h6 class="text-muted mb-1">Today's Date</h6>
+                      <input class="form-control w-100" 
+                             [value]="today | date:'fullDate'" readonly>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light border-0">
+                <div class="card-body text-end">
+                  <h6 class="text-muted mb-1">Order ID</h6>
+                  <h4 class="text-primary mb-0">{{ finalOrderCode }}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Section -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <i class="bi bi-person me-2"></i>Customer Information
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" 
+                           formControlName="existingCustomer" id="existingCustomer">
+                    <label class="form-check-label" for="existingCustomer">Existing Customer</label>
+                  </div>
+                </div>
+                
+                <div class="col-md-6" *ngIf="orderForm.get('existingCustomer')?.value">
+                  <select id="customerId" class="form-select" formControlName="customerId">
+                    <option value="">-- Select Customer --</option>
+                    <option *ngFor="let cust of customersList" [value]="cust.id">
+                      [{{ cust.id }}] {{ cust.name }}
+                    </option>
+                  </select>
+                  <div *ngIf="orderForm.get('customerId')?.invalid && orderForm.get('customerId')?.touched"
+                       class="text-danger small mt-1">
+                    Customer selection is required
+                  </div>
+                </div>
+
+                <div class="col-md-6" *ngIf="!orderForm.get('existingCustomer')?.value">
+                  <input type="text" id="customerName" class="form-control" 
+                         formControlName="customerName" placeholder="Full Name (Arabic/English letters only)"
+                         pattern="^[\u0600-\u06FFa-zA-Z ]+$">
+                  <div *ngIf="orderForm.get('customerName')?.invalid && orderForm.get('customerName')?.touched"
+                       class="text-danger small mt-1">
+                    <span *ngIf="orderForm.get('customerName')?.errors?.['required']">
+                      Customer name is required
+                    </span>
+                    <span *ngIf="orderForm.get('customerName')?.errors?.['pattern']">
+                      Only Arabic/English letters and spaces allowed
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                    <input type="text" id="phoneNumber" class="form-control" 
+                           formControlName="phoneNumber" placeholder="Phone Number">
+                  </div>
+                  <div *ngIf="orderForm.get('phoneNumber')?.invalid && orderForm.get('phoneNumber')?.touched"
+                       class="text-danger small mt-1">
+                    <span *ngIf="orderForm.get('phoneNumber')?.errors?.['required']">
+                      Phone number is required
+                    </span>
+                    <span *ngIf="orderForm.get('phoneNumber')?.errors?.['pattern']">
+                      Invalid phone number format
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" 
+                           formControlName="hasCompany" id="hasCompany">
+                    <label class="form-check-label" for="hasCompany">Company Associated</label>
+                  </div>
+                </div>
+
+                <div class="col-md-6" *ngIf="orderForm.get('hasCompany')?.value">
+                  <input type="text" id="companyName" class="form-control" 
+                         formControlName="companyName" placeholder="Company Name">
+                  <div *ngIf="orderForm.get('companyName')?.invalid && orderForm.get('companyName')?.touched"
+                       class="text-danger small mt-1">
+                    Company name is required
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address & Work Type -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-header bg-light">
+                  <i class="bi bi-geo-alt me-2"></i>Delivery Address
+                </div>
+                <div class="card-body">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <p-select [options]="cities" formControlName="city" 
+                                  optionLabel="label" placeholder="Select City"
+                                  styleClass="w-100 p-inputtext-sm"></p-select>
+                      <div *ngIf="orderForm.get('city')?.invalid && orderForm.get('city')?.touched"
+                           class="text-danger small mt-1">
+                        City selection is required
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <input type="text" formControlName="addressDetails" 
+                             class="form-control w-100" placeholder="Street Address">
+                      <div *ngIf="orderForm.get('addressDetails')?.invalid && orderForm.get('addressDetails')?.touched"
+                           class="text-danger small mt-1">
+                        Address details are required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-header bg-light">
+                  <i class="bi bi-tools me-2"></i>Work Type
+                </div>
+                <div class="card-body">
+                  <p-multiSelect [options]="workTypes" formControlName="workType"
+                                 optionLabel="name" placeholder="Select Services"
+                                 [maxSelectedLabels]="3" styleClass="w-100 p-inputtext-sm"></p-multiSelect>
+                  <div *ngIf="orderForm.get('workType')?.invalid && orderForm.get('workType')?.touched"
+                       class="text-danger small mt-1">
+                    At least one service must be selected
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Items -->
+          <div class="card mb-4">
+            <div class="card-header bg-light d-flex justify-content-between">
+              <span><i class="bi bi-basket me-2"></i>Order Items</span>
+              <button type="button" class="btn btn-sm btn-outline-success" 
+                      (click)="addOrderItem()">
+                <i class="bi bi-plus-lg"></i> Add Item
+              </button>
+            </div>
+            <div class="card-body">
+              <div formArrayName="orderItems">
+                <div *ngFor="let item of orderItemsArray.controls; let i = index" 
+                     [formGroupName]="i" class="card mb-3 shadow-sm">
+                  <div class="card-body">
+                    <div class="row g-2">
+                      <div class="col-md-3">
+                        <label class="form-label">Material Type</label>
+                        <div class="btn-group w-75 flex-column" role="group">
+                          <input type="radio" class=" btn-check w-100" 
+                                 formControlName="MaterialType" value="Granite" 
+                                 [id]="'granite' + i">
+                          <label class="btn btn-outline-primary" [for]="'granite' + i">Granite</label>
+                          
+                          <input type="radio" class="btn-check w-100" 
+                                 formControlName="MaterialType" value="Marble" 
+                                 [id]="'marble' + i">
+                          <label class="btn btn-outline-primary" [for]="'marble' + i">Marble</label>
+                        </div>
+                        <div *ngIf="item.get('MaterialType')?.invalid && item.get('MaterialType')?.touched"
+                             class="text-danger small mt-1">
+                          Material type is required
+                        </div>
+                      </div>
+
+                      <div class="col-md-3">
+                        <label class="form-label">Material Name</label>
+                        <input type="text" class="form-control w-75" 
+                               formControlName="MaterialName" placeholder="Material Name"
+                               pattern="^[\u0600-\u06FFa-zA-Z ]+$">
+                        <div *ngIf="item.get('MaterialName')?.invalid && item.get('MaterialName')?.touched"
+                             class="text-danger small mt-1">
+                          <span *ngIf="item.get('MaterialName')?.errors?.['required']">
+                            Material name is required
+                          </span>
+                          <span *ngIf="item.get('MaterialName')?.errors?.['pattern']">
+                            Only Arabic/English letters and spaces allowed
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="col-md-2">
+                        <label class="form-label">Unit</label>
+                        <select class="form-select w-75" formControlName="dimension">
+                          <option value="">Select Unit</option>
+                          <option value="m2">m²</option>
+                          <option value="ml">m (linear)</option>
+                          <option value="m3">m³</option>
+                        </select>
+                        <div *ngIf="item.get('dimension')?.invalid && item.get('dimension')?.touched"
+                             class="text-danger small mt-1">
+                          Unit selection is required
+                        </div>
+                      </div>
+
+                      <div class="col-md-2">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control w-75" 
+                               formControlName="amount" placeholder="0"
+                               min="1">
+                        <div *ngIf="item.get('amount')?.invalid && item.get('amount')?.touched"
+                             class="text-danger small mt-1">
+                          Minimum quantity is 1
+                        </div>
+                      </div>
+
+                      <div class="col-md-2">
+                        <label class="form-label">Unit Cost</label>
+                        <div class="input-group">
+                          <input type="number" class="form-control w-75" 
+                                 formControlName="cost" placeholder="0.00"
+                                 min="0">
+                          <span class="input-group-text">EGP</span>
+                        </div>
+                        <div *ngIf="item.get('cost')?.invalid && item.get('cost')?.touched"
+                             class="text-danger small mt-1">
+                          Cost must be a positive number
+                        </div>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <h5 class="text-primary mb-0">
+                            Total: {{ calculateTotal(i) | number:'1.0-0' }} EGP
+                          </h5>
+                          <button type="button" class="btn btn-outline-danger btn-sm" 
+                                  (click)="removeOrderItem(i)" 
+                                  *ngIf="orderItemsArray.length > 1">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Summary -->
+              <!-- Financial Summary -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h6 class="text-muted">Subtotal</h6>
+                  <h4 class="text-primary mb-0">{{ grandTotal | number:'1.0-0' }} EGP</h4>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <label class="form-label">Additional Costs</label>
+                  <div class="input-group">
+                    <input type="number" class="form-control" 
+                           formControlName="ExtraEstimatedCost"
+                           min="0">
+                    <span class="input-group-text">EGP</span>
+                  </div>
+                  <div *ngIf="orderForm.get('ExtraEstimatedCost')?.invalid && orderForm.get('ExtraEstimatedCost')?.touched"
+                       class="text-danger small mt-1">
+                    Invalid value
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <label class="form-label">Final Price</label>
+                  <div class="input-group">
+                    <input type="number" class="form-control" 
+                           formControlName="TotalPrice"
+                           required min="0">
+                    <span class="input-group-text">EGP</span>
+                  </div>
+                  <div *ngIf="orderForm.get('TotalPrice')?.invalid && orderForm.get('TotalPrice')?.touched"
+                       class="text-danger small mt-1">
+                    <span *ngIf="orderForm.get('TotalPrice')?.errors?.['required']">
+                      Final price is required
+                    </span>
+                    <span *ngIf="orderForm.get('TotalPrice')?.errors?.['min']">
+                      Minimum value is 0
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+ 
+      <!-- Profit Margin Percentage & Final Price Section -->
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3 justify-content-center">
+      <!-- Final Price Card -->
+      <div class="col-md-3">
+        <div class="card bg-light h-100">
+          <div class="card-body text-center">
+            <h6 class="text-muted mb-2">Final Price</h6>
+            <h4 class="text-primary mb-0">
+              {{ orderForm.value.TotalPrice | number:'1.0-0' }} EGP
+            </h4>
+          </div>
+        </div>
+      </div>
+      <!-- Profit Margin Percentage -->
+      <div class="col-md-3">
+        <div class="card bg-light h-100">
+          <div class="card-body text-center">
+            <h6 class="text-muted mb-2">Profit Margin</h6>
+            <h4 class="text-success mb-0">
+              {{ (orderForm.value.TotalPrice - (grandTotal + orderForm.value.ExtraEstimatedCost)) 
+                 | number:'1.0-0' }} EGP
+            </h4>
+          </div>
+        </div>
+      </div>
+      <!-- Profit Margin Percentage -->
+      <div class="col-md-3">
+        <div class="card bg-light h-100">
+          <div class="card-body text-center">
+            <h6 class="text-muted mb-2">Profit Margin (%)</h6>
+            <h4 class="text-success mb-0">
+              {{ calculateProfitMarginPercentage() | number:'1.0-0' }}%
+            </h4>
+          </div>
         </div>
       </div>
     </div>
-
-    <form [formGroup]="orderForm" (ngSubmit)="submitOrder()">
-      <button (click)="fillTestData()" class="btn btn-secondary">Fill Test Data</button>
-      <div class="d-flex flex-column my-3">
-        <!-- existingCustomer checkbox -->
-<div class="form-check mb-3">
-  <input class="form-check-input"
-         type="checkbox"
-         formControlName="existingCustomer"
-         id="existingCustomer" />
-  <label class="form-check-label" for="existingCustomer">
-    Existing customer
-  </label>
-</div>
-
-<!-- If NOT existing customer, show the name input -->
-<div class="mb-3" *ngIf="!orderForm.get('existingCustomer')?.value">
-  <label for="customerName" class="form-label">Customer name</label>
-  <input type="text"
-         formControlName="customerName"
-         class="form-control"
-         id="customerName"
-         placeholder="Input Customer name">
-  <small *ngIf="orderForm.get('customerName')?.invalid && orderForm.get('customerName')?.touched" class="text-danger">
-    Customer name is required
-  </small>
-</div>
-
-<!-- If existing customer, show a dropdown of all customers -->
-<div class="mb-3" *ngIf="orderForm.get('existingCustomer')?.value">
-  <label for="customerId" class="form-label">Select Customer</label>
-  <select formControlName="customerId" class="form-select" id="customerId">
-    <option value="">-- Select a Customer --</option>
-    <option *ngFor="let cust of customersList" [ngValue]="cust.id">
-      {{ cust.id }} - {{ cust.name }}
-    </option>
-  </select>
-  <small *ngIf="orderForm.get('customerId')?.invalid && orderForm.get('customerId')?.touched" class="text-danger">
-    Please select a customer
-  </small>
-  <small *ngIf="orderForm.get('customerId')?.invalid && orderForm.get('customerId')?.touched" class="text-danger">
-    Please select a customer
-  </small>
-</div>
-
-<!-- hasCompany checkbox -->
-<div class="form-check mb-3">
-  <input class="form-check-input"
-         type="checkbox"
-         formControlName="hasCompany"
-         id="hasCompany" />
-  <label class="form-check-label" for="hasCompany">
-    Company?
-  </label>
-</div>
-
-<!-- Company name input, shown if hasCompany is checked -->
-<div class="mb-3" *ngIf="orderForm.get('hasCompany')?.value">
-  <label for="companyName" class="form-label">Company Name</label>
-  <input type="text"
-         formControlName="companyName"
-         class="form-control"
-         id="companyName"
-         placeholder="Enter company name">
-  <small *ngIf="orderForm.get('companyName')?.invalid && orderForm.get('companyName')?.touched" class="text-danger">
-    Company name is required
-  </small>
-</div>
-        <div class="mb-3">
-          <label for="phoneNumber" class="form-label">Phone Number </label>
-          <input type="text" formControlName="phoneNumber" class="form-control" id="phoneNumber" placeholder="input phone number" />
-        
-          <small *ngIf="orderForm.get('phoneNumber')?.touched && orderForm.get('phoneNumber')?.errors?.['required']" class="text-danger">
-            Phone number is required
-          </small>
-        
-          <small *ngIf="orderForm.get('phoneNumber')?.touched && orderForm.get('phoneNumber')?.errors?.['pattern']" class="text-danger">
-            Enter a valid phone number
-          </small>
-        </div>
-        <div class="mb-3">
-          <div class="form-label">Address</div>
-          <div class="d-flex">
-            <div class="card flex justify-center me-4">
-              <p-select [options]="cities" formControlName="city" optionLabel="label" placeholder="Select a City"
-                class="w-full md:w-56 bg-white form-control form2 text-black select-h hs align-items-center" />
-              <small *ngIf="orderForm.get('city')?.invalid && orderForm.get('city')?.touched" class="text-danger">
-                Please select a city
-              </small>
-            </div>
-            <input type="text" formControlName="addressDetails" class="form-control" id="addressDetails" placeholder="Input address details">
-            <small *ngIf="orderForm.get('addressDetails')?.invalid && orderForm.get('addressDetails')?.touched" class="text-danger">
-              Address details are required
-            </small>
-          </div>
-        </div>
-        <div class="form-label">Work Type</div>
-        <div>
-          <p-multiselect [options]="workTypes" formControlName="workType" optionLabel="name" placeholder="Select Work Type"
-            [maxSelectedLabels]="3" styleClass="w-full md:w-80 mb-3 bg-white form-control text-black select-h hs align-items-center" />
-          <small *ngIf="orderForm.get('workType')?.invalid && orderForm.get('workType')?.touched" class="text-danger">
-            Please select at least one work type
-          </small>
-        </div>
-      </div>
-
-      <div formArrayName="orderItems">
-        <div *ngFor="let item of orderItemsArray.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center my-3">
-          <!-- Material Type -->
-          <div class="mb-3 me-5 ws">
-            <label class="form-label">Material Type</label>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                formControlName="MaterialType"
-                value="Granite"
-                [id]="'radioGranite' + i"
-              />
-              <label class="form-check-label" [for]="'radioGranite' + i">Granite</label>
-            </div>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                formControlName="MaterialType"
-                value="Marble"
-                [id]="'radioMarble' + i"
-              />
-              <label class="form-check-label" [for]="'radioMarble' + i">Marble</label>
-            </div>
-            <small
-              *ngIf="item.get('MaterialType')?.invalid && item.get('MaterialType')?.touched"
-              class="text-danger"
-            >
-              Please select a material type.
-            </small>
-          </div>
-      
-          <!-- Material Name -->
-          <div class="mb-3 me-5 ws">
-            <label class="form-label">Material Name</label>
-            <input
-              type="text"
-              formControlName="MaterialName"
-              class="form-control w-100"
-              placeholder="Enter material name"
-            />
-            <small
-              *ngIf="item.get('MaterialName')?.invalid && item.get('MaterialName')?.touched"
-              class="text-danger"
-            >
-              <span *ngIf="item.get('MaterialName')?.errors?.['required']">Material name is required.</span>
-              <span *ngIf="item.get('MaterialName')?.errors?.['pattern']">Only letters and spaces are allowed.</span>
-            </small>
-          </div>
-      
-          <!-- Dimensions -->
-          <div class="mb-3 me-5 ws">
-            <label class="form-label">Dimensions</label>
-            <select formControlName="dimension" class="form-select w-100">
-              <option value="" disabled>Select unit</option>
-              <option value="m2">m²</option>
-              <option value="ml">m (linear)</option>
-              <option value="m3">m³</option>
-            </select>
-            <small
-              *ngIf="item.get('dimension')?.invalid && item.get('dimension')?.touched"
-              class="text-danger"
-            >
-              Please select a dimension.
-            </small>
-          </div>
-      
-          <!-- Amount -->
-          <div class="mb-3 me-5">
-            <label class="form-label">Amount</label>
-            <input
-              type="number"
-              formControlName="amount"
-              class="form-control form2"
-              placeholder="Enter amount"
-              (keypress)="allowOnlyNumbers($event)"
-            />
-            <small
-              *ngIf="item.get('amount')?.invalid && item.get('amount')?.touched"
-              class="text-danger"
-            >
-              <span *ngIf="item.get('amount')?.errors?.['required']">Amount is required.</span>
-              <span *ngIf="item.get('amount')?.errors?.['min']">Amount must be at least 1.</span>
-            </small>
-          </div>
-      
-          <!-- Cost -->
-          <div class="mb-3 me-5">
-            <label class="form-label">Cost</label>
-            <input
-              type="number"
-              formControlName="cost"
-              class="form-control form2"
-              placeholder="Enter cost"
-              (keypress)="allowOnlyNumbers($event)"
-            />
-            <small
-              *ngIf="item.get('cost')?.invalid && item.get('cost')?.touched"
-              class="text-danger"
-            >
-              <span *ngIf="item.get('cost')?.errors?.['required']">Cost is required.</span>
-              <span *ngIf="item.get('cost')?.errors?.['min']">Cost cannot be negative.</span>
-            </small>
-          </div>
-      
-          <!-- Total Cost -->
-          <div class="mb-3 me-5 ws">
-            <label class="form-label">Total Cost</label>
-            <h6 class="form-control form2 bg-secondary-subtle">
-              {{ calculateTotal(i) | number:'1.0-0' }} EGP
-            </h6>
-          </div>
-      
-          <!-- Add/Remove Buttons -->
-          <button class="btn btn-success h-50 me-2" type="button" (click)="addOrderItem()">
-            <i class="pi pi-plus"></i>
-          </button>
-          <button
-            class="btn btn-danger h-50"
-            type="button"
-            *ngIf="orderItemsArray.length > 1"
-            (click)="removeOrderItem(i)"
-          >
-            <i class="pi pi-minus"></i>
-          </button>
-        </div>
-      </div>
-      <div class="d-flex align-items-center my-3">
-        <div class="mb-3 me-5 ws">
-          <div class="form-label">Total Cost</div>
-          <h6 class="form-control form2 bg-secondary-subtle">{{ grandTotal | number:'1.0-0'}} EGP</h6>
-        </div>
-        <div class="mb-3 me-5 ws">
-          <div class="form-label">Extra Estimated Cost</div>
-          <input
-            type="number"
-            formControlName="ExtraEstimatedCost"
-            class="form-control w-100"
-            placeholder="Enter extra cost (optional)"
-          />
-          <small
-            *ngIf="
-              orderForm.get('ExtraEstimatedCost')?.errors?.['numberOnly'] &&
-              orderForm.get('ExtraEstimatedCost')?.touched
-            "
-            class="text-danger"
-          >
-            Only numbers are allowed
-          </small>
-        </div>
-        <div class="mb-3 me-5 ws">
-          <div class="form-label">Total Price</div>
-          <input
-            type="number"
-            formControlName="TotalPrice"
-            class="form-control w-100"
-            placeholder="Enter total price"
-          />
-          <small
-            *ngIf="orderForm.get('TotalPrice')?.invalid && orderForm.get('TotalPrice')?.touched"
-            class="text-danger"
-          >
-            Total Price is required
-          </small>
-          <small
-  *ngIf="
-    orderForm.get('TotalPrice')?.errors?.['numberOnly'] &&
-    orderForm.get('TotalPrice')?.touched
-  "
-  class="text-danger"
->
-  Only numbers are allowed
-</small>
-        </div>
-      </div>
-      
-
-      <div *ngIf="submitMessage" class="alert" [ngClass]="{'alert-success': submitMessage.includes('success'), 'alert-danger': !submitMessage.includes('success')}">
-        {{ submitMessage }}
-      </div>
-
-      <div class="d-flex">
-        <button type="submit" [disabled]="orderForm.invalid || isSubmitting" class="btn btn-danger">
-          <i class="pi pi-plus me-2"></i> {{ isSubmitting ? 'Submitting...' : 'Submit Order' }}
-        </button>
-      </div>
-    </form>
-    <pre>{{ orderForm.value | json }}</pre>
-
-
-    <div class="debug">
-      <p>Form Valid: {{ orderForm.valid }}</p>
-      <p>Form Errors: {{ orderForm.errors | json }}</p>
-      <p>Form Value: {{ orderForm.value | json }}</p>
-      <p>Order Items Valid: {{ orderForm.get('orderItems')?.valid }}</p>
-      <div *ngFor="let item of orderItemsArray.controls; let i = index">
-        <p>Item {{ i }} Valid: {{ item.valid }}</p>
-        <p>Item {{ i }} Errors: {{ item.errors | json }}</p>
-        <p>MaterialType Errors: {{ item.get('MaterialType')?.errors | json }}</p>
-        <p>MaterialName Errors: {{ item.get('MaterialName')?.errors | json }}</p>
-        <p>dimension Errors: {{ item.get('dimension')?.errors | json }}</p>
-        <p>amount Errors: {{ item.get('amount')?.errors | json }}</p>
-        <p>cost Errors: {{ item.get('cost')?.errors | json }}</p>
-      </div>
-    </div>
-      <!-- Recent Orders Table -->
-      <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-light">
-          <h5 class="mb-0">Recent Orders</h5>
-          <button class="btn btn-sm btn-outline-primary" (click)="loadRecentOrders()">
-            <i class="pi pi-refresh"></i> Refresh
-          </button>
-        </div>
-        <div class="card-body p-0">
-          <div *ngIf="isLoadingOrders" class="text-center py-3">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-          
-          <div *ngIf="!isLoadingOrders && recentOrders.length === 0" class="text-center py-3">
-            <p class="text-muted mb-0">No recent orders found</p>
-          </div>
-          
-          <div *ngIf="!isLoadingOrders && recentOrders.length > 0">
-            <div class="table-responsive">
-              <table class="table table-hover table-striped mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Work Types</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Price</th>
-                    <th>Created At</th>
-                    <th>Phone Number</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let order of recentOrders.slice().reverse()">
-                    <td><span class="badge bg-secondary">{{ order.id }}</span></td>
-                    <td>{{ order.customer_name }}</td>
-                    <td>{{ formatWorkTypes(order.work_types) }}</td>
-                    <td>
-                      <span class="badge"
-                            [ngClass]="{
-                              'bg-warning': order.order_status === 'pending',
-                              'bg-primary': order.order_status === 'in-progress',
-                              'bg-success': order.order_status === 'completed',
-                              'bg-danger': order.order_status === 'cancelled'
-                            }">
-                        {{ order.order_status }}
-                      </span>
-                    </td>
-                    <td>{{ order.created_at | date:'short' }}</td>
-                    <td>{{ order.order_price }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
   </div>
 </div>
 
-<!-- Success Modal Template -->
+
+ 
+
+          <!-- Submit Section -->
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+            <button type="submit" 
+            class="btn btn-primary btn-lg w-100"
+            [disabled]="orderForm.invalid || isSubmitting">
+      <span *ngIf="!isSubmitting">
+        <i class="bi bi-check2-circle me-2"></i>Submit Order
+      </span>
+      <span *ngIf="isSubmitting" class="d-flex align-items-center">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Submitting...
+      </span>
+    </button>
+          </div>
+
+          <!-- Recent Orders -->
+          <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between">
+              <span><i class="bi bi-clock-history me-2"></i>Recent Orders</span>
+              <button class="btn btn-sm btn-outline-primary" 
+                      (click)="loadRecentOrders()" 
+                      [disabled]="isLoadingOrders">
+                <span *ngIf="!isLoadingOrders"><i class="bi bi-arrow-clockwise"></i> Refresh</span>
+                <span *ngIf="isLoadingOrders" class="spinner-border spinner-border-sm me-1"></span>
+              </button>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>ID</th>
+                      <th>Customer</th>
+                      <th>Services</th>
+                      <th>Status</th>
+                      <th>Price</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let order of recentOrders.slice().reverse()">
+                      <td><span class="badge bg-primary">{{ order.id }}</span></td>
+                      <td>{{ order.customer_name }}</td>
+                      <td>{{ formatWorkTypes(order.work_types) }}</td>
+                      <td>
+                        <span class="badge" 
+                              [ngClass]="{
+                                'bg-warning': order.order_status === 'pending',
+                                'bg-info': order.order_status === 'in-progress',
+                                'bg-success': order.order_status === 'completed',
+                                'bg-danger': order.order_status === 'cancelled'
+                              }">
+                          {{ order.order_status }}
+                        </span>
+                      </td>
+                      <td>{{ order.order_price }} EGP</td>
+                      <td>{{ order.created_at | date:'medium' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Debug -->
+          <div class="debug d-none">
+            <pre>{{ orderForm.value | json }}</pre>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <ng-template #successModal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Order Submitted</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.close()"></button>
+  <div class="modal-header bg-success text-white">
+    <h5 class="modal-title">Order #{{ submittedOrder?.id }} Details</h5>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.close()"></button>
   </div>
-  <div class="modal-body print-container">
-    <p class="print-header">Thank you for your order!</p>
-    <div class="order-summary">
-      <p><strong>Customer Name:</strong> {{ orderForm.value.customerName }}</p>
-      <p><strong>Phone Number:</strong> {{ orderForm.value.phoneNumber }}</p>
-      <p>
-        <strong>Address:</strong> 
-        {{ orderForm.value.city?.label || orderForm.value.city }},
-        {{ orderForm.value.addressDetails }}
-      </p>
-      <p>
-        <strong>Work Types:</strong> 
-        <span *ngFor="let wt of orderForm.value.workType">{{ wt.name }} </span>
-      </p>
-      <p><strong>Start Date:</strong> {{ orderForm.value.startDate }}</p>
-      <p><strong>End Date:</strong> {{ orderForm.value.endDate }}</p>
-      <div *ngIf="orderForm.value.orderItems && orderForm.value.orderItems.length">
-        <h5>Order Items:</h5>
-        <table class="order-items-table">
-          <thead>
-            <tr>
-              <th>Material</th>
-              <th>Dimension</th>
-              <th>Amount</th>
-              <th>Cost</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of orderForm.value.orderItems">
-              <td>{{ item.marbleMaterial }}</td>
-              <td>{{ item.dimension }}</td>
-              <td>{{ item.amount | number:'1.0-0'}}</td>
-              <td>{{ item.cost | number:'1.0-0'}}</td>
-              <td>{{ item.amount * item.cost | number:'1.0-0'}} EGP</td>
-            </tr>
-          </tbody>
-        </table>
+  <div class="modal-body">
+    <!-- Customer Info -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <h6 class="text-muted">Customer</h6>
+        <p class="mb-0">{{ submittedOrder?.customer_name }}</p>
+        <p class="mb-0">{{ submittedOrder?.phone_number }}</p>
       </div>
-      <p class="grand-total"><strong>Grand Total:</strong> {{ grandTotal | number:'1.0-0'}} EGP</p>
+    </div>
+
+    <!-- Order Items -->
+    <div class="table-responsive mb-3">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th>Unit</th>
+            <th>Qty</th>
+            <th>Cost</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of submittedOrder?.items">
+            <td>{{ item.material_name }}</td>
+            <td>{{ item.unit }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.cost | number:'1.0-0' }} EGP</td>
+            <td>{{ item.total_cost | number:'1.0-0' }} EGP</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Financial Summary -->
+    <div class="row">
+      <div class="col-md-6">
+        <h6 class="text-muted">Subtotal</h6>
+        <h4 class="text-primary">{{ submittedOrder?.totalCost | number:'1.0-0' }} EGP</h4>
+      </div>
+      <div class="col-md-6">
+        <h6 class="text-muted">Final Price</h6>
+        <h4 class="text-success">{{ submittedOrder?.finalPrice | number:'1.0-0' }} EGP</h4>
+      </div>
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="printOrder()">Print Order</button>
-    <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+    <button class="btn btn-primary" (click)="printOrder()">
+      <i class="bi bi-printer"></i> Print
+    </button>
+    <button class="btn btn-secondary" (click)="modal.close()">
+      <i class="bi bi-x-circle"></i> Close
+    </button>
   </div>
 </ng-template>
