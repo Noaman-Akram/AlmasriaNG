@@ -1,358 +1,386 @@
 <div [style.margin-left.px]="updateMargin()" class="salah bg-body-tertiary">
-  <div class="z-1 w-100">
-    <div class="mb-4">
-      <h2 class="fs-1 fw-bolder">عروض السعر</h2>
+  <!-- ─────────── TOP BAR ─────────── -->
+  <div class="d-flex align-items-center justify-content-between mb-2 shadow-sm p-3 bg-white rounded-3">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <i class="pi pi-table text-primary fs-4"></i>
+      <h2 class="fs-4 fw-bold m-0">عروض السعر / Quotations
+        <small class="text-secondary">({{ orders?.length || 0 }})</small>
+      </h2>
     </div>
-    <div class="card">
-      <p-table #dt1 [value]="customers" dataKey="id" [rows]="10" 
-               [rowsPerPageOptions]="[10, 25, 50]" [loading]="loading" 
-               [paginator]="true" [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
-               [sortMode]="'multiple'" [multiSortMeta]="sortMeta">
-        <ng-template pTemplate="caption">
-          <div class="">
-            <p-button class="pb-3" label="Clear" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
-            <p-iconfield iconPosition="left" class="mt-3">
-              <p-inputicon>
-                <i class="pi pi-search"></i>
-              </p-inputicon>
-              <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Search keyword" />
-            </p-iconfield>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="header">
-          <tr>
-            <th style="min-width:15rem" [sortable]="true" pSortableColumn="name">
-              <div class="d-flex align-items-center flex items-center">
-                ID
-                <p-sortIcon class="ps-2" field="name"></p-sortIcon>
-                <p-columnFilter type="text" field="name" display="menu" />
-              </div>
-            </th>
-            <th style="min-width:15rem" [sortable]="true" pSortableColumn="country.name">
-              <div class="d-flex align-items-center flex items-center">
-                Customer Name
-                <p-sortIcon class="ps-2" field="country.name"></p-sortIcon>
-                <p-columnFilter type="text" field="country.name" display="menu" />
-              </div>
-            </th>
-            <th style="min-width:15rem" [sortable]="true" pSortableColumn="representative.name">
-              <div class="d-flex align-items-center">
-                Address
-                <p-sortIcon class="ps-2" field="representative.name"></p-sortIcon>
-                <p-columnFilter field="representative" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
-                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                    <p-multiSelect [(ngModel)]="value" [options]="representatives" placeholder="Any" (onChange)="filter($event.value)" optionLabel="name" style="min-width: 14rem" [panelStyle]="{ minWidth: '16rem' }">
-                      <ng-template let-option pTemplate="item">
-                        <div class="flex items-center gap-2">
-                          <img [alt]="option.label" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}" style="width: 32px" />
-                          <span>{{ option.name }}</span>
-                        </div>
-                      </ng-template>
-                    </p-multiSelect>
-                  </ng-template>
-                </p-columnFilter>
-              </div>
-            </th>
-            <th style="min-width:10rem" [sortable]="true" pSortableColumn="date">
-              <div class="d-flex align-items-center">
-                Status
-                <p-sortIcon class="ps-2" field="date"></p-sortIcon>
-                <p-columnFilter type="date" field="date" display="menu"></p-columnFilter>
-              </div>
-            </th>
-            <th style="min-width:10rem" [sortable]="true" pSortableColumn="balance">
-              <div class="d-flex align-items-center">
-                Price
-                <p-sortIcon class="ps-2" field="balance"></p-sortIcon>
-                <p-columnFilter type="numeric" field="balance" display="menu" currency="USD" />
-              </div>
-            </th>
-            <th style="min-width:10rem" [sortable]="true" pSortableColumn="status">
-              <div class="d-flex align-items-center">
-                Cost
-                <p-sortIcon class="ps-2" field="status"></p-sortIcon>
-                <p-columnFilter field="status" matchMode="equals" display="menu">
-                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                    <p-select [(ngModel)]="value" [options]="statuses" (onChange)="filter($event.value)" placeholder="Select One" styleClass="w-full">
-                      <ng-template let-option pTemplate="item">
-                        <p-tag [value]="option.value" [severity]="getSeverity(option.value)"></p-tag>
-                      </ng-template>
-                    </p-select>
-                  </ng-template>
-                </p-columnFilter>
-              </div>
-            </th>
-            <th style="min-width:10rem" [sortable]="true" pSortableColumn="activity">
-              <div class="d-flex align-items-center">
-                Type
-                <p-sortIcon class="ps-2" field="activity"></p-sortIcon>
-                <p-columnFilter field="activity" matchMode="between" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
-                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                    <p-slider [(ngModel)]="value" [range]="true" styleClass="m-4" (onSlideEnd)="filter($event.values)" />
-                    <div class="flex items-center px-2">
-                      <span *ngIf="!value">0</span>
-                      <span *ngIf="value">{{ value[0] }} - {{ value[1] }}</span>
-                    </div>
-                  </ng-template>
-                </p-columnFilter>
-              </div>
-            </th>
-            <th style="width: 3rem" [sortable]="true" pSortableColumn="verified">
-              <div class="d-flex align-items-center">
-                Created at
-                <p-sortIcon class="ps-2" field="verified"></p-sortIcon>
-                <p-columnFilter type="boolean" field="verified" display="menu" />
-              </div>
-            </th>
-            <th style="width: 3rem">
-              <div class="d-flex align-items-center">
-                Phone Number
-                <p-sortIcon class="ps-2" field="verified"></p-sortIcon>
-                <p-columnFilter type="boolean" field="verified" display="menu" />
-              </div>
-            </th>
-            <th style="width: 5rem">
-              <div class="d-flex align-items-center justify-content-center">
-                Actions
-              </div>
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-customer>
-          <tr>
-            <td>
-              {{ customer.name }}
-            </td>
-            <td>
-              <div class="flex items-center gap-2">
-                <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" [class]="'flag flag-' + customer.country.code" style="width: 20px" />
-                <span>{{ customer.country.name }}</span>
-              </div>
-            </td>
-            <td>
-              <div class="flex items-center gap-2">
-                <img [alt]="customer.representative.name" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ customer.representative.image }}" width="32" />
-                <span>{{ customer.representative.name }}</span>
-              </div>
-            </td>
-            <td>
-              {{ customer.date | date: 'MM/dd/yyyy' }}
-            </td>
-            <td>
-              {{ customer.balance | currency: 'USD' : 'symbol' }}
-            </td>
-            <td>
-              <p-tag [value]="customer.status" [severity]="getSeverity(customer.status)" />
-            </td>
-            <td>
-              <p-progressbar [value]="customer.activity" [showValue]="false" />
-            </td>
-            <td class="text-center">
-              <i
-                class="pi"
-                [ngClass]="{
-                  'text-green-500 pi-check-circle': customer.verified,
-                  'text-red-500 pi-times-circle': !customer.verified
-                }"
-              ></i>
-            </td>
-            <td>
-              {{ customer.phone || '+1-555-123-4567' }}
-            </td>
-            <td>
-              <div class="flex justify-content-center">
-                <button pButton pRipple type="button" icon="pi pi-eye" 
-                        class="p-button-rounded p-button-info p-button-outlined"
-                        (click)="viewCustomerDetails(customer)"></button>
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="11">No customers found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <!-- global search & refresh -->
+      <p-iconfield iconPosition="left" style="background:transparent;border:1px solid #ced4da;border-radius:4px;padding:0 .5rem;min-width:220px;">
+        <p-inputicon><i class="pi pi-search text-muted"></i></p-inputicon>
+        <input pInputText type="text"
+               placeholder="Search…"
+               style="border:none;background:transparent;color:#495057"
+               (input)="dt1.filterGlobal($event.target.value,'contains')" />
+      </p-iconfield>
+      <p-button icon="pi pi-filter-slash"
+                class="p-button-text text-danger"
+                (click)="clear(dt1)"
+                tooltip="Clear filters"></p-button>
+      <p-button icon="pi pi-refresh"
+                class="p-button-text text-primary"
+                (click)="loadOrders()"
+                tooltip="Reload"></p-button>
     </div>
   </div>
-  
-  <!-- Customer Details Sidebar -->
-  <p-sidebar [(visible)]="isDetailSidebarVisible" position="right" [style]="{width:'30em'}" 
-            styleClass="customer-detail-sidebar" [closeOnEscape]="true" [dismissible]="false"
-            (onHide)="closeDetailSidebar()">
+
+  <!-- ─────────── KPI TAGS ─────────── -->
+  <div class="d-flex gap-3 flex-wrap mb-2">
+    <p-tag style="color:white"
+           [value]="'Avg Price : ' + (averagePrice | currency:'USD')"
+           severity="secondary"></p-tag>
+  </div>
+
+  <!-- ─────────── ORDERS TABLE ─────────── -->
+  <div class="card">
+    <p-table #dt1
+             [value]="orders"
+             dataKey="id"
+             [rows]="25"
+             [rowsPerPageOptions]="[25,50,100]"
+             [paginator]="true"
+             [responsiveLayout]="'scroll'"
+             [loading]="loading"
+             [globalFilterFields]="['customer_name','address','order_status']"
+             [sortMode]="'multiple'"
+             [multiSortMeta]="sortMeta"
+             class="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id" style="width:5rem">
+            ID <p-sortIcon field="id"></p-sortIcon>
+          </th>
+          <th pSortableColumn="customer_name" style="min-width:14rem">
+            Customer <p-sortIcon field="customer_name"></p-sortIcon>
+          </th>
+          <th pSortableColumn="address" style="min-width:14rem">
+            Address <p-sortIcon field="address"></p-sortIcon>
+          </th>
+          <th pSortableColumn="order_status" style="min-width:9rem">
+            Status <p-sortIcon field="order_status"></p-sortIcon>
+          </th>
+          <th pSortableColumn="order_price" style="min-width:8rem">
+            Price <p-sortIcon field="order_price"></p-sortIcon>
+          </th>
+          <th pSortableColumn="order_cost" style="min-width:8rem">
+            Cost <p-sortIcon field="order_cost"></p-sortIcon>
+          </th>
+          <th pSortableColumn="work_types" style="min-width:8rem">
+            Type <p-sortIcon field="work_types"></p-sortIcon>
+          </th>
+          <th pSortableColumn="created_at" style="min-width:10rem">
+            Created <p-sortIcon field="created_at"></p-sortIcon>
+          </th>
+          <th style="width:4rem; text-align:center">✦</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-order>
+        <tr [ngClass]="rowClass(order)">
+          <td>{{ order.id }}</td>
+          <td>{{ order.customer_name }}</td>
+          <td>{{ order.address }}</td>
+          <td>
+            <p-tag [value]="order.order_status"
+                   [severity]="getSeverity(order.order_status)"></p-tag>
+          </td>
+          <td>{{ order.order_price | currency:'USD':'symbol' }}</td>
+          <td>{{ order.order_cost  | currency:'USD':'symbol' }}</td>
+          <td>{{ order.work_types }}</td>
+          <td>{{ order.created_at | date:'mediumDate' }}</td>
+          <td class="text-center">
+            <button type="button"
+                    pButton pRipple
+                    icon="pi pi-eye"
+                    class="p-button-text p-button-sm"
+                    (click)="viewOrderDetails(order)"></button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+        <tr class="fw-bold">
+          <td colspan="4" class="text-end">Totals:</td>
+          <td>{{ totalPrice | currency:'USD':'symbol' }}</td>
+          <td>{{ totalCost  | currency:'USD':'symbol' }}</td>
+          <td colspan="3"></td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- ─────────── STATUS CARDS ─────────── -->
+  <div class="row g-3 mt-3">
+    <div class="col-12 col-sm-6 col-md-4" *ngFor="let s of statusSummary">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center py-3">
+          <h6 class="card-title mb-1">{{ s.label }}</h6>
+          <p class="mb-0 fw-semibold">{{ s.count }} orders</p>
+          <small class="text-muted">{{ s.sum | currency:'USD' }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────── SIDE PANEL ─────────── -->
+  <p-sidebar [(visible)]="isDetailSidebarVisible"
+             position="right"
+             [dismissible]="false"
+             [modal]="true"
+             styleClass="shadow-4 sidebar-act"
+             (onHide)="closeDetailSidebar()">
+
+    <!-- Header -->
     <ng-template pTemplate="header">
-      <div class="flex align-items-center gap-2 px-3">
-        <h2>{{ isEditing ? 'Edit Customer' : 'Customer Details' }}</h2>
+      <div class="d-flex align-items-center gap-2">
+        <h3 class="m-0">📝 Order #{{ selectedOrder?.id }}</h3>
+        <p-tag [value]="selectedOrder?.order_status"
+               [severity]="getSeverity(selectedOrder?.order_status)"></p-tag>
       </div>
     </ng-template>
-    
+
+    <!-- Content -->
     <ng-template pTemplate="content">
-      <div class="p-4" *ngIf="selectedCustomer">
-        <div *ngIf="!isEditing" class="customer-detail-section">
-          <h3 class="section-header mb-3">Basic Information</h3>
-          <div class="detail-row">
-            <span class="detail-label">ID:</span>
-            <span class="detail-value">{{ selectedCustomer.id || 'N/A' }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Name:</span>
-            <span class="detail-value">{{ selectedCustomer.name || 'N/A' }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Company:</span>
-            <span class="detail-value">{{ selectedCustomer.company || 'N/A' }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Status:</span>
-            <p-tag [value]="selectedCustomer.status" [severity]="getSeverity(selectedCustomer.status)" />
+      <!-- VIEW MODE -->
+      <div *ngIf="selectedOrder && !isEditing" class="d-flex flex-column gap-3">
+        <!-- Order Info -->
+        <div class="card">
+          <div class="card-header bg-light fw-bold">Order Info</div>
+          <div class="card-body small">
+            <p><strong>Created:</strong> {{ selectedOrder.created_at | date:'medium' }}</p>
+            <p><strong>Company:</strong> {{ selectedOrder.company || '—' }}</p>
+            <p><strong>Code:</strong> {{ selectedOrder.code || '—' }}</p>
+            <p><strong>Work Types:</strong> {{ selectedOrder.work_types }}</p>
           </div>
         </div>
 
-        <div *ngIf="isEditing" class="customer-edit-section">
-          <h3 class="section-header mb-3">Edit Information</h3>
-          <form #editForm="ngForm" (ngSubmit)="saveCustomer()">
-            <div class="field mb-3">
-              <label for="name" class="block">Name</label>
-              <input pInputText id="name" [(ngModel)]="selectedCustomer.name" name="name" required class="w-full" />
-              <small *ngIf="editForm.controls['name']?.invalid && editForm.controls['name']?.touched" class="p-error">Name is required</small>
-            </div>
-            <div class="field mb-3">
-              <label for="company" class="block">Company</label>
-              <input pInputText id="company" [(ngModel)]="selectedCustomer.company" name="company" class="w-full" />
-            </div>
-            <div class="field mb-3">
-              <label for="status" class="block">Status</label>
-              <p-select id="status" [(ngModel)]="selectedCustomer.status" name="status" [options]="statuses" 
-                        optionLabel="label" optionValue="value" placeholder="Select Status" class="w-full">
-                <ng-template let-option pTemplate="item">
-                  <p-tag [value]="option.value" [severity]="getSeverity(option.value)"></p-tag>
-                </ng-template>
-              </p-select>
-            </div>
-            <div class="field mb-3">
-              <label for="country" class="block">Country</label>
-              <p-select id="country" [(ngModel)]="selectedCustomer.country" name="country" [options]="countries" 
-                        optionLabel="name" placeholder="Select Country" class="w-full">
-                <ng-template let-option pTemplate="item">
-                  <div class="flex items-center gap-2">
-                    <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" 
-                         [class]="'flag flag-' + option.code" style="width: 20px" />
-                    <span>{{ option.name }}</span>
-                  </div>
-                </ng-template>
-              </p-select>
-            </div>
-            <div class="field mb-3">
-              <label for="balance" class="block">Balance</label>
-              <input pInputText id="balance" type="number" [(ngModel)]="selectedCustomer.balance" name="balance" class="w-full" />
-            </div>
-            <div class="field mb-3">
-              <label for="activity" class="block">Activity</label>
-              <p-slider [(ngModel)]="selectedCustomer.activity" name="activity" [min]="0" [max]="100" class="w-full" />
-            </div>
-            <div class="field mb-3">
-              <label for="representative" class="block">Representative</label>
-              <p-select id="representative" [(ngModel)]="selectedCustomer.representative" name="representative" 
-                        [options]="representatives" optionLabel="name" placeholder="Select Representative" class="w-full">
-                <ng-template let-option pTemplate="item">
-                  <div class="flex items-center gap-2">
-                    <img [alt]="option.name" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}" 
-                         style="width: 32px" />
-                    <span>{{ option.name }}</span>
-                  </div>
-                </ng-template>
-              </p-select>
-            </div>
-            <div class="field mb-3">
-              <label for="date" class="block">Date</label>
-              <p-calendar [(ngModel)]="selectedCustomer.date" name="date" dateFormat="mm/dd/yy" class="w-full" />
-            </div>
-            <div class="field mb-3">
-              <label for="phone" class="block">Phone</label>
-              <input pInputText id="phone" [(ngModel)]="selectedCustomer.phone" name="phone" class="w-full" />
-            </div>
-            <div class="field mb-3">
-              <p-checkbox [(ngModel)]="selectedCustomer.verified" name="verified" label="Verified" [binary]="true" />
-            </div>
-          </form>
-        </div>
-        
-        <div *ngIf="!isEditing" class="customer-detail-section mt-4">
-          <h3 class="section-header mb-3">Location Information</h3>
-          <div class="detail-row">
-            <span class="detail-label">Country:</span>
-            <div class="detail-value flex align-items-center gap-2">
-              <img *ngIf="selectedCustomer.country?.code" 
-                  src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" 
-                  [class]="'flag flag-' + selectedCustomer.country?.code" 
-                  style="width: 20px" />
-              <span>{{ selectedCustomer.country?.name || 'N/A' }}</span>
-            </div>
+        <!-- Customer -->
+        <div class="card">
+          <div class="card-header bg-light fw-bold">Customer</div>
+          <div class="card-body small">
+            <p><strong>Name:</strong> {{ selectedOrder.customer_name }}</p>
+            <p><strong>Address:</strong> {{ selectedOrder.address }}</p>
           </div>
         </div>
-        
-        <div *ngIf="!isEditing" class="customer-detail-section mt-4">
-          <h3 class="section-header mb-3">Financial Information</h3>
-          <div class="detail-row">
-            <span class="detail-label">Balance:</span>
-            <span class="detail-value">{{ selectedCustomer.balance | currency: 'USD' : 'symbol' }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Activity:</span>
-            <div class="detail-value w-full">
-              <p-progressbar [value]="selectedCustomer.activity" [showValue]="true"></p-progressbar>
-            </div>
+
+        <!-- Financial -->
+        <div class="card">
+          <div class="card-header bg-light fw-bold">Financial</div>
+          <div class="card-body small">
+            <p><strong>Price:</strong> {{ selectedOrder.order_price | currency:'USD' }}</p>
+            <p><strong>Cost:</strong> {{ selectedOrder.order_cost | currency:'USD' }}</p>
           </div>
         </div>
-        
-        <div *ngIf="!isEditing" class="customer-detail-section mt-4">
-          <h3 class="section-header mb-3">Representative</h3>
-          <div class="detail-row">
-            <div class="detail-value flex align-items-center gap-2">
-              <img *ngIf="selectedCustomer.representative?.image" 
-                  [alt]="selectedCustomer.representative?.name" 
-                  src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ selectedCustomer.representative?.image }}"
-                  style="width: 40px; height: 40px; border-radius: 50%;" />
-              <span>{{ selectedCustomer.representative?.name || 'N/A' }}</span>
-            </div>
-          </div>
-        </div>
-        
-        <div *ngIf="!isEditing" class="customer-detail-section mt-4">
-          <h3 class="section-header mb-3">Additional Information</h3>
-          <div class="detail-row">
-            <span class="detail-label">Date:</span>
-            <span class="detail-value">{{ selectedCustomer.date | date: 'MM/dd/yyyy' }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Verified:</span>
-            <span class="detail-value">
-              <i class="pi" [ngClass]="{
-                  'text-green-500 pi-check-circle': selectedCustomer.verified,
-                  'text-red-500 pi-times-circle': !selectedCustomer.verified
-              }"></i>
-              {{ selectedCustomer.verified ? 'Yes' : 'No' }}
-            </span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Phone:</span>
-            <span class="detail-value">{{ selectedCustomer.phone || '+1-555-123-4567' }}</span>
+
+        <!-- Measurements -->
+        <div class="card">
+          <div class="card-header bg-light fw-bold">Measurements</div>
+          <div class="card-body p-0">
+            <p-table [value]="measurements" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Type</th>
+                  <th>Name</th>
+                  <th>Quantity</th>
+                  <th>Unit Cost</th>
+                  <th>Total Cost</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-m>
+                <tr>
+                  <td>{{ m.material_type }}</td>
+                  <td>{{ m.material_name }}</td>
+                  <td>{{ m.quantity }} {{ m.unit }}</td>
+                  <td>{{ m.cost   | currency:'USD':'symbol' }}</td>
+                  <td>{{ m.total_cost | currency:'USD':'symbol' }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="text-center text-secondary">
+                    No measurements recorded for this order.
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
           </div>
         </div>
       </div>
-    </ng-template>
-    
-    <ng-template pTemplate="footer">
-      <div class="flex justify-content-end p-3 gap-2">
-        <p-button *ngIf="!isEditing" icon="pi pi-pencil" label="Edit" styleClass="p-button-primary" 
-                  (click)="startEditing()"></p-button>
-        <p-button *ngIf="isEditing" icon="pi pi-check" label="Save" styleClass="p-button-success" 
-                  [disabled]="editForm?.invalid" (click)="saveCustomer()"></p-button>
-        <p-button *ngIf="isEditing" icon="pi pi-times" label="Cancel" styleClass="p-button-secondary" 
-                  (click)="cancelEditing()"></p-button>
-        <p-button *ngIf="!isEditing" icon="pi pi-times" label="Close" styleClass="p-button-secondary" 
-                  (click)="closeDetailSidebar()"></p-button>
+
+      <!-- EDIT MODE -->
+      <div *ngIf="isEditing">
+        <form [formGroup]="orderForm"
+              (ngSubmit)="saveOrder()"
+              class="p-fluid small d-flex flex-column gap-3">
+
+          <!-- Customer Info -->
+          <div class="card mb-3">
+            <div class="card-header bg-light fw-bold">Customer Information</div>
+            <div class="card-body">
+              <div class="field mb-3">
+                <label for="customer_name">Name *</label>
+                <input pInputText id="customer_name"
+                       formControlName="customer_name" />
+              </div>
+              <div class="grid">
+                <div class="field col-6">
+                  <label for="city">City *</label>
+                  <p-dropdown id="city"
+                              formControlName="city"
+                              [options]="cities"
+                              optionLabel="label"></p-dropdown>
+                </div>
+                <div class="field col-6">
+                  <label for="address_details">Address *</label>
+                  <input pInputText
+                         id="address_details"
+                         formControlName="address_details" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Details -->
+          <div class="card mb-3">
+            <div class="card-header bg-light fw-bold">Order Details</div>
+            <div class="card-body">
+              <div class="grid">
+                <div class="field col-6">
+                  <label for="order_status">Status *</label>
+                  <p-dropdown id="order_status"
+                              formControlName="order_status"
+                              [options]="statuses"
+                              optionLabel="label"></p-dropdown>
+                </div>
+                <div class="field col-6">
+                  <label for="work_types">Work Types *</label>
+                  <input pInputText id="work_types"
+                         formControlName="work_types" />
+                </div>
+                <div class="field col-6">
+                  <label for="company">Company</label>
+                  <input pInputText id="company"
+                         formControlName="company" />
+                </div>
+                <div class="field col-6">
+                  <label for="code">Code *</label>
+                  <input pInputText id="code"
+                         formControlName="code" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial -->
+          <div class="card mb-3">
+            <div class="card-header bg-light fw-bold">Financial</div>
+            <div class="card-body">
+              <div class="grid">
+                <div class="field col-6">
+                  <label for="order_price">Price *</label>
+                  <p-inputNumber id="order_price"
+                                 formControlName="order_price"
+                                 mode="currency"
+                                 currency="USD"></p-inputNumber>
+                </div>
+                <div class="field col-6">
+                  <label for="order_cost">Cost *</label>
+                  <p-inputNumber id="order_cost"
+                                 formControlName="order_cost"
+                                 mode="currency"
+                                 currency="USD"></p-inputNumber>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Measurements FormArray -->
+          <div class="card mb-3">
+            <div class="card-header bg-light fw-bold d-flex justify-content-between">
+              <span>Measurements</span>
+              <button pButton type="button"
+                      icon="pi pi-plus"
+                      class="p-button-sm"
+                      (click)="addMeasurement()"></button>
+            </div>
+            <div class="card-body" formArrayName="measurements">
+              <div *ngFor="let m of measurementFormArray.controls; let i = index"
+                   [formGroupName]="i"
+                   class="mb-3">
+                <div class="grid">
+                  <div class="field col-3">
+                    <label>Type *</label>
+                    <input pInputText formControlName="material_type" />
+                  </div>
+                  <div class="field col-3">
+                    <label>Name *</label>
+                    <input pInputText formControlName="material_name" />
+                  </div>
+                  <div class="field col-2">
+                    <label>Unit *</label>
+                    <p-dropdown [options]="units"
+                                formControlName="unit"
+                                optionLabel="label"></p-dropdown>
+                  </div>
+                  <div class="field col-2">
+                    <label>Qty *</label>
+                    <p-inputNumber formControlName="quantity" [min]="1"></p-inputNumber>
+                  </div>
+                  <div class="field col-2">
+                    <label>Cost *</label>
+                    <p-inputNumber formControlName="cost"
+                                   mode="currency"
+                                   currency="USD"></p-inputNumber>
+                  </div>
+                  <div class="col-12 md:col-1 d-flex align-items-end">
+                    <button pButton type="button"
+                            icon="pi pi-trash"
+                            class="p-button-danger p-button-sm"
+                            *ngIf="measurementFormArray.length > 1"
+                            (click)="removeMeasurement(i)"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- ACTION BUTTONS INSIDE CONTENT -->
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <ng-container *ngIf="!isEditing">
+          <button pButton type="button"
+                  icon="pi pi-pencil"
+                  label="Edit"
+                  class="p-button-primary p-button-sm"
+                  (click)="startEditing()"></button>
+          <button pButton type="button"
+                  icon="pi pi-times"
+                  label="Close"
+                  class="p-button-secondary p-button-sm"
+                  (click)="closeDetailSidebar()"></button>
+        </ng-container>
+        <ng-container *ngIf="isEditing">
+          <button pButton
+                  type="button"
+                  icon="pi pi-check"
+                  label="Save"
+                  class="p-button-success p-button-sm"
+                  [disabled]="orderForm.invalid"
+                  (click)="onSaveEdit()">
+          </button>
+          <button pButton
+                  type="button"
+                  icon="pi pi-times"
+                  label="Cancel"
+                  class="p-button-secondary p-button-sm"
+                  (click)="onCancelEdit()">
+          </button>
+        </ng-container>
+        
       </div>
     </ng-template>
   </p-sidebar>

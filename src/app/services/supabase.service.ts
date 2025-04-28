@@ -34,6 +34,7 @@ export interface Order {
   code: string; 
 }
 
+
 export interface OrderDetail {
   detail_id: number;
   created_at: string; // ISO timestamp
@@ -46,15 +47,19 @@ export interface OrderDetail {
   total_cost: number;
   img_url?: string;
 }
+ 
 
 export interface Measurement {
-  id: number;
-  marble_type: string;
+  id?: number;
+  material_type: string;
   unit: string;
   quantity: number;
   cost: number;
   order_id: number;
+  material_name: string;
+  total_cost: number;
 }
+ 
 
 export interface Material {
   id: number;
@@ -171,23 +176,65 @@ export class SupabaseService {
   }
   
   
-  async updateDB<T extends { id?: number; detail_id?: number }>(table: string, id: number, data: Partial<T>): Promise<T | null> {
-    const idField = table === 'OrderDetails' ? 'detail_id' : 'id'; // Handle different primary key for OrderDetails
-    const { data: updatedData, error } = await this.supabase
+  async updateDB<T extends { id?: number; detail_id?: number }>(
+    table: string,
+    id: number,
+    data: Partial<T>
+  ): Promise<T | null> {
+    // Pick the correct primary-key column
+    const idField = table === 'OrderDetails' ? 'detail_id' : 'id';
+  
+    /* 1) Fetch the current row ---------------------------------------- */
+    const { data: oldRow, error: fetchErr } = await this.supabase
+      .from(table)
+      .select('*')
+      .eq(idField, id)
+      .single();
+  
+    if (fetchErr) {
+      console.error(`Error fetching current ${table} row (${idField}=${id})`, fetchErr);
+      throw fetchErr;
+    }
+  
+    /* 2) Perform the update ------------------------------------------- */
+    const { data: newRow, error: updErr } = await this.supabase
       .from(table)
       .update(data)
       .eq(idField, id)
-      .select()
+      .select('*')
       .single();
-
-    if (error) {
-      console.error(`Error updating ${table} with ${idField} ${id}:`, error);
-      throw error;
+  
+    if (updErr) {
+      console.error(`Error updating ${table} (${idField}=${id})`, updErr);
+      throw updErr;
     }
+  
+    /* 3) Build a diff of changed fields -------------------------------- */
+    const diff: Record<string, { old: any; new: any }> = {};
+    for (const key of Object.keys(data) as (keyof T)[]) {
+      const before = (oldRow as T)[key];
+      const after  = (newRow as T)[key];
+      if (before !== after) {
+        diff[key as string] = { old: before, new: after };
+      }
+    }
+  
+    /* 4) Pretty console output ---------------------------------------- */
+    console.group(`Updated row in ${table} (${idField}=${id})`);
+    if (Object.keys(diff).length === 0) {
+      console.info('No values actually changed.');
+    } else {
+      Object.entries(diff).forEach(([field, d]) =>
+        console.info(`%c${field}:`, 'color:#0d6efd', d.old, '→', d.new)
+      );
+    }
+    console.groupEnd();
 
-    console.info(`Updated in ${table}:`, updatedData);
-    return (updatedData as T) || null;
+    console.info(`Updated in ${table}:`, newRow);
+  
+    return (newRow as T) || null;
   }
+  
   async deleteDB<T>(table: string, filters: Partial<T>): Promise<T[]> {
     const { data: deletedData, error } = await this.supabase
       .from(table)

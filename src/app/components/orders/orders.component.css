@@ -16,7 +16,18 @@
 
 
 
+.sidebar-act, .p-drawer-righ, .p-drawer {
+    min-width: none !important;
+    width: 65rem !important;
+    max-width: 65rem !important;
+}
 
+
+:host ::ng-deep.sidebar-act {
+    width: 55rem !important;
+    max-width: 55rem !important;
+    min-width: 55rem !important;
+  }
 
 
 .p-datatable-header {
@@ -104,4 +115,14 @@
 /* Style for the filter-slash icon in the button */
 :host ::ng-deep .p-datatable .p-datatable-header .p-button.p-button-outlined .pi-filter-slash {
     color: black;
+}
+
+/* make reactive form fields blend into your white-card background */
+.transparent-input .p-inputtext,
+.transparent-input .p-dropdown,
+.transparent-input input,
+.transparent-input .p-inputnumber-input {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }

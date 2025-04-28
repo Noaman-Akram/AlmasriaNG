@@ -1,0 +1,12 @@
+  /* For right sidebar */
+  .p-sidebar-right {
+    width: 55rem !important;
+    max-width: 55rem !important;
+    min-width: 55rem !important;
+  }
+  
+  .p-sidebar-right.sidebar-act {
+    width: 55rem !important;
+    max-width: 55rem !important;
+    min-width: 55rem !important;
+  }
