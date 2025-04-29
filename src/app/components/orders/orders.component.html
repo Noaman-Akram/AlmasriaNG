@@ -125,263 +125,286 @@
     </div>
   </div>
 
-  <!-- ─────────── SIDE PANEL ─────────── -->
-  <p-sidebar [(visible)]="isDetailSidebarVisible"
-             position="right"
-             [dismissible]="false"
-             [modal]="true"
-             styleClass="shadow-4 sidebar-act"
-             (onHide)="closeDetailSidebar()">
+<!-- ─────────── SIDE PANEL ─────────── -->
+<p-sidebar [(visible)]="isDetailSidebarVisible"
+           position="right"
+           [dismissible]="false"
+           [modal]="true"
+           styleClass="shadow-4 sidebar-act"
+           (onHide)="closeDetailSidebar()">
 
-    <!-- Header -->
-    <ng-template pTemplate="header">
-      <div class="d-flex align-items-center gap-2">
-        <h3 class="m-0">📝 Order #{{ selectedOrder?.id }}</h3>
-        <p-tag [value]="selectedOrder?.order_status"
-               [severity]="getSeverity(selectedOrder?.order_status)"></p-tag>
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <div class="d-flex align-items-center gap-2">
+      <h3 class="m-0">📝 Order #{{ selectedOrder?.id }}</h3>
+      <p-tag [value]="selectedOrder?.order_status" [severity]="getSeverity(selectedOrder?.order_status)"></p-tag>
+    </div>
+  </ng-template>
+
+  <!-- Content -->
+  <ng-template pTemplate="content">
+
+    <!-- VIEW MODE -->
+ <div *ngIf="selectedOrder && !isEditing" class="d-flex flex-column gap-3">
+
+<!-- Highlighted Order Code and Created At at the top -->
+<div class="d-flex flex-wrap gap-3 mb-4">
+
+  <!-- Order Code Box -->
+  <div class="flex-grow-1 p-3 bg-primary text-white border-round shadow-2">
+    <div class="small">Order Code</div>
+    <div class="fw-bold fs-5">{{ selectedOrder.code || '—' }}</div>
+  </div>
+
+  <!-- Created At Box -->
+  <div class="flex-grow-1 p-3 bg-success text-white border-round shadow-2">
+    <div class="small">Created At</div>
+    <div class="fw-bold fs-6">{{ selectedOrder.created_at | date:'medium' }}</div>
+  </div>
+
+</div>
+
+
+  <!-- Customer Information -->
+  <div class="card mb-4">
+    <div class="card-header bg-light d-flex align-items-center">
+      <i class="pi pi-user me-2 text-primary"></i>
+      <span class="fw-bold">Customer Information</span>
+    </div>
+    <div class="card-body small">
+      <div class="grid">
+        <div class="field col-12 md:col-6"><strong>Full Name:</strong> {{ selectedOrder.customer_name || '—' }}</div>
+        <div class="field col-12 md:col-6"><strong>Company:</strong> {{ selectedOrder.company || '—' }}</div>
+        <div class="field col-12 md:col-6"><strong>City:</strong> {{ selectedOrder.address?.split(',')[0] || '—' }}</div>
+        <div class="field col-12 md:col-6"><strong>Address Details:</strong> {{ selectedOrder.address?.split(',').slice(1).join(', ') || '—' }}</div>
       </div>
-    </ng-template>
+    </div>
+  </div>
 
-    <!-- Content -->
-    <ng-template pTemplate="content">
-      <!-- VIEW MODE -->
-      <div *ngIf="selectedOrder && !isEditing" class="d-flex flex-column gap-3">
-        <!-- Order Info -->
-        <div class="card">
-          <div class="card-header bg-light fw-bold">Order Info</div>
-          <div class="card-body small">
-            <p><strong>Created:</strong> {{ selectedOrder.created_at | date:'medium' }}</p>
-            <p><strong>Company:</strong> {{ selectedOrder.company || '—' }}</p>
-            <p><strong>Code:</strong> {{ selectedOrder.code || '—' }}</p>
-            <p><strong>Work Types:</strong> {{ selectedOrder.work_types }}</p>
-          </div>
-        </div>
-
-        <!-- Customer -->
-        <div class="card">
-          <div class="card-header bg-light fw-bold">Customer</div>
-          <div class="card-body small">
-            <p><strong>Name:</strong> {{ selectedOrder.customer_name }}</p>
-            <p><strong>Address:</strong> {{ selectedOrder.address }}</p>
-          </div>
-        </div>
-
-        <!-- Financial -->
-        <div class="card">
-          <div class="card-header bg-light fw-bold">Financial</div>
-          <div class="card-body small">
-            <p><strong>Price:</strong> {{ selectedOrder.order_price | currency:'USD' }}</p>
-            <p><strong>Cost:</strong> {{ selectedOrder.order_cost | currency:'USD' }}</p>
-          </div>
-        </div>
-
-        <!-- Measurements -->
-        <div class="card">
-          <div class="card-header bg-light fw-bold">Measurements</div>
-          <div class="card-body p-0">
-            <p-table [value]="measurements" styleClass="p-datatable-sm">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>Type</th>
-                  <th>Name</th>
-                  <th>Quantity</th>
-                  <th>Unit Cost</th>
-                  <th>Total Cost</th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-m>
-                <tr>
-                  <td>{{ m.material_type }}</td>
-                  <td>{{ m.material_name }}</td>
-                  <td>{{ m.quantity }} {{ m.unit }}</td>
-                  <td>{{ m.cost   | currency:'USD':'symbol' }}</td>
-                  <td>{{ m.total_cost | currency:'USD':'symbol' }}</td>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td colspan="5" class="text-center text-secondary">
-                    No measurements recorded for this order.
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div>
-        </div>
+  <!-- Order Details -->
+  <div class="card mb-4">
+    <div class="card-header bg-light d-flex align-items-center">
+      <i class="pi pi-shopping-cart me-2 text-primary"></i>
+      <span class="fw-bold">Order Details</span>
+    </div>
+    <div class="card-body small">
+      <div class="grid">
+        <div class="field col-12 md:col-6"><strong>Work Types:</strong> {{ selectedOrder.work_types }}</div>
+        <div class="field col-12 md:col-6"><strong>Status:</strong> {{ selectedOrder.order_status }}</div>
       </div>
+    </div>
+  </div>
 
-      <!-- EDIT MODE -->
-      <div *ngIf="isEditing">
-        <form [formGroup]="orderForm"
-              (ngSubmit)="saveOrder()"
-              class="p-fluid small d-flex flex-column gap-3">
-
-          <!-- Customer Info -->
-          <div class="card mb-3">
-            <div class="card-header bg-light fw-bold">Customer Information</div>
-            <div class="card-body">
-              <div class="field mb-3">
-                <label for="customer_name">Name *</label>
-                <input pInputText id="customer_name"
-                       formControlName="customer_name" />
-              </div>
-              <div class="grid">
-                <div class="field col-6">
-                  <label for="city">City *</label>
-                  <p-dropdown id="city"
-                              formControlName="city"
-                              [options]="cities"
-                              optionLabel="label"></p-dropdown>
-                </div>
-                <div class="field col-6">
-                  <label for="address_details">Address *</label>
-                  <input pInputText
-                         id="address_details"
-                         formControlName="address_details" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Order Details -->
-          <div class="card mb-3">
-            <div class="card-header bg-light fw-bold">Order Details</div>
-            <div class="card-body">
-              <div class="grid">
-                <div class="field col-6">
-                  <label for="order_status">Status *</label>
-                  <p-dropdown id="order_status"
-                              formControlName="order_status"
-                              [options]="statuses"
-                              optionLabel="label"></p-dropdown>
-                </div>
-                <div class="field col-6">
-                  <label for="work_types">Work Types *</label>
-                  <input pInputText id="work_types"
-                         formControlName="work_types" />
-                </div>
-                <div class="field col-6">
-                  <label for="company">Company</label>
-                  <input pInputText id="company"
-                         formControlName="company" />
-                </div>
-                <div class="field col-6">
-                  <label for="code">Code *</label>
-                  <input pInputText id="code"
-                         formControlName="code" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Financial -->
-          <div class="card mb-3">
-            <div class="card-header bg-light fw-bold">Financial</div>
-            <div class="card-body">
-              <div class="grid">
-                <div class="field col-6">
-                  <label for="order_price">Price *</label>
-                  <p-inputNumber id="order_price"
-                                 formControlName="order_price"
-                                 mode="currency"
-                                 currency="USD"></p-inputNumber>
-                </div>
-                <div class="field col-6">
-                  <label for="order_cost">Cost *</label>
-                  <p-inputNumber id="order_cost"
-                                 formControlName="order_cost"
-                                 mode="currency"
-                                 currency="USD"></p-inputNumber>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Measurements FormArray -->
-          <div class="card mb-3">
-            <div class="card-header bg-light fw-bold d-flex justify-content-between">
-              <span>Measurements</span>
-              <button pButton type="button"
-                      icon="pi pi-plus"
-                      class="p-button-sm"
-                      (click)="addMeasurement()"></button>
-            </div>
-            <div class="card-body" formArrayName="measurements">
-              <div *ngFor="let m of measurementFormArray.controls; let i = index"
-                   [formGroupName]="i"
-                   class="mb-3">
-                <div class="grid">
-                  <div class="field col-3">
-                    <label>Type *</label>
-                    <input pInputText formControlName="material_type" />
-                  </div>
-                  <div class="field col-3">
-                    <label>Name *</label>
-                    <input pInputText formControlName="material_name" />
-                  </div>
-                  <div class="field col-2">
-                    <label>Unit *</label>
-                    <p-dropdown [options]="units"
-                                formControlName="unit"
-                                optionLabel="label"></p-dropdown>
-                  </div>
-                  <div class="field col-2">
-                    <label>Qty *</label>
-                    <p-inputNumber formControlName="quantity" [min]="1"></p-inputNumber>
-                  </div>
-                  <div class="field col-2">
-                    <label>Cost *</label>
-                    <p-inputNumber formControlName="cost"
-                                   mode="currency"
-                                   currency="USD"></p-inputNumber>
-                  </div>
-                  <div class="col-12 md:col-1 d-flex align-items-end">
-                    <button pButton type="button"
-                            icon="pi pi-trash"
-                            class="p-button-danger p-button-sm"
-                            *ngIf="measurementFormArray.length > 1"
-                            (click)="removeMeasurement(i)"></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
+  <!-- Financial Information -->
+  <div class="card mb-4">
+    <div class="card-header bg-light d-flex align-items-center">
+      <i class="pi pi-dollar me-2 text-primary"></i>
+      <span class="fw-bold">Financial Information</span>
+    </div>
+    <div class="card-body small">
+      <div class="grid">
+        <div class="field col-12 md:col-6"><strong>Order Price:</strong> {{ selectedOrder.order_price | currency:'USD' }}</div>
+        <div class="field col-12 md:col-6"><strong>Order Cost:</strong> {{ selectedOrder.order_cost | currency:'USD' }}</div>
       </div>
+    </div>
+  </div>
 
-      <!-- ACTION BUTTONS INSIDE CONTENT -->
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <ng-container *ngIf="!isEditing">
-          <button pButton type="button"
-                  icon="pi pi-pencil"
-                  label="Edit"
-                  class="p-button-primary p-button-sm"
-                  (click)="startEditing()"></button>
-          <button pButton type="button"
-                  icon="pi pi-times"
-                  label="Close"
-                  class="p-button-secondary p-button-sm"
-                  (click)="closeDetailSidebar()"></button>
-        </ng-container>
-        <ng-container *ngIf="isEditing">
-          <button pButton
-                  type="button"
-                  icon="pi pi-check"
-                  label="Save"
-                  class="p-button-success p-button-sm"
-                  [disabled]="orderForm.invalid"
-                  (click)="onSaveEdit()">
-          </button>
-          <button pButton
-                  type="button"
-                  icon="pi pi-times"
-                  label="Cancel"
-                  class="p-button-secondary p-button-sm"
-                  (click)="onCancelEdit()">
-          </button>
-        </ng-container>
+  <!-- Measurements -->
+  <div class="card mb-4">
+    <div class="card-header bg-light d-flex align-items-center">
+      <i class="pi pi-ruler me-2 text-primary"></i>
+      <span class="fw-bold">Measurements</span>
+    </div>
+    <div class="card-body p-0">
+      <p-table [value]="measurements" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Unit Cost</th>
+            <th>Total Cost</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-m>
+          <tr>
+            <td>{{ m.material_type }}</td>
+            <td>{{ m.material_name }}</td>
+            <td>{{ m.quantity }} {{ m.unit }}</td>
+            <td>{{ m.cost | currency:'USD':'symbol' }}</td>
+            <td>{{ m.total_cost | currency:'USD':'symbol' }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center text-secondary">No measurements recorded for this order.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+</div>
+
+
+    <!-- EDIT MODE -->
+    <div *ngIf="isEditing" class="order-editor">
+      <form [formGroup]="orderForm" class="p-fluid" (ngSubmit)="onSaveEdit()">
         
+<!-- Customer Information (Edit Mode) -->
+<div class="card mb-4">
+  <div class="card-header bg-light d-flex align-items-center">
+    <i class="pi pi-user me-2 text-primary"></i>
+    <span class="fw-bold">Customer Information</span>
+  </div>
+  <div class="card-body">
+    <div class="grid">
+      <div class="field col-12 md:col-6">
+        <label>Full Name</label>
+        <input pInputText formControlName="customer_name" class="p-inputtext-sm w-100" placeholder="Enter full name">
       </div>
-    </ng-template>
-  </p-sidebar>
+
+     <div class="field col-12 md:col-6">
+  <div class="flex align-items-center gap-2 mb-2">
+    <p-checkbox 
+      formControlName="hasCompany"
+      binary="true"
+      inputId="isCompanyCheckbox">
+    </p-checkbox>
+    <label for="isCompanyCheckbox" class="mb-0">Is Company?</label>
+  </div>
+
+  <!-- Company input shown only when hasCompany is true -->
+  <div *ngIf="orderForm.get('hasCompany')?.value">
+    <label>Company Name</label>
+    <input 
+      pInputText 
+      formControlName="company" 
+      class="p-inputtext-sm w-100" 
+      placeholder="Enter company name">
+  </div>
+</div>
+
+      
+
+      <div class="field col-12 md:col-6">
+        <label>City</label>
+        <p-select [options]="cities" formControlName="city" optionLabel="label" class="w-100 p-inputtext-sm" placeholder="Select City"></p-select>
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <label>Address Details</label>
+        <input pInputText formControlName="address_details" class="p-inputtext-sm w-100" placeholder="Enter address details">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        <!-- Order Details -->
+        <div class="card mb-4">
+          <div class="card-header bg-light d-flex align-items-center">
+            <i class="pi pi-shopping-cart me-2 text-primary"></i>
+            <span class="fw-bold">Order Details</span>
+          </div>
+          <div class="card-body">
+            <div class="grid">
+              <div class="field col-12 md:col-6">
+                <label>Order Code</label>
+                <input pInputText formControlName="code">
+              </div>
+  
+              
+              <div class="field col-12 md:col-6">
+                <label>Work Types</label>
+                <p-multiSelect 
+                  [options]="workTypes"
+                  formControlName="work_types"
+                  optionLabel="name"
+                  placeholder="Select Services"
+                  display="chip"
+                  class="w-100">
+                </p-multiSelect>
+              </div>
+              
+              <div class="field col-12 md:col-6">
+                <label>Status</label>
+                <p-select [options]="statuses" formControlName="order_status" optionLabel="label"></p-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Information -->
+        <div class="card mb-4">
+          <div class="card-header bg-light d-flex align-items-center">
+            <i class="pi pi-dollar me-2 text-primary"></i>
+            <span class="fw-bold">Financial Information</span>
+          </div>
+          <div class="card-body">
+            <div class="grid">
+              <div class="field col-12 md:col-6">
+                <label>Order Price</label>
+                <p-inputNumber formControlName="order_price" mode="currency" currency="USD"></p-inputNumber>
+              </div>
+              <div class="field col-12 md:col-6">
+                <label>Order Cost</label>
+                <p-inputNumber formControlName="order_cost" mode="currency" currency="USD"></p-inputNumber>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Measurements (Already handled separately) -->
+        <div class="card mb-4">
+          <div class="card-header bg-light d-flex align-items-center">
+            <i class="pi pi-ruler me-2 text-primary"></i>
+            <span class="fw-bold">Measurements</span>
+            <button pButton type="button" icon="pi pi-plus" class="p-button-sm ml-auto" (click)="addMeasurement()" label="Add Measurement"></button>
+          </div>
+          <div class="card-body" formArrayName="measurements">
+            <div *ngFor="let m of measurementFormArray.controls; let i = index" [formGroupName]="i" class="p-3 border-round mb-3">
+              <div class="grid">
+                <div class="field col-12 md:col-3">
+                  <input pInputText formControlName="material_type" placeholder="Material Type">
+                </div>
+                <div class="field col-12 md:col-3">
+                  <input pInputText formControlName="material_name" placeholder="Material Name">
+                </div>
+                <div class="field col-12 md:col-2">
+                  <p-select [options]="units" formControlName="unit" optionLabel="label"></p-select>
+                </div>
+                <div class="field col-12 md:col-2">
+                  <p-inputNumber formControlName="quantity" [min]="1"></p-inputNumber>
+                </div>
+                <div class="field col-12 md:col-2">
+                  <p-inputNumber formControlName="cost" mode="currency" currency="USD"></p-inputNumber>
+                </div>
+                <div class="col-12 md:col-1 flex align-items-end justify-content-end">
+                  <button pButton icon="pi pi-trash" class="p-button-danger p-button-text" (click)="removeMeasurement(i)" *ngIf="measurementFormArray.length > 1"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 mt-4">
+          <button pButton type="button" label="Cancel" class="p-button-secondary" (click)="onCancelEdit()"></button>
+          <button pButton type="submit" label="Save Changes" class="p-button-primary" [disabled]="orderForm.invalid"></button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <ng-container *ngIf="!isEditing">
+        <button pButton type="button" icon="pi pi-pencil" label="Edit" class="p-button-primary p-button-sm" (click)="startEditing()"></button>
+        <button pButton type="button" icon="pi pi-times" label="Close" class="p-button-secondary p-button-sm" (click)="closeDetailSidebar()"></button>
+      </ng-container>
+    </div>
+
+  </ng-template>
+</p-sidebar>
+
 </div>

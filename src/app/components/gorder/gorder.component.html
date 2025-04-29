@@ -1,187 +1,288 @@
 <div [style.margin-left.px]="updateMargin()" class="salah bg-body-tertiary">
-  <div class="order-edit-container">
-    <h3>Edit Order</h3>
 
-    <!-- Button to create a new order -->
-    <button type="button" class="btn btn-secondary mb-3" (click)="createNewOrder()">
-      Create New Order
-    </button>
-    
-    <!-- Order selection dropdown -->
-    <div class="mb-3" *ngIf="ordersList && ordersList.length">
-      <label for="orderSelect" class="form-label">Select Order</label>
-      <select id="orderSelect" class="form-select" (change)="onOrderSelect($event.target.value)">
-        <option value="">-- Select an Order --</option>
-        <option *ngFor="let order of ordersList" [value]="order.id">
-          {{ order.id }} - {{ order.customer_name }}
-        </option>
-      </select>
+<div class="container mt-4">
+  <div class="card shadow" style="max-width: 1200px; margin: 0 auto;">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">
+        <i class="bi bi-pencil-square me-2"></i>Edit Order
+      </h3>
     </div>
     
-    <!-- Form displays only when an order is selected or after clicking "Create New Order" -->
-    <div *ngIf="selectedOrder || (!selectedOrder && orderForm.dirty)">
-      <form [formGroup]="orderForm" (ngSubmit)="submitOrder()">
-        <!-- Order Details Section -->
-        <div class="order-details">
-          <div class="mb-3">
-            <label for="customerName" class="form-label">Customer Name</label>
-            <input type="text" id="customerName" formControlName="customerName" class="form-control" placeholder="Enter customer name">
-            <small *ngIf="orderForm.get('customerName')?.invalid && orderForm.get('customerName')?.touched" class="text-danger">
-              Customer name is required.
-            </small>
-          </div>
-    
-          <div class="mb-3">
-            <label for="phoneNumber" class="form-label">Phone Number</label>
-            <input type="text" id="phoneNumber" formControlName="phoneNumber" class="form-control" placeholder="Enter phone number">
-            <small *ngIf="orderForm.get('phoneNumber')?.touched && orderForm.get('phoneNumber')?.errors?.['required']" class="text-danger">
-              Phone number is required.
-            </small>
-            <small *ngIf="orderForm.get('phoneNumber')?.touched && orderForm.get('phoneNumber')?.errors?.['pattern']" class="text-danger">
-              Enter a valid phone number.
-            </small>
-          </div>
-    
-          <div class="mb-3">
-            <div class="form-label">Address</div>
-            <div class="d-flex">
-              <div class="card flex justify-center me-4">
-                <p-select [options]="cities" formControlName="city" optionLabel="label" placeholder="Select a City"
-                  class="w-full md:w-56 bg-white form-control form2 text-black select-h hs align-items-center" />
-                <small *ngIf="orderForm.get('city')?.invalid && orderForm.get('city')?.touched" class="text-danger">
-                  Please select a city
-                </small>
-              </div>
-              <input type="text" formControlName="addressDetails" class="form-control" id="addressDetails" placeholder="Input address details">
-              <small *ngIf="orderForm.get('addressDetails')?.invalid && orderForm.get('addressDetails')?.touched" class="text-danger">
-                Address details are required
-              </small>
-            </div>
-          </div>
- 
-          <div class="form-label">Work Type</div>
-
-          <div>
-            <p-multiselect [options]="workTypes" formControlName="workType" optionLabel="name" placeholder="Select Work Type"
-              [maxSelectedLabels]="3" styleClass="w-full md:w-80 mb-3 bg-white form-control text-black select-h hs align-items-center" />
-            <small *ngIf="orderForm.get('workType')?.invalid && orderForm.get('workType')?.touched" class="text-danger">
-              Please select at least one work type
-            </small>
-          </div>
-    
-          <!-- Company Option -->
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" formControlName="hasCompany" id="hasCompany">
-            <label class="form-check-label" for="hasCompany">Company?</label>
-          </div>
-    
-          <div class="mb-3" *ngIf="orderForm.get('hasCompany')?.value">
-            <label for="companyName" class="form-label">Company Name</label>
-            <input type="text" id="companyName" formControlName="companyName" class="form-control" placeholder="Enter company name">
-            <small *ngIf="orderForm.get('companyName')?.invalid && orderForm.get('companyName')?.touched" class="text-danger">
-              Company name is required.
-            </small>
-          </div>
-    
-          <!-- New Fields: Start Date, End Date, and Attachment -->
-          <div class="mb-3">
-            <label for="startDate" class="form-label">Start Date</label>
-            <input type="date" id="startDate" formControlName="startDate" class="form-control">
-            <small *ngIf="orderForm.get('startDate')?.invalid && orderForm.get('startDate')?.touched" class="text-danger">
-              Start date is required.
-            </small>
-          </div>
-    
-          <div class="mb-3">
-            <label for="endDate" class="form-label">End Date</label>
-            <input type="date" id="endDate" formControlName="endDate" class="form-control">
-            <small *ngIf="orderForm.get('endDate')?.invalid && orderForm.get('endDate')?.touched" class="text-danger">
-              End date is required.
-            </small>
-          </div>
-    
-          <div class="mb-3">
-            <label for="attachment" class="form-label">Attachment (Image)</label>
-            <input type="file" id="attachment" (change)="onFileChange($event)" class="form-control">
-          </div>
-        </div>
-    
-        <!-- Order Items Section -->
-        <div formArrayName="orderItems">
-          <div *ngFor="let item of orderItemsArray.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center my-3">
-            <div class="mb-3 me-3">
-              <label class="form-label">Marble Material</label>
-              <select formControlName="marbleMaterial" class="form-select">
-                <option value="">Select Material</option>
-                <option value="Granite">Granite</option>
-                <option value="Marble">Marble</option>
-                <option value="Quartz">Quartz</option>
-              </select>
-              <small *ngIf="item.get('marbleMaterial')?.invalid && item.get('marbleMaterial')?.touched" class="text-danger">
-                Please select a material.
-              </small>
-            </div>
-    
-            <div class="mb-3 me-3">
-              <label class="form-label">Dimensions</label>
-              <select formControlName="dimension" class="form-select">
-                <option value="m2">m2</option>
-                <option value="Metre">Metre</option>
-              </select>
-            </div>
-    
-            <div class="mb-3 me-3">
-              <label class="form-label">Amount</label>
-              <input type="number" formControlName="amount" class="form-control" placeholder="Enter amount">
-              <small *ngIf="item.get('amount')?.hasError('required') && item.get('amount')?.touched" class="text-danger">
-                Amount is required.
-              </small>
-              <small *ngIf="item.get('amount')?.hasError('min') && item.get('amount')?.touched" class="text-danger">
-                Amount must be at least 1.
-              </small>
-            </div>
-    
-            <div class="mb-3 me-3">
-              <label class="form-label">Cost</label>
-              <input type="number" formControlName="cost" class="form-control" placeholder="Enter cost">
-              <small *ngIf="item.get('cost')?.hasError('required') && item.get('cost')?.touched" class="text-danger">
-                Cost is required.
-              </small>
-              <small *ngIf="item.get('cost')?.hasError('min') && item.get('cost')?.touched" class="text-danger">
-                Cost cannot be negative.
-              </small>
-            </div>
-    
-            <div class="mb-3 me-3">
-              <label class="form-label">Total Cost</label>
-              <h6 class="form-control bg-secondary-subtle">{{ calculateTotal(i) }} EGP</h6>
-            </div>
-    
-            <button type="button" class="btn btn-success me-2" (click)="addOrderItem()">
-              <i class="pi pi-plus"></i>
-            </button>
-    
-            <button type="button" class="btn btn-danger" *ngIf="orderItemsArray.length > 1" (click)="removeOrderItem(i)">
-              <i class="pi pi-minus"></i>
-            </button>
-          </div>
-        </div>
-    
-        <div class="mb-3">
-          <label class="form-label">Grand Total</label>
-          <h6 class="form-control bg-secondary-subtle">{{ grandTotal }} EGP</h6>
-        </div>
-    
-        <div *ngIf="submitMessage" class="alert" [ngClass]="{'alert-success': submitMessage.includes('success'), 'alert-danger': !submitMessage.includes('success')}">
-          {{ submitMessage }}
-        </div>
-    
-        <button type="submit" [disabled]="orderForm.invalid || isSubmitting" class="btn btn-primary">
-          {{ isSubmitting ? 'Submitting...' : 'Update Order' }}
+    <div class="card-body">
+      <!-- Action Buttons -->
+      <div class="d-flex mb-3">
+        <button class="btn btn-success me-2" (click)="createNewOrder()">
+          <i class="bi bi-plus-circle me-2"></i>Create New Order
         </button>
+        
+        <select class="form-select w-auto" 
+                *ngIf="ordersList?.length"
+                (change)="onOrderSelect($event.target.value)">
+          <option value="">-- Select Order --</option>
+          <option *ngFor="let order of ordersList" [value]="order.id">
+            {{ order.id }} - {{ order.customer_name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Main Form -->
+      <form [formGroup]="orderForm" (ngSubmit)="submitOrder()">
+        <div class="row" *ngIf="selectedOrder || orderForm.dirty">
+          <!-- Customer Section -->
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <i class="bi bi-person me-2"></i>Customer Details
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-person-fill me-1 text-muted"></i>Customer Name
+                  </label>
+                  <input type="text" class="form-control" 
+                         formControlName="customerName">
+                  <div *ngIf="orderForm.get('customerName')?.errors?.required && 
+                              orderForm.get('customerName')?.touched"
+                       class="text-danger small">
+                    Name is required
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-telephone me-1 text-muted"></i>Phone Number
+                  </label>
+                  <input type="text" class="form-control" 
+                         formControlName="phoneNumber">
+                  <div *ngIf="orderForm.get('phoneNumber')?.errors && 
+                              orderForm.get('phoneNumber')?.touched"
+                       class="text-danger small">
+                    <span *ngIf="orderForm.get('phoneNumber')?.errors?.required">
+                      Phone is required
+                    </span>
+                    <span *ngIf="orderForm.get('phoneNumber')?.errors?.pattern">
+                      Invalid phone format
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Section -->
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <i class="bi bi-geo-alt me-2"></i>Delivery Address
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-building me-1 text-muted"></i>City
+                  </label>
+                  <p-select [options]="cities" 
+                            formControlName="city"
+                            optionLabel="label"
+                            class="w-100"></p-select>
+                  <div *ngIf="orderForm.get('city')?.invalid && 
+                              orderForm.get('city')?.touched"
+                       class="text-danger small">
+                    City is required
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-signpost me-1 text-muted"></i>Address Details
+                  </label>
+                  <input type="text" class="form-control" 
+                         formControlName="addressDetails">
+                  <div *ngIf="orderForm.get('addressDetails')?.invalid && 
+                              orderForm.get('addressDetails')?.touched"
+                       class="text-danger small">
+                    Address details required
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Work Type Section -->
+          <div class="col-md-12">
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <i class="bi bi-tools me-2"></i>Work Type
+              </div>
+              <div class="card-body">
+                <p-multiselect [options]="workTypes" 
+                               formControlName="workType"
+                               optionLabel="name"
+                               placeholder="Select Services"
+                               [maxSelectedLabels]="3"
+                               class="w-100"></p-multiselect>
+                <div *ngIf="orderForm.get('workType')?.invalid && 
+                            orderForm.get('workType')?.touched"
+                     class="text-danger small">
+                  Please select at least one service
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Company Section -->
+          <div class="col-md-12">
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" 
+                         formControlName="hasCompany" id="hasCompany">
+                  <label class="form-check-label" for="hasCompany">
+                    <i class="bi bi-building me-2"></i>Is this a company order?
+                  </label>
+                </div>
+
+                <div *ngIf="orderForm.get('hasCompany')?.value" class="mt-3">
+                  <input type="text" class="form-control" 
+                         formControlName="companyName"
+                         placeholder="Company Name">
+                  <div *ngIf="orderForm.get('companyName')?.invalid && 
+                              orderForm.get('companyName')?.touched"
+                       class="text-danger small">
+                    Company name required
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Date & Attachment -->
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <i class="bi bi-calendar me-2"></i>Dates
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-calendar-check me-1 text-muted"></i>Start Date
+                  </label>
+                  <input type="date" class="form-control" 
+                         formControlName="startDate">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-calendar-x me-1 text-muted"></i>End Date
+                  </label>
+                  <input type="date" class="form-control" 
+                         formControlName="endDate">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <i class="bi bi-paperclip me-2"></i>Attachment
+              </div>
+              <div class="card-body">
+                <input type="file" class="form-control" 
+                       (change)="onFileChange($event)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Items -->
+          <div class="col-md-12">
+            <div class="card mb-3">
+              <div class="card-header bg-light d-flex justify-content-between">
+                <span><i class="bi bi-basket me-2"></i>Order Items</span>
+                <button type="button" class="btn btn-sm btn-success" 
+                        (click)="addOrderItem()">
+                  <i class="bi bi-plus-lg"></i> Add Item
+                </button>
+              </div>
+              <div class="card-body">
+                <div formArrayName="orderItems">
+                  <div *ngFor="let item of orderItemsArray.controls; let i = index" 
+                       [formGroupName]="i" class="card mb-2 p-3">
+                    <div class="row g-3">
+                      <div class="col-md-3">
+                        <label class="form-label">Material</label>
+                        <select class="form-select" 
+                                formControlName="marbleMaterial">
+                          <option value="">Select Material</option>
+                          <option value="Granite">Granite</option>
+                          <option value="Marble">Marble</option>
+                          <option value="Quartz">Quartz</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-2">
+                        <label class="form-label">Unit</label>
+                        <select class="form-select" 
+                                formControlName="dimension">
+                          <option value="m2">m²</option>
+                          <option value="m">Meter</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-2">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" 
+                               formControlName="amount">
+                      </div>
+
+                      <div class="col-md-2">
+                        <label class="form-label">Cost</label>
+                        <div class="input-group">
+                          <input type="number" class="form-control" 
+                                 formControlName="cost">
+                          <span class="input-group-text">EGP</span>
+                        </div>
+                      </div>
+
+                      <div class="col-md-3 align-self-center">
+                        <div class="d-flex justify-content-between">
+                          <h5 class="text-primary mb-0">
+                            Total: {{ calculateTotal(i) | number:'1.0-0' }} EGP
+                          </h5>
+                          <button type="button" class="btn btn-danger btn-sm" 
+                                  *ngIf="orderItemsArray.length > 1"
+                                  (click)="removeOrderItem(i)">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grand Total & Submit -->
+          <div class="col-md-12">
+            <div class="card mb-3">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                  Grand Total: <strong class="text-success">{{ grandTotal | number:'1.0-0' }} EGP</strong>
+                </h4>
+                <button type="submit" class="btn btn-primary" 
+                        [disabled]="orderForm.invalid || isSubmitting">
+                  <span *ngIf="!isSubmitting">
+                    <i class="bi bi-save me-2"></i>Update Order
+                  </span>
+                  <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                  Saving...
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   </div>
-  <pre>{{ orderForm.value | json }}</pre>
-
+</div>
 </div>

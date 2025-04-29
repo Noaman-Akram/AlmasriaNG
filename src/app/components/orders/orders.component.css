@@ -126,3 +126,8 @@
   border: none !important;
   box-shadow: none !important;
 }
+.p-inputtext{
+    background-color: transparent !important; 
+    color: black;
+    border: 1px solid #ced4da;
+}

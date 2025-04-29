@@ -11,6 +11,14 @@ interface WorkType {
   code: string;
 }
 
+interface Measurement {
+  order_id:     number;
+  material_name: string; // or material_type if that’s what you store
+  unit:         string;
+  quantity:     number;
+  cost:         number;
+}
+
 @Component({
   selector: 'app-order-edit',
   standalone: true,
@@ -36,6 +44,9 @@ export class GorderComponent implements OnInit {
   today: Date = new Date();
   marginLeft = 200;
   isSidebarOpen = false;
+
+  finalOrderCode: string = '';
+
 
   // For file (attachment) handling
   selectedFile: File | null = null;
@@ -81,6 +92,10 @@ export class GorderComponent implements OnInit {
       endDate: ['', Validators.required],
       attachment: [null] // to store the file name or URL
     });
+    this.orderForm.addControl('orderDetails', this.fb.array([]));
+    this.orderForm.addControl('measurements',  this.fb.array([]));
+    this.orderForm.addControl('transactions',  this.fb.array([]));
+    this.orderForm.addControl('orderStages',   this.fb.array([]));
 
     // Start with one empty order item.
     this.addOrderItem();
@@ -104,7 +119,10 @@ export class GorderComponent implements OnInit {
       })
       .catch(err => console.error('Error retrieving orders:', err));
   }
-
+  loadRecentOrders(): void {
+    this.fetchOrders();
+  }
+  isLoadingOrders: boolean = false;
   /**
    * Called when an order is selected from the dropdown.
    * It finds the order by its id and patches the form with its data.
@@ -142,56 +160,74 @@ export class GorderComponent implements OnInit {
     }
   }
 */
-
-onOrderSelect(orderId: string): void {
-  const id = Number(orderId); // Convert orderId to a number
-  const order = this.ordersList.find(o => o.id === id);
-  if (order) {
-    console.log('Fetched order:', order);
-    this.selectedOrder = order;
-    
-    let city = '';
-    let addressDetails = '';
-    if (order.address) {
-      const parts = order.address.split(', ');
-      city = parts[0]; // e.g., "cairo"
-      addressDetails = parts.slice(1).join(', ');
-    }
-    
-    // Compare based on the 'value' property instead of 'label'
-    const cityObj = this.cities.find(c => c.value === city) || '';
-    
-    // Delay patching to ensure the form is fully rendered
-    setTimeout(() => {
-      this.orderForm.patchValue({
-        customerName: order.customer_name,
-        phoneNumber: order.phone_number,
-        city: cityObj, // now this should patch correctly
-        addressDetails: addressDetails,
-        workType: this.parseWorkTypes(order.work_types),
-        hasCompany: order.company ? true : false,
-        companyName: order.company || '',
-        startDate: order.start_date || '',
-        endDate: order.end_date || '',
-        attachment: order.attachment || null
-      });
-      this.orderForm.updateValueAndValidity();
-      console.log('Patched order values into the form.');
-    }, 100); // 100 ms delay
-
-    if (order.orderItems && Array.isArray(order.orderItems)) {
-      this.setOrderItems(order.orderItems);
-    }
-    
-    // Optional: log form changes for debugging
-    this.orderForm.valueChanges.subscribe(values => {
-      console.log('Form values:', values);
-    });
+onFileChange(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (!input.files || input.files.length === 0) {
+    this.selectedFile = null;
+    return;
   }
+
+  this.selectedFile = input.files[0];
+  // if you want to store the filename/URL in the form control:
+  this.orderForm.patchValue({
+    attachment: this.selectedFile.name
+  });
+
+  // optionally mark the control as dirty/touched
+  this.orderForm.get('attachment')?.markAsDirty();
 }
 
 
-  
+
+
+async onOrderSelect(orderIdStr: string): Promise<void> {
+  const id = Number(orderIdStr);
+  if (!id) return;
+
+  // 1️⃣ find the order
+  const order = this.ordersList.find(o => o.id === id);
+  if (!order) return;
+  this.selectedOrder = order;
+
+  // 2️⃣ patch simple scalar fields
+  const [ city, ...rest ] = (order.address || '').split(', ');
+  this.orderForm.patchValue({
+    customerName:   order.customer_name,
+    phoneNumber:    order.phone_number,
+    city:           this.cities.find(c => c.value === city) || '',
+    addressDetails: rest.join(', '),
+    workType:       this.parseWorkTypes(order.work_types),
+    hasCompany:     !!order.company,
+    companyName:    order.company || '',
+    startDate:      order.start_date,
+    endDate:        order.end_date,
+    attachment:     order.attachment
+  });
+
+  // 3️⃣ load Measurements & filter for this order
+  try {
+    const allMeasurements = await this
+      .supabaseService
+      .retrieveDB('Measurements') as Measurement[];
+
+    const myMeasurements = allMeasurements
+      .filter(m => m.order_id === id);
+
+    // 4️⃣ map into your FormArray
+    this.setOrderItems(
+      myMeasurements.map(m => ({
+        marbleMaterial: m.material_name,
+        dimension:      m.unit,
+        amount:         m.quantity,
+        cost:           m.cost
+      }))
+    );
+
+  } catch (err) {
+    console.error('Error loading measurements:', err);
+  }
+}
+
   /**
    * Parses the stored work_types string into an array of WorkType objects.
    * Expected format example: "{K,W}"
@@ -291,6 +327,9 @@ onOrderSelect(orderId: string): void {
       return sum + (amount * cost);
     }, 0);
   }
+  get measurementsArray() { return this.orderForm.get('measurements') as FormArray; }
+get orderDetailsArray() { return this.orderForm.get('orderDetails') as FormArray; }
+get transactionsArray() { return this.orderForm.get('transactions') as FormArray; }
 
   /**
    * Handles file input changes.
